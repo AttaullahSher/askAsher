@@ -9,7 +9,7 @@
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
-      background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 50%, #a1c4fd 100%);
+      background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 50%, #d1d9ff 100%);
       color: #1d1d1f;
       display: flex;
       flex-direction: column;
@@ -40,6 +40,9 @@
       margin: 15px auto;
       color: #444;
       line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     form {
       margin-top: 30px;
@@ -55,6 +58,8 @@
     }
     input[type="text"], textarea {
       width: 100%;
+      max-width: 90%; /* Reduced width to avoid touching the right edge */
+      margin: 0 auto; /* Center the input fields */
       padding: 15px;
       font-size: 1rem;
       border: none;
@@ -64,6 +69,9 @@
       box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
       transition: all 0.3s ease;
     }
+    textarea {
+      height: 150px; /* Increased height for the question textarea */
+    }
     input[type="text"]:focus, textarea:focus {
       outline: none;
       background: #fff;
@@ -72,18 +80,18 @@
     button {
       padding: 15px 35px;
       font-size: 1.1rem;
-      background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+      background: linear-gradient(45deg, #4facfe, #00f2fe); /* Lighter blue gradient */
       color: white;
       border: none;
       border-radius: 25px;
       cursor: pointer;
       transition: all 0.3s ease;
       align-self: center;
-      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+      box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
     }
     button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+      box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6);
     }
 
     .social-row {
@@ -101,14 +109,14 @@
       justify-content: center;
       width: 50px;
       height: 50px;
-      background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+      background: linear-gradient(45deg, #4facfe, #00f2fe); /* Lighter blue gradient */
       border-radius: 50%;
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
     .social-row a:hover {
       transform: scale(1.1);
-      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+      box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
     }
     .social-row a img {
       width: 25px;
@@ -134,14 +142,17 @@
   <header>
     <img src="https://scontent.frdp4-1.fna.fbcdn.net/v/t39.30808-6/219699645_5583884791648909_1466720680113157178_n.jpg?stp=cp6_dst-jpg&_nc_cat=108&ccb=1-7&_nc_sid=833d69&_nc_ohc=8fU8JkgE9u0Q7kNvgG5aX7M&_nc_ht=scontent.frdp4-1.fna&_nc_gid=Ar_1zQdE8rI3jGPGZt3b5uN&oh=00_AYCDY6m8J3L-oE3e5v7tUNm5W9LBEpQ8eJ2oYx4nS2zOkQ&oe=670A3CA7" alt="Attaullah Sher" class="profile-pic">
     <h1>Attaullah Sher</h1>
-    <p>Have a question about social trends, religion, astronomy, or tech? I’d love to help you explore the answers!</p>
+    <p>
+      <span>Have a question about social trends, religion,</span>
+      <span>astronomy, or tech? I’d love to help you explore the answers!</span>
+    </p>
   </header>
 
   <form action="https://formsubmit.co/Attaullah.Sher@me.com" method="POST">
     <input type="hidden" name="_subject" value="New Question for Attaullah Sher!">
     <input type="hidden" name="_captcha" value="false">
     <input type="text" name="name" placeholder="Your name (optional)">
-    <textarea name="question" placeholder="What’s on your mind? Ask away..." required></textarea>
+    <textarea name="question" placeholder="Type your question in English, Urdu, or Pashto" required></textarea>
     <button type="submit">Ask Asher</button>
   </form>
 
