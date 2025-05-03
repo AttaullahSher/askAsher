@@ -4,158 +4,323 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ask Attaullah Sher</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     body {
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
-      background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 50%, #d1d9ff 100%);
-      color: #1d1d1f;
+      color: #ffffff;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: start;
+      justify-content: space-between;
       min-height: 100vh;
-      background-attachment: fixed;
+      overflow-x: hidden;
+      background: radial-gradient(circle at center, #0a0f0d 0%, #1c2526 70%, #0a0f0d 100%);
+      position: relative;
+      animation: waveAnimation 20s infinite ease-in-out;
+    }
+    .light {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, #ffffff 0%, rgba(255, 255, 255, 0) 70%);
+      transform: translate(-50%, -50%);
+      z-index: -2;
+      animation: lightGlow 12s infinite ease-in-out;
+    }
+    .green-circle {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, #00ff7f 5%, transparent 30%);
+      opacity: 0.6;
+      z-index: -1;
+      animation: greenCirclePulse 10s infinite ease-in-out;
     }
     header {
       text-align: center;
-      margin: 50px 20px 20px;
+      margin: 40px 20px 20px;
+      animation: fadeIn 1s ease-in;
     }
     header h1 {
-      font-size: 2.4rem;
-      font-weight: 600;
+      font-size: 2.5rem;
+      font-weight: 700;
       margin: 10px 0;
+      background: linear-gradient(45deg, #00ff7f, #ffffff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
     header p {
       font-size: 1.1rem;
       max-width: 600px;
       margin: 15px auto;
-      color: #444;
-      line-height: 1.5;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      color: #ffffff;
+      line-height: 1.6;
     }
     form {
-      margin-top: 30px;
+      margin-top: 20px;
       width: 90%;
       max-width: 500px;
       display: flex;
       flex-direction: column;
       gap: 20px;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(10, 15, 13, 0.8);
       padding: 30px;
       border-radius: 20px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      animation: slideUp 0.8s ease-out;
+      z-index: 1;
     }
-    input[type="text"], textarea {
+    select, textarea {
       width: 100%;
-      max-width: 90%; /* Reduced width to avoid touching the right edge */
-      margin: 0 auto; /* Center the input fields */
-      padding: 15px;
+      max-width: 90%;
+      margin: 0 auto;
+      padding: 15px 40px 15px 15px;
       font-size: 1rem;
-      border: none;
+      border: 2px solid #00ff7f;
       border-radius: 25px;
-      background: #f0f0f5;
+      background: #1c2526;
+      color: #ffffff;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%2300ff7f' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 15px center;
       resize: vertical;
-      box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
       transition: all 0.3s ease;
     }
-    textarea {
-      height: 150px; /* Increased height for the question textarea */
-    }
-    input[type="text"]:focus, textarea:focus {
+    select:focus, textarea:focus {
       outline: none;
-      background: #fff;
-      box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.3);
+      background: #0a0f0d;
+      box-shadow: 0 0 0 3px rgba(0, 255, 127, 0.5);
+    }
+    textarea {
+      height: 160px;
+      background-image: none;
     }
     button {
       padding: 15px 35px;
       font-size: 1.1rem;
-      background: linear-gradient(45deg, #4facfe, #00f2fe); /* Blue gradient */
-      color: white;
+      background: #00ff7f;
+      color: #0a0f0d;
       border: none;
       border-radius: 25px;
       cursor: pointer;
       transition: all 0.3s ease;
       align-self: center;
-      box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+      box-shadow: 0 4px 15px rgba(0, 255, 127, 0.6);
     }
     button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6);
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 6px 20px rgba(0, 255, 127, 0.8);
     }
-
     .social-row {
-      margin: 40px 0;
+      margin: 20px 0;
       display: flex;
       gap: 15px;
       justify-content: center;
       flex-wrap: wrap;
+      z-index: 10;
       position: relative;
     }
+    .social-text {
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #00ff7f, #ffffff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
     .social-row a {
-      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
       width: 50px;
       height: 50px;
-      background: linear-gradient(45deg, #4facfe, #00f2fe); /* Blue gradient */
+      background: #00ff7f;
       border-radius: 50%;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 15px rgba(0, 255, 127, 0.6);
+      opacity: 1;
+      position: relative;
+      animation: buttonPulse 2s infinite ease-in-out;
     }
     .social-row a:hover {
-      transform: scale(1.1);
-      box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+      transform: scale(1.1) rotate(5deg);
+      box-shadow: 0 6px 20px rgba(0, 255, 127, 0.8);
+      animation: none;
     }
     .social-row a img {
-      width: 25px;
-      height: 25px;
+      width: 30px;
+      height: 30px;
       object-fit: contain;
-      filter: brightness(0) invert(1);
+      filter: brightness(0);
     }
-    .social-row a:hover:after {
-      content: "Follow for more!";
+    .honeypot {
+      display: none;
+    }
+    .character {
+      width: 80px;
+      height: 80px;
+      background: url('https://cdn.jsdelivr.net/gh/twemoji/twemoji/assets/svg/1f466-1f3fb.svg') no-repeat center;
+      background-size: contain;
       position: absolute;
-      bottom: -30px;
-      font-size: 0.9rem;
-      color: #fff;
-      background: rgba(0,0,0,0.7);
-      padding: 5px 10px;
-      border-radius: 10px;
-      white-space: nowrap;
+      top: 20px;
+      left: 20px;
+      animation: jumpIn 1s ease-out;
+      z-index: 1;
+    }
+    .character.typing {
+      background: url('https://cdn.jsdelivr.net/gh/twemoji/twemoji/assets/svg/1f466-1f3fb.svg') no-repeat center;
+      background-size: contain;
+      filter: opacity(0.8);
+    }
+    footer {
+      padding-bottom: 20px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes jumpIn {
+      0% { transform: translateY(-100vh); }
+      70% { transform: translateY(20px); }
+      100% { transform: translateY(0); }
+    }
+    @keyframes waveAnimation {
+      0% { background-position: 0 0; }
+      50% { background-position: 100% 0; }
+      100% { background-position: 0 0; }
+    }
+    @keyframes greenCirclePulse {
+      0% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(0.8); opacity: 0.4; }
+      100% { transform: scale(1); opacity: 0.6; }
+    }
+    @keyframes lightGlow {
+      0% { transform: scale(1) translate(-50%, -50%); opacity: 0.8; }
+      50% { transform: scale(1.2) translate(-50%, -50%); opacity: 1; }
+      100% { transform: scale(1) translate(-50%, -50%); opacity: 0.8; }
+    }
+    @keyframes buttonPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    @media (max-width: 500px) {
+      header h1 { font-size: 2rem; }
+      form { padding: 20px; width: 85%; }
+      select, textarea { padding-right: 30px; font-size: 0.9rem; }
+      textarea { height: 120px; }
+      .character { width: 60px; height: 60px; top: 15px; left: 15px; }
+      .social-row a { width: 40px; height: 40px; }
+      .social-row a img { width: 25px; height: 25px; }
+      .social-row { margin: 15px 0; gap: 10px; }
+      .social-text { font-size: 1rem; }
+    }
+    @media (max-width: 390px) {
+      header h1 { font-size: 1.8rem; }
+      header p { font-size: 1rem; }
+      form { padding: 15px; }
+      select, textarea { padding-right: 25px; }
+      button { padding: 12px 25px; font-size: 1rem; }
     }
   </style>
 </head>
 <body>
+  <div class="character" id="character"></div>
+  <div class="light"></div>
+  <div class="green-circle"></div>
 
   <header>
     <h1>Attaullah Sher</h1>
     <p>
-      <span>Have a question about social trends, religion,</span>
-      <span>astronomy, or tech? I’d love to help you explore the answers!</span>
+      Leme turn your questions & Suggestions into epic videos! <br>
+      Share anonymously and let’s create something amazing together!
     </p>
   </header>
 
-  <form action="https://formsubmit.co/Attaullah.Sher@me.com" method="POST">
-    <input type="hidden" name="_subject" value="New Question for Attaullah Sher!">
-    <input type="hidden" name="_captcha" value="false">
-    <input type="text" name="name" placeholder="Your name (optional)">
-    <textarea name="question" placeholder="Type your question in English, Urdu, or Pashto" required></textarea>
-    <button type="submit">Ask Asher</button>
+  <form action="https://formspree.io/f/your-form-id" method="POST">
+    <input type="hidden" name="_subject" value="New Submission for Attaullah Sher!">
+    <input type="text" name="_honeypot" class="honeypot" placeholder="Leave this blank">
+    <select name="type" id="suggestions-dropdown" required>
+      <option value="" disabled selected>Optional Suggestions</option>
+      <option value="question">I’ve got a juicy question!</option>
+      <option value="secret">I wanna share a secret!</option>
+      <option value="confession">I have a funny confession!</option>
+      <option value="space">Tell me something cool about space!</option>
+      <option value="suggestion">I’ve got a wild suggestion!</option>
+      <option value="story">Share a crazy story with me!</option>
+      <option value="tech">What’s the weirdest tech fact you know?</option>
+    </select>
+    <textarea name="message" id="message" placeholder="Type your message in English, Urdu, or Pashto" required></textarea>
+    <button type="submit">Submit Anonymously</button>
   </form>
 
-  <div class="social-row">
-    <a href="https://facebook.com/attaullah.sher" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" alt="Facebook"></a>
-    <a href="https://youtube.com/@attaullahsher" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/youtube.svg" alt="YouTube"></a>
-    <a href="https://instagram.com/attaullah.sher" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram"></a>
-    <a href="https://snapchat.com/add/attaullah.sher" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/snapchat.svg" alt="Snapchat"></a>
-    <a href="https://twitter.com/attaullahsherX" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="Twitter"></a>
-    <a href="https://tiktok.com/@attaullah.sher2" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tiktok.svg" alt="TikTok"></a>
-  </div>
+  <footer>
+    <div class="social-text">Follow for more!</div>
+    <div class="social-row">
+      <a href="https://facebook.com/attaullah.sher" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" alt="Facebook"></a>
+      <a href="https://youtube.com/@attaullahsher" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/youtube.svg" alt="YouTube"></a>
+      <a href="https://instagram.com/attaullah.sher" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram"></a>
+      <a href="https://snapchat.com/add/attaullah.sher" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/snapchat.svg" alt="Snapchat"></a>
+      <a href="https://twitter.com/attaullahsherX" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="Twitter"></a>
+      <a href="https://tiktok.com/@attaullah.sher2" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tiktok.svg" alt="TikTok"></a>
+    </div>
+  </footer>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script>
+    gsap.fromTo(".social-row a", 
+      { opacity: 0, scale: 0.5 },
+      { opacity: 1, scale: 1, stagger: 0.1, duration: 0.8, ease: "back.out(1.7)", delay: 0.5 }
+    );
+    gsap.from(".social-text", {
+      opacity: 0,
+      y: -20,
+      duration: 0.8,
+      delay: 0.5,
+      ease: "power2.out"
+    });
+
+    const suggestionsDropdown = document.getElementById('suggestions-dropdown');
+    const messageTextarea = document.getElementById('message');
+    const character = document.getElementById('character');
+
+    suggestionsDropdown.addEventListener('change', (e) => {
+      const selectedSuggestion = e.target.options[e.target.selectedIndex].text;
+      messageTextarea.value = `${selectedSuggestion}: `;
+      messageTextarea.focus();
+      const cursorPosition = messageTextarea.value.length;
+      messageTextarea.setSelectionRange(cursorPosition, cursorPosition);
+    });
+
+    messageTextarea.addEventListener('input', () => {
+      character.classList.add('typing');
+    });
+
+    messageTextarea.addEventListener('blur', () => {
+      character.classList.remove('typing');
+    });
+  </script>
 </body>
 </html>
