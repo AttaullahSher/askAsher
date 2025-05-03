@@ -316,13 +316,11 @@
       <option value="space">Tell me something cool about space!</option>
       <option value="suggestion">I’ve got a wild suggestion!</option>
       <option value="story">Share a crazy story with me!</option>
-      <option value="tech">What’s the weirdest tech fact you know?</option>
     </select>
     <textarea name="message" id="message" placeholder="Type your message in English, Urdu, or Pashto" required></textarea>
     <button type="submit" id="submitButton">Submit Anonymously</button>
     <div class="success-message" style="display: none;"></div>
     <div class="action-buttons" style="display: none;">
-      <button type="button" class="close-button">Close</button>
       <button type="button" class="reset-button">Submit Another</button>
     </div>
   </form>
@@ -361,7 +359,6 @@
     const submitButton = document.getElementById('submitButton');
     const successMessage = document.querySelector('.success-message');
     const actionButtons = document.querySelector('.action-buttons');
-    const closeButton = document.querySelector('.close-button');
     const resetButton = document.querySelector('.reset-button');
 
     suggestionsDropdown.addEventListener('change', (e) => {
@@ -411,10 +408,6 @@
           submitButton.disabled = false;
         }
       });
-    });
-
-    closeButton.addEventListener('click', () => {
-      window.close();
     });
 
     resetButton.addEventListener('click', () => {
