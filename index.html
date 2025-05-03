@@ -79,7 +79,7 @@
       animation: slideUp 0.8s ease-out;
       z-index: 1;
     }
-    select, textarea {
+    select {
       width: 100%;
       max-width: 90%;
       margin: 0 auto;
@@ -93,18 +93,46 @@
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%2300ff7f' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 15px center;
-      resize: vertical;
       box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
       transition: all 0.3s ease;
+      max-height: 150px;
+      overflow-y: auto;
     }
-    select:focus, textarea:focus {
+    select:focus {
       outline: none;
       background: #0a0f0d;
       box-shadow: 0 0 0 3px rgba(0, 255, 127, 0.5);
     }
+    select::-webkit-scrollbar {
+      width: 8px;
+    }
+    select::-webkit-scrollbar-track {
+      background: #1c2526;
+      border-radius: 25px;
+    }
+    select::-webkit-scrollbar-thumb {
+      background: #00ff7f;
+      border-radius: 25px;
+    }
     textarea {
+      width: 100%;
+      max-width: 90%;
+      margin: 0 auto;
+      padding: 15px 40px 15px 15px;
+      font-size: 1rem;
+      border: 2px solid #00ff7f;
+      border-radius: 25px;
+      background: #1c2526;
+      color: #ffffff;
+      resize: vertical;
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
       height: 160px;
-      background-image: none;
+    }
+    textarea:focus {
+      outline: none;
+      background: #0a0f0d;
+      box-shadow: 0 0 0 3px rgba(0, 255, 127, 0.5);
     }
     button {
       padding: 15px 35px;
@@ -121,6 +149,23 @@
     button:hover {
       transform: translateY(-2px) scale(1.05);
       box-shadow: 0 6px 20px rgba(0, 255, 127, 0.8);
+    }
+    button:disabled {
+      background: #cccccc;
+      cursor: wait;
+      box-shadow: none;
+      transform: none;
+    }
+    .success-message {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #ffffff;
+      margin: 20px 0;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
     }
     .social-row {
       margin: 20px 0;
@@ -236,6 +281,7 @@
       .social-row a img { width: 25px; height: 25px; }
       .social-row { margin: 15px 0; gap: 10px; }
       .social-text { font-size: 1rem; }
+      .action-buttons { flex-direction: column; gap: 10px; }
     }
     @media (max-width: 390px) {
       header h1 { font-size: 1.8rem; }
@@ -254,15 +300,15 @@
   <header>
     <h1>Attaullah Sher</h1>
     <p>
-      Leme turn your questions & Suggestions into epic videos! <br>
+      Let Attaullah Sher turn your questions into epic videos, stories, and reels! <br>
       Share anonymously and let’s create something amazing together!
     </p>
   </header>
 
-  <form action="https://formspree.io/f/your-form-id" method="POST">
-    <input type="hidden" name="_subject" value="New Submission for Attaullah Sher!">
+  <form id="contact-form" action="https://formspree.io/f/mqaqplqo" method="POST">
+    <input type="hidden" name="_subject" value="New Question for you!">
     <input type="text" name="_honeypot" class="honeypot" placeholder="Leave this blank">
-    <select name="type" id="suggestions-dropdown" required>
+    <select name="type" id="suggestions-dropdown">
       <option value="" disabled selected>Optional Suggestions</option>
       <option value="question">I’ve got a juicy question!</option>
       <option value="secret">I wanna share a secret!</option>
@@ -273,7 +319,12 @@
       <option value="tech">What’s the weirdest tech fact you know?</option>
     </select>
     <textarea name="message" id="message" placeholder="Type your message in English, Urdu, or Pashto" required></textarea>
-    <button type="submit">Submit Anonymously</button>
+    <button type="submit" id="submitButton">Submit Anonymously</button>
+    <div class="success-message" style="display: none;"></div>
+    <div class="action-buttons" style="display: none;">
+      <button type="button" class="close-button">Close</button>
+      <button type="button" class="reset-button">Submit Another</button>
+    </div>
   </form>
 
   <footer>
@@ -288,6 +339,7 @@
     </div>
   </footer>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script>
     gsap.fromTo(".social-row a", 
@@ -305,6 +357,12 @@
     const suggestionsDropdown = document.getElementById('suggestions-dropdown');
     const messageTextarea = document.getElementById('message');
     const character = document.getElementById('character');
+    const form = document.getElementById('contact-form');
+    const submitButton = document.getElementById('submitButton');
+    const successMessage = document.querySelector('.success-message');
+    const actionButtons = document.querySelector('.action-buttons');
+    const closeButton = document.querySelector('.close-button');
+    const resetButton = document.querySelector('.reset-button');
 
     suggestionsDropdown.addEventListener('change', (e) => {
       const selectedSuggestion = e.target.options[e.target.selectedIndex].text;
@@ -320,6 +378,53 @@
 
     messageTextarea.addEventListener('blur', () => {
       character.classList.remove('typing');
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      submitButton.disabled = true;
+
+      const formData = {
+        type: suggestionsDropdown.value,
+        message: messageTextarea.value,
+        _subject: 'New Question for you!',
+        _honeypot: form.querySelector('[name="_honeypot"]').value
+      };
+
+      $.ajax({
+        url: form.action,
+        method: 'POST',
+        data: formData,
+        dataType: 'json',
+        headers: { 'Accept': 'application/json' },
+        success: function(response) {
+          suggestionsDropdown.style.display = 'none';
+          messageTextarea.style.display = 'none';
+          submitButton.style.display = 'none';
+          successMessage.style.display = 'block';
+          successMessage.textContent = 'Your message was sent successfully!';
+          actionButtons.style.display = 'flex';
+        },
+        error: function() {
+          successMessage.style.display = 'block';
+          successMessage.textContent = 'Error sending message. Please try again.';
+          submitButton.disabled = false;
+        }
+      });
+    });
+
+    closeButton.addEventListener('click', () => {
+      window.close();
+    });
+
+    resetButton.addEventListener('click', () => {
+      form.reset();
+      suggestionsDropdown.style.display = 'block';
+      messageTextarea.style.display = 'block';
+      submitButton.style.display = 'block';
+      successMessage.style.display = 'none';
+      actionButtons.style.display = 'none';
+      submitButton.disabled = false;
     });
   </script>
 </body>
