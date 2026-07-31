@@ -1,18 +1,18 @@
 {
-  "name": "Ask Asher — your own assistant",
-  "short_name": "Ask Asher",
+  "name": "ASK — your own assistant",
+  "short_name": "ASK",
   "description": "A personal assistant that remembers you, teaches you step by step, talks and listens, makes images, and runs on open models you choose.",
   "start_url": "./index.html",
   "scope": "./",
-  "id": "ask-asher",
+  "id": "ask-assistant",
   "display": "standalone",
   "display_override": [
     "standalone",
     "minimal-ui"
   ],
   "orientation": "any",
-  "background_color": "#0B1117",
-  "theme_color": "#0B1117",
+  "background_color": "#F6F8FB",
+  "theme_color": "#F6F8FB",
   "categories": [
     "productivity",
     "utilities",

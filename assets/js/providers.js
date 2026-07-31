@@ -1,7 +1,7 @@
 /* providers.js — one code path for every model.
    Everything listed speaks the OpenAI /v1/chat/completions shape, so picking a model is
    really just picking a base URL + a key + a model name. If the chosen one falls over,
-   Ask Asher walks down the rest of the chain instead of showing an error. */
+   ASK walks down the rest of the chain instead of showing an error. */
 const Providers = (() => {
 
   const usable = p => p.enabled && p.base && p.model && (p.key || p.keyless || p.id === 'ollama');
@@ -46,7 +46,7 @@ const Providers = (() => {
     if (p.key) h['Authorization'] = `Bearer ${p.key}`;
     if (p.id === 'openrouter') {
       h['HTTP-Referer'] = location.origin;
-      h['X-Title'] = 'Ask Asher';
+      h['X-Title'] = 'ASK';
     }
     return h;
   };

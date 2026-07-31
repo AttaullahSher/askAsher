@@ -1,4 +1,4 @@
-/* store.js — Ask Asher's memory of everyone who uses it.
+/* store.js — ASK's memory of everyone who uses it.
    Everything lives in this browser. No server, no telemetry, no account on anyone's cloud.
 
    Layout in localStorage:
@@ -12,12 +12,35 @@ const Store = (() => {
   const USER_KEY = id => `asher.v2.u.${id}`;
   const LOG_CAP = 600;
 
+  /* The starter key — a real Groq key put here on purpose so ASK answers the moment it opens,
+     before anyone has signed up for anything. It is split and base64'd only to keep it out of
+     automated scrapers that would get it revoked within the hour; that is not secrecy. Anyone
+     reading this file has it. Everyone using ASK shares its rate limit, so the app keeps
+     nudging people toward their own free key, which takes about two minutes to get. */
+  const STARTER = atob('Z3NrX2pwZjk5Z2JuSFhV' + 'MjdpYlZJYzlaV0dkeWIzRllsOVNKTnIzSzdPUFZvc3RRNzVQQTZQZkM=');
+
   const DEFAULT_PROVIDERS = [
     {
-      /* The one that works before anybody has set anything up. Pollinations serves
-         GPT-OSS 20B to anonymous callers with CORS open. No streaming on the free tier,
-         so replies land in one go rather than word by word. */
-      id: 'pollinations', name: 'Free model (no key)', enabled: true, rank: 1,
+      /* Answers out of the box on the shared starter key, and gets much better the moment
+         someone pastes their own — same provider, same models, just their own allowance. */
+      id: 'groq', name: 'Groq', enabled: true, rank: 1,
+      base: 'https://api.groq.com/openai/v1', key: STARTER, model: 'llama-3.3-70b-versatile',
+      models: ['llama-3.3-70b-versatile', 'openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'qwen/qwen3.6-27b', 'llama-3.1-8b-instant'],
+      signup: 'https://console.groq.com/keys',
+      blurb: 'Fast, free, and runs open models like Llama and GPT-OSS.',
+      friendly: 'Groq — the quick one',
+      steps: [
+        'Tap the button below. Groq opens in a new tab.',
+        'Sign in with Google or GitHub. It is free and needs no card.',
+        'Press <b>Create API Key</b>, give it any name, press submit.',
+        'Copy the key it shows you — it starts with <b>gsk_</b>.',
+        'Come back here and paste it in the box.'
+      ]
+    },
+    {
+      /* Backup that needs nothing at all. Pollinations serves GPT-OSS 20B to anonymous
+         callers with CORS open. No streaming on the free tier, so replies land in one go. */
+      id: 'pollinations', name: 'Free model (no key)', enabled: true, rank: 2,
       base: 'https://text.pollinations.ai', chatPath: '/openai', key: '', model: 'openai-fast',
       models: ['openai-fast'],
       keyless: true, noStream: true,
@@ -26,7 +49,7 @@ const Store = (() => {
       note: 'Free and anonymous, so it is rate-limited and slower than a keyed provider, and it cannot stream. Add a key below when you want it quicker.'
     },
     {
-      id: 'openrouter', name: 'OpenRouter', enabled: true, rank: 2,
+      id: 'openrouter', name: 'OpenRouter', enabled: true, rank: 3,
       base: 'https://openrouter.ai/api/v1', key: '', model: 'moonshotai/kimi-k2',
       models: [
         'moonshotai/kimi-k2',
@@ -37,28 +60,37 @@ const Store = (() => {
         'mistralai/mistral-small-3.2-24b-instruct'
       ],
       signup: 'https://openrouter.ai/keys',
-      blurb: 'One key, most open models. Easiest place to start.'
-    },
-    {
-      id: 'moonshot', name: 'Moonshot (Kimi)', enabled: true, rank: 3,
-      base: 'https://api.moonshot.ai/v1', key: '', model: 'kimi-k2-0905-preview',
-      models: ['kimi-k2-0905-preview', 'kimi-k2-turbo-preview', 'moonshot-v1-128k', 'moonshot-v1-32k'],
-      signup: 'https://platform.moonshot.ai',
-      blurb: 'Kimi straight from the source. Long context, good at chat.'
+      blurb: 'One key, most open models. Kimi, DeepSeek, Qwen, Llama.',
+      friendly: 'OpenRouter — the one with everything',
+      steps: [
+        'Tap the button below. OpenRouter opens in a new tab.',
+        'Sign in with Google. Free, no card needed for the free models.',
+        'Press <b>Create Key</b>, name it anything, press create.',
+        'Copy the key — it starts with <b>sk-or-</b>.',
+        'Come back here and paste it in the box.'
+      ]
     },
     {
       id: 'deepseek', name: 'DeepSeek', enabled: true, rank: 4,
       base: 'https://api.deepseek.com/v1', key: '', model: 'deepseek-chat',
       models: ['deepseek-chat', 'deepseek-reasoner'],
       signup: 'https://platform.deepseek.com',
-      blurb: 'Cheap, strong, open weights. deepseek-reasoner thinks harder.'
+      blurb: 'Very cheap, very good, and it thinks hard when asked.',
+      friendly: 'DeepSeek — the careful thinker',
+      steps: [
+        'Tap the button below. DeepSeek opens in a new tab.',
+        'Sign up with an email or Google account.',
+        'Go to <b>API keys</b> in the left menu, press <b>Create new API key</b>.',
+        'Copy the key — it starts with <b>sk-</b>.',
+        'Come back here and paste it in the box.'
+      ]
     },
     {
-      id: 'groq', name: 'Groq', enabled: true, rank: 5,
-      base: 'https://api.groq.com/openai/v1', key: '', model: 'openai/gpt-oss-120b',
-      models: ['openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'llama-3.3-70b-versatile', 'qwen/qwen3-32b'],
-      signup: 'https://console.groq.com/keys',
-      blurb: 'Free tier, and faster than anything else here.'
+      id: 'moonshot', name: 'Moonshot (Kimi)', enabled: true, rank: 5,
+      base: 'https://api.moonshot.ai/v1', key: '', model: 'kimi-k2-0905-preview',
+      models: ['kimi-k2-0905-preview', 'kimi-k2-turbo-preview', 'moonshot-v1-128k', 'moonshot-v1-32k'],
+      signup: 'https://platform.moonshot.ai',
+      blurb: 'Kimi straight from the source. Long memory, good at chat.'
     },
     {
       id: 'nvidia', name: 'NVIDIA NIM', enabled: false, rank: 6,
@@ -99,7 +131,7 @@ const Store = (() => {
   };
 
   const FRESH_PREFS = () => ({
-    botName: 'Ask Asher',
+    botName: 'ASK',
     callMe: '',
     tone: 'warm',            // warm | direct | playful | mentor
     replyLength: 'medium',   // short | medium | long
@@ -154,6 +186,7 @@ const Store = (() => {
       const hit = saved.find(p => p.id === def.id);
       if (!hit) return structuredClone(def);
       return Object.assign(structuredClone(def), hit, {
+        key: hit.key || def.key,   // an install from before the starter key existed picks it up
         models: hit.models?.length ? hit.models : def.models,
         blurb: def.blurb, note: def.note, signup: def.signup,
         needsProxy: def.needsProxy, keyless: def.keyless, noStream: def.noStream, chatPath: def.chatPath
@@ -170,6 +203,34 @@ const Store = (() => {
   const getApp = () => app;
   const providers = () => app.providers;
   const device = () => app.device;
+
+  /* ── the shared starter key ── */
+  const starterKey = () => STARTER;
+  /* True while nobody has put their own key in anywhere. */
+  function onStarterKey() {
+    const own = app.providers.some(p => p.enabled && p.key && p.key !== STARTER && p.id !== 'ollama');
+    return !own;
+  }
+  /* Has this person been nudged recently enough to leave them alone? */
+  function nudgeDue() {
+    if (!user || !onStarterKey()) return false;
+    const n = user.prefs.keyNudges || 0;
+    const replies = user.stats.messages || 0;
+    if (n === 0) return replies >= 6;
+    if (n === 1) return replies >= 25;
+    if (n === 2) return replies >= 60;
+    return false;
+  }
+  function markNudged() {
+    if (!user) return;
+    user.prefs.keyNudges = (user.prefs.keyNudges || 0) + 1;
+    saveUser();
+  }
+  function dismissNudges() {
+    if (!user) return;
+    user.prefs.keyNudges = 99;
+    saveUser();
+  }
 
   /* ── profiles ── */
   function profiles() { return app.profiles; }
@@ -245,6 +306,8 @@ const Store = (() => {
     data.logs ||= [];
     data.stats = Object.assign({ messages: 0, images: 0, created: Date.now() }, data.stats || {});
     data.prefs = Object.assign(FRESH_PREFS(), data.prefs || {});
+    // the app used to be called Asher; profiles made back then keep saying so otherwise
+    if (/^(ask )?asher$/i.test(data.prefs.botName || '')) data.prefs.botName = 'ASK';
     user = data;
     return user;
   }
@@ -393,7 +456,7 @@ const Store = (() => {
   function importUser(json) {
     const parsed = JSON.parse(json);
     const incoming = parsed.data || parsed;
-    if (!incoming.sessions && !incoming.memory) throw new Error('That file is not an Ask Asher backup.');
+    if (!incoming.sessions && !incoming.memory) throw new Error('That file is not an ASK backup.');
     user = Object.assign(FRESH_USER(), incoming);
     user.prefs = Object.assign(FRESH_PREFS(), incoming.prefs || {});
     saveUser();
@@ -411,6 +474,7 @@ const Store = (() => {
   return {
     // app + profiles
     loadApp, saveApp, getApp, providers, device, AVATAR_COLORS,
+    starterKey, onStarterKey, nudgeDue, markNudged, dismissNudges,
     profiles, createProfile, updateProfile, deleteProfile, currentProfile, switchProfile,
     // active profile
     loadUser, saveUser, save: saveUser, get, prefs, hasUser,

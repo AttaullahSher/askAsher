@@ -71,7 +71,7 @@ Rules:
   /* ── the system prompt every chat runs on ── */
   function systemPrompt() {
     const p = Store.prefs();
-    const bot = p.botName || 'Ask Asher';
+    const bot = p.botName || 'ASK';
     const name = p.callMe || Store.currentProfile()?.name || '';
     const groups = Store.memoryByCategory();
     const today = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -191,7 +191,7 @@ Rules:
   }
 
   /* Re-read where they are heading, and how to be more useful to them.
-     This is what keeps Ask Asher pointed at the person's actual goal instead of drifting. */
+     This is what keeps ASK pointed at the person's actual goal instead of drifting. */
   async function reviewGoals(session) {
     const t = transcript(session, 20);
     if (t.count < 4) return null;
