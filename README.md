@@ -181,6 +181,7 @@ assets/css/app.css
 assets/js/store.js        profiles, chats, memory, goals, logs — all localStorage
 assets/js/providers.js    OpenAI-compatible calls, SSE streaming, fallback chain, prompt polish
 assets/js/memory.js       fact extraction, goal review, system-prompt assembly, coverage meter
+assets/js/lang.js         works out English / Roman Urdu / Urdu from what you type
 assets/js/lookup.js       keyless web check — Wikipedia, Hacker News, DuckDuckGo
 assets/js/keys.js         the step-by-step walkthrough to a free key
 assets/js/help.js         how-do-I sheet, with device-specific install steps
@@ -203,6 +204,21 @@ python3 -m http.server 8080
 
 A plain `file://` open works too, except the service worker — browsers only register one over
 HTTP(S).
+
+## Language
+
+Nobody picks a language. ASK reads what you write and answers the same way:
+
+- **English** — plain English in, plain English out.
+- **Roman Urdu** — *"mujhe product add karna hai"*. This is the one a language menu always gets
+  wrong: the letters are Latin, so every detector calls it English and answers in English. ASK
+  matches it on vocabulary instead — words that are common in Roman Urdu and rare in English —
+  and replies in Roman Urdu.
+- **Urdu script** — detected from the script itself, answered in Urdu script.
+
+It weighs your last five messages, newest heaviest, so switching mid-conversation is picked up on
+the next reply. You can still pin one language permanently in **Settings → How it talks**, and the
+setting line tells you which language it is using right now and why.
 
 ## Voice, honestly
 

@@ -668,7 +668,7 @@ button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit
   .btn{padding:12px 16px;}
   .btn.sm{padding:10px 12px;}
   .chip{padding:8px 14px; font-size:13px;}
-  .send,.comp-btn{width:40px; height:40px; flex-basis:40px;}
+  .send,.comp-btn{width:44px; height:44px; flex-basis:44px;}
   .session{padding:12px 10px;}
   .mem-item{padding:10px 34px 10px 11px;}
   .mem-item .x{opacity:1; width:28px; height:28px; top:6px;}
@@ -779,3 +779,61 @@ button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit
 .model-opt span{display:block; font-size:12px; color:var(--muted-2); margin-top:2px;}
 .p-help{display:flex; gap:8px; flex-wrap:wrap;}
 .p-help .btn{flex:1; min-width:150px;}
+
+/* ═══ top bar buttons you can actually see ═══ */
+.top-btn{
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--panel); border:1px solid var(--line); color:var(--text);
+  border-radius:var(--r); padding:9px 13px; cursor:pointer;
+  font-size:14px; font-weight:600; white-space:nowrap; min-height:44px;
+  transition:.14s;
+}
+.top-btn:hover{border-color:var(--accent); color:var(--accent);}
+.top-btn svg{flex:0 0 20px;}
+.chat-actions{display:flex; gap:8px;}
+@media (max-width:520px){
+  .top-btn{padding:9px 11px; font-size:13.5px;}
+  .top-btn .wide-only{display:none;}
+  .chat-top{gap:8px; padding-left:12px; padding-right:12px;}
+  .chat-title p{display:none;}
+  .chat-title h1{font-size:16px;}
+}
+
+/* ═══ models tab, made plain ═══ */
+.setup-lead{
+  background:var(--accent-dim); border:1px solid rgba(34,118,214,.25);
+  border-radius:var(--r-lg); padding:16px 17px; margin-bottom:16px;
+}
+.setup-lead b{display:block; font-family:var(--display); font-size:16.5px; margin-bottom:4px;}
+.setup-lead p{margin:0 0 12px; font-size:13.5px; color:var(--muted);}
+
+.p-state{display:flex; gap:9px; align-items:center; padding:0 13px 10px; font-size:13px; color:var(--muted);}
+.p-chip{
+  font-style:normal; font-size:11.5px; font-weight:700; border-radius:20px;
+  padding:3px 9px; flex:0 0 auto;
+}
+.p-chip.ok{background:#E4F6EC; color:#12764A;}
+.p-chip.warn{background:var(--warm); color:#8A6512;}
+.p-chip.off{background:var(--panel-2); color:var(--muted-2);}
+.p-actions{display:flex; gap:8px; padding:0 13px 12px; flex-wrap:wrap;}
+.p-actions .btn{flex:1; min-width:140px; min-height:44px;}
+
+.p-advanced{border-top:1px solid var(--line-soft); margin:0 0 2px;}
+.p-advanced summary{
+  cursor:pointer; padding:11px 13px; font-size:13px; color:var(--muted-2);
+  list-style:none; display:flex; align-items:center; gap:6px;
+}
+.p-advanced summary::-webkit-details-marker{display:none;}
+.p-advanced summary::before{content:'▸'; transition:transform .15s;}
+.p-advanced[open] summary::before{transform:rotate(90deg);}
+.p-advanced summary:hover{color:var(--accent);}
+.p-advanced .p-move{display:flex; gap:8px;}
+.p-advanced .p-move .btn{flex:1;}
+
+/* Rail buttons big enough to hit on a phone */
+@media (pointer:coarse){
+  .rail-foot .btn, .btn-getkey, .profile-chip{min-height:46px;}
+  .rail-label{font-size:13px;}
+  .session{min-height:52px;}
+  .help-row{min-height:56px;}
+}
