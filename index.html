@@ -76,14 +76,23 @@
   <!-- ══ CHAT ══ -->
   <main class="chat">
     <header class="chat-top">
-      <button class="icon-btn only-mobile" id="btnToggleLeft" aria-label="Chats">☰</button>
+      <button class="top-btn only-mobile" id="btnToggleLeft">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+        <span>Menu</span>
+      </button>
       <div class="chat-title">
         <h1 id="chatTitle">New chat</h1>
         <p id="chatSub">Say anything.</p>
       </div>
       <div class="chat-actions">
-        <button class="icon-btn" id="btnExportChat" title="Download this chat as Markdown">↓</button>
-        <button class="icon-btn" id="btnToggleRight" aria-label="What it knows about you">◐</button>
+        <button class="top-btn" id="btnExportChat" title="Save this chat to your phone">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          <span class="wide-only">Save</span>
+        </button>
+        <button class="top-btn" id="btnToggleRight">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="2" fill="none"/><path d="M5 20c.8-3.8 3.6-5.6 7-5.6s6.2 1.8 7 5.6" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+          <span>About you</span>
+        </button>
       </div>
     </header>
 
@@ -251,10 +260,16 @@
           </label>
           <label class="field"><span>Language</span>
             <select id="setLanguage">
-              <option>English</option><option>Urdu</option><option>Pashto</option>
-              <option>Arabic</option><option>Hindi</option><option>English + Urdu mix</option><option>Other</option>
+              <option value="auto">Automatic — match how I write</option>
+              <option value="English">Always English</option>
+              <option value="Roman Urdu">Always Roman Urdu (English letters)</option>
+              <option value="Urdu">Always Urdu script</option>
+              <option value="Pashto">Always Pashto</option>
+              <option value="Arabic">Always Arabic</option>
+              <option value="Hindi">Always Hindi</option>
             </select>
           </label>
+          <label class="field"><span>&nbsp;</span><span class="field-hint" id="langHint">Right now it is answering in English.</span></label>
           <label class="field"><span>Tidy up my messages first</span>
             <select id="setPolish">
               <option value="off">Never</option>
@@ -441,6 +456,7 @@
 <script src="assets/js/store.js"></script>
 <script src="assets/js/providers.js"></script>
 <script src="assets/js/memory.js"></script>
+<script src="assets/js/lang.js"></script>
 <script src="assets/js/lookup.js"></script>
 <script src="assets/js/keys.js"></script>
 <script src="assets/js/help.js"></script>

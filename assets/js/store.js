@@ -163,7 +163,7 @@ const Store = (() => {
     tone: 'warm',            // warm | direct | playful | mentor
     replyLength: 'medium',   // short | medium | long
     level: 'new',            // new | some | pro — how much it assumes you already know
-    language: 'English',
+    language: 'auto',    // auto | English | Roman Urdu | Urdu | anything they type
     persona: '',
     extractEvery: 3,
     goalReviewEvery: 6,
@@ -336,6 +336,8 @@ const Store = (() => {
     data.prefs = Object.assign(FRESH_PREFS(), data.prefs || {});
     // the app used to be called Asher; profiles made back then keep saying so otherwise
     if (/^(ask )?asher$/i.test(data.prefs.botName || '')) data.prefs.botName = 'ASK';
+    // people were never asked to pick a language, they were made to — start detecting instead
+    if (data.prefs.language === 'English' && !data.prefs.languagePicked) data.prefs.language = 'auto';
     user = data;
     return user;
   }

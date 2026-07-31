@@ -249,18 +249,11 @@ const Onboarding = (() => {
     });
     n.append(grid);
 
-    const langField = el('label', 'field full');
-    langField.append(el('span', null, 'Language you mostly write in'));
-    const lang = el('select');
-    ['English', 'Urdu', 'Pashto', 'Arabic', 'Hindi', 'English + Urdu mix', 'Other'].forEach(l => {
-      const o = el('option', null, l); o.value = l; lang.append(o);
-    });
-    langField.append(lang);
-    n.append(langField);
+    n.append(el('p', 'gate-note', 'No need to pick a language — ASK answers in whatever you write in, including Roman Urdu. You can pin one later in settings.'));
 
     const row = el('div', 'gate-actions');
     const done = el('button', 'btn btn-primary btn-block', 'Start talking');
-    done.onclick = () => finish(answers, { tone, language: lang.value });
+    done.onclick = () => finish(answers, { tone, language: 'auto' });
     row.append(done);
     n.append(row);
     return show(n);

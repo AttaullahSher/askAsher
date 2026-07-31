@@ -91,8 +91,12 @@ Rules:
 - One follow-up question at most, and only when the answer really depends on it.
 - Some of this gets read aloud, so keep sentences speakable and do not lean on symbols or tables to carry meaning.`;
 
-    if (p.language && p.language !== 'English') {
-      s += `\n- They prefer ${p.language}. Match the language they write in; when they mix languages, mix them back naturally.`;
+    /* Language is worked out from what they actually type — including Roman Urdu, which every
+       language menu gets wrong because the letters are Latin. */
+    const code = typeof Lang !== 'undefined' ? Lang.forSession(Store.active()) : null;
+    if (code) s += `\n\n── Language ──\n${Lang.instruction(code)}\nIf they switch language mid-conversation, switch with them on the next reply.`;
+    else if (p.language && p.language !== 'auto' && p.language !== 'English') {
+      s += `\n\n── Language ──\nThey prefer ${p.language}. Match the language and script they write in.`;
     }
     if (p.persona) s += `\n\n── Their house rules ──\n${p.persona}`;
 

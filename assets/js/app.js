@@ -626,47 +626,91 @@ function openModelSheet() {
 function renderProviders() {
   const wrap = $('#providerList');
   wrap.innerHTML = '';
+
+  /* The way in, at the top, where it cannot be missed. Everything technical is folded
+     away inside each card, so this page reads as a list of services and their state. */
+  const lead = el('div', 'setup-lead');
+  lead.innerHTML = `<b>Add a model, step by step</b>
+    <p>Five short steps and ASK checks it works before saving. No technical knowledge needed.</p>`;
+  const leadBtn = el('button', 'btn btn-primary btn-block', 'Show me how');
+  leadBtn.onclick = () => { $('#settingsModal').hidden = true; Keys.open({ onDone: () => { renderStatus(); openSettings('models'); } }); };
+  lead.append(leadBtn);
+  wrap.append(lead);
+
   const list = [...Store.providers()].sort((a, b) => a.rank - b.rank);
 
   list.forEach((p, i) => {
-    const card = el('div', 'provider' + (p.enabled && (p.key || p.id === 'ollama') ? ' enabled' : ''));
+    const own = p.key && p.key !== Store.starterKey();
+    const ready = p.enabled && p.base && p.model && (p.key || p.keyless || p.id === 'ollama');
+    const card = el('div', 'provider' + (ready ? ' enabled' : ''));
 
+    /* ── the plain part ── */
     const headRow = el('div', 'p-head');
     headRow.append(el('div', 'p-rank', String(i + 1)));
+
     const nm = el('div', 'p-name');
-    nm.append(el('strong', null, esc(p.name)));
-    nm.append(el('span', null, esc(p.blurb || 'OpenAI-compatible endpoint')));
+    nm.append(el('strong', null, esc(p.friendly || p.name)));
+    nm.append(el('span', null, esc(p.blurb || 'Any OpenAI-compatible service')));
     headRow.append(nm);
 
-    const moves = el('div', 'p-move');
-    const up = el('button', 'icon-btn sm', '↑'); up.title = 'Try this one earlier';
-    up.disabled = i === 0;
-    up.onclick = () => swapRank(p.id, list[i - 1].id);
-    const down = el('button', 'icon-btn sm', '↓'); down.title = 'Try this one later';
-    down.disabled = i === list.length - 1;
-    down.onclick = () => swapRank(p.id, list[i + 1].id);
-    moves.append(up, down);
-    headRow.append(moves);
-
     const sw = el('label', 'switch');
+    sw.title = p.enabled ? 'On — ASK may use this' : 'Off — ASK will skip this';
     const cb = el('input'); cb.type = 'checkbox'; cb.checked = !!p.enabled;
     cb.onchange = () => { p.enabled = cb.checked; Store.saveApp(); renderProviders(); renderStatus(); };
     sw.append(cb, el('i'));
     headRow.append(sw);
     card.append(headRow);
 
+    const state = el('div', 'p-state');
+    let chip, chipClass, line;
+    if (!p.enabled) { chip = 'Off'; chipClass = 'off'; line = 'Switched off. Turn it on to use it.'; }
+    else if (p.keyless) { chip = 'Ready'; chipClass = 'ok'; line = 'Works with no key at all.'; }
+    else if (p.id === 'ollama') { chip = p.base ? 'Ready' : 'Needs setting up'; chipClass = 'ok'; line = 'Runs on your own computer.'; }
+    else if (own) { chip = 'Your key'; chipClass = 'ok'; line = 'Using your own key — nobody else shares it.'; }
+    else if (p.key) { chip = 'Shared key'; chipClass = 'warn'; line = 'On the key that ships with ASK. Add your own to make it quicker.'; }
+    else { chip = 'No key yet'; chipClass = 'warn'; line = 'Add a key and ASK will use this too.'; }
+    state.innerHTML = `<i class="p-chip ${chipClass}">${chip}</i><span>${esc(line)}</span>`;
+    card.append(state);
+
+    const actions = el('div', 'p-actions');
+    if (!p.keyless) {
+      const setup = el('button', 'btn' + (own ? '' : ' btn-primary'), own ? 'Change key' : 'Set this up');
+      setup.onclick = () => { $('#settingsModal').hidden = true; Keys.open({ onDone: () => { renderStatus(); openSettings('models'); } }); };
+      actions.append(setup);
+    }
+    const check = el('button', 'btn', 'Check it works');
+    check.onclick = async () => {
+      check.textContent = 'Checking…';
+      check.disabled = true;
+      try {
+        const reply = await Providers.test(p);
+        setStatusLine(card, 'ok', `Working — it answered "${reply}"`);
+        Store.log('model.test', `${p.name} ok`);
+      } catch (err) {
+        setStatusLine(card, 'bad', Keys.friendlyKeyError(err.message, p).replace(/<[^>]+>/g, ''));
+        Store.log('model.test', `${p.name} failed: ${err.message}`.slice(0, 200));
+      } finally { check.textContent = 'Check it works'; check.disabled = false; }
+    };
+    actions.append(check);
+    card.append(actions);
+    card.append(el('div', 'p-test', ''));
+
+    /* ── the technical part, folded away ── */
+    const details = el('details', 'p-advanced');
+    const summary = el('summary', null, 'Advanced — address, model name, order');
+    details.append(summary);
+
     const bodyEl = el('div', 'p-body');
 
     if (p.note) {
       const warn = el('div', 'field full');
-      warn.innerHTML = `<span class="${p.needsProxy ? 'alarm' : ''}">${p.needsProxy ? 'Needs a proxy' : 'Heads up'}</span>
+      warn.innerHTML = `<span class="${p.needsProxy ? 'alarm' : ''}">${p.needsProxy ? 'Needs a proxy' : 'Worth knowing'}</span>
         <p class="note sm" style="margin:0">${esc(p.note)}</p>`;
       bodyEl.append(warn);
     }
 
     const keyField = el('label', 'field full');
-    const keyLabel = el('span', null, 'API key');
-    keyField.append(keyLabel);
+    keyField.append(el('span', null, 'Key'));
     const keyIn = el('input');
     keyIn.type = 'password';
     keyIn.value = p.key || '';
@@ -675,19 +719,8 @@ function renderProviders() {
     keyField.append(keyIn);
     bodyEl.append(keyField);
 
-    if (p.signup) {
-      // outside the label on purpose: a link inside one gets eaten by the label's own click
-      const help = el('div', 'field full p-help');
-      const walk = el('button', 'btn sm', 'Walk me through getting a key');
-      walk.onclick = e => { e.preventDefault(); $('#settingsModal').hidden = true; Keys.open({ onDone: () => { renderStatus(); openSettings('models'); } }); };
-      const site = el('button', 'btn sm', 'Open their site ↗');
-      site.onclick = e => { e.preventDefault(); Keys.openLink(p.signup); };
-      help.append(walk, site);
-      bodyEl.append(help);
-    }
-
     const baseField = el('label', 'field');
-    baseField.append(el('span', null, 'Base URL'));
+    baseField.append(el('span', null, 'Address'));
     const baseIn = el('input');
     baseIn.value = p.base || '';
     baseIn.placeholder = 'https://…/v1';
@@ -696,7 +729,7 @@ function renderProviders() {
     bodyEl.append(baseField);
 
     const modelField = el('label', 'field');
-    modelField.append(el('span', null, 'Model'));
+    modelField.append(el('span', null, 'Model name'));
     const row = el('div', 'with-btn');
     const modelIn = el('input');
     modelIn.value = p.model || '';
@@ -704,8 +737,8 @@ function renderProviders() {
     modelIn.oninput = () => { p.model = modelIn.value.trim(); Store.saveApp(); renderStatus(); };
     const dl = el('datalist'); dl.id = `dl-${p.id}`;
     dl.innerHTML = (p.models || []).map(m => `<option value="${esc(m)}">`).join('');
-    const loadBtn = el('button', 'btn sm', 'Load');
-    loadBtn.title = 'Ask the provider what this key can actually run';
+    const loadBtn = el('button', 'btn sm', 'Refresh list');
+    loadBtn.title = 'Ask the provider which models this key can run';
     loadBtn.onclick = async e => {
       e.preventDefault();
       loadBtn.textContent = '…';
@@ -713,35 +746,39 @@ function renderProviders() {
         p.models = await Providers.listModels(p);
         Store.saveApp();
         renderProviders();
-        toast(`${p.models.length} models loaded from ${p.name}.`);
+        toast(`${p.models.length} models found.`);
       } catch (err) {
-        loadBtn.textContent = 'Load';
-        setStatusLine(card, 'bad', `Could not load models: ${err.message}`);
+        loadBtn.textContent = 'Refresh list';
+        setStatusLine(card, 'bad', `Could not fetch the list: ${err.message}`);
       }
     };
     row.append(modelIn, dl, loadBtn);
     modelField.append(row);
     bodyEl.append(modelField);
 
-    const testWrap = el('div', 'field full');
-    const testBtn = el('button', 'btn sm btn-block', 'Test this connection');
-    testBtn.onclick = async e => {
-      e.preventDefault();
-      testBtn.textContent = 'Testing…';
-      try {
-        const reply = await Providers.test(p);
-        setStatusLine(card, 'ok', `Working — it replied "${reply}"`);
-        Store.log('model.test', `${p.name} ok`);
-      } catch (err) {
-        setStatusLine(card, 'bad', err.message);
-        Store.log('model.test', `${p.name} failed: ${err.message}`.slice(0, 200));
-      } finally { testBtn.textContent = 'Test this connection'; }
-    };
-    testWrap.append(testBtn);
-    bodyEl.append(testWrap);
+    const order = el('div', 'field full');
+    order.append(el('span', null, 'Order in the queue'));
+    const orderRow = el('div', 'p-move');
+    const up = el('button', 'btn sm', '↑ earlier');
+    up.disabled = i === 0;
+    up.onclick = e => { e.preventDefault(); swapRank(p.id, list[i - 1].id); };
+    const down = el('button', 'btn sm', '↓ later');
+    down.disabled = i === list.length - 1;
+    down.onclick = e => { e.preventDefault(); swapRank(p.id, list[i + 1].id); };
+    orderRow.append(up, down);
+    order.append(orderRow);
+    bodyEl.append(order);
 
-    card.append(bodyEl);
-    card.append(el('div', 'p-test', ''));
+    if (p.signup) {
+      const help = el('div', 'field full p-help');
+      const site = el('button', 'btn sm', 'Open their site ↗');
+      site.onclick = e => { e.preventDefault(); Keys.openLink(p.signup); };
+      help.append(site);
+      bodyEl.append(help);
+    }
+
+    details.append(bodyEl);
+    card.append(details);
     wrap.append(card);
   });
 }
@@ -801,7 +838,8 @@ function fillPrefs() {
   $('#setLevel').value = p.level || 'new';
   $('#setLookup').value = p.lookup || 'smart';
   $('#setLength').value = p.replyLength || 'medium';
-  $('#setLanguage').value = p.language || 'English';
+  $('#setLanguage').value = p.language || 'auto';
+  renderLangHint();
   $('#setPolish').value = p.polish || 'smart';
   $('#setExtractEvery').value = String(p.extractEvery ?? 3);
   $('#setGoalEvery').value = String(p.goalReviewEvery ?? 6);
@@ -820,6 +858,8 @@ function readPrefs() {
   p.lookup = $('#setLookup').value;
   p.replyLength = $('#setLength').value;
   p.language = $('#setLanguage').value;
+  p.languagePicked = p.language !== 'auto';
+  renderLangHint();
   p.polish = $('#setPolish').value;
   p.extractEvery = Number($('#setExtractEvery').value);
   p.goalReviewEvery = Number($('#setGoalEvery').value);
@@ -841,6 +881,17 @@ function readPrefs() {
   p.voicePitch = Number($('#setVoicePitch').value);
   p.sttMode = $('#setSttMode').value;
   Store.save();
+}
+
+function renderLangHint() {
+  const hint = $('#langHint');
+  if (!hint) return;
+  const p = Store.prefs();
+  if (p.language && p.language !== 'auto') { hint.textContent = `Pinned: every reply comes back in ${p.language}.`; return; }
+  const code = Lang.ofSession(Store.active(), null);
+  hint.textContent = code
+    ? `Right now it is answering in ${Lang.label(code)} — because that is what you have been writing.`
+    : 'It will match whatever you write in — English, Roman Urdu or Urdu.';
 }
 
 /* ── voice ── */
