@@ -51,6 +51,20 @@ const Voice = (() => {
     return hint || (navigator.language || 'en').slice(0, 2);
   }
 
+  /* Two good ones for this device and language, so nobody has to read a list of forty.
+     The first is the warmest-sounding local voice, the second the clearest fallback. */
+  function shortlist() {
+    const lang = preferredLang();
+    const all = list().filter(v => v.lang?.toLowerCase().startsWith(lang));
+    const pool = all.length ? all : list();
+    if (!pool.length) return [];
+
+    const nice = /google|natural|neural|siri|samantha|karen|daniel|aria|enhanced|premium/i;
+    const sorted = [...pool].sort((a, b) => (nice.test(b.name) ? 1 : 0) - (nice.test(a.name) ? 1 : 0));
+    const two = sorted.slice(0, 2);
+    return two.map(v => ({ name: v.name, label: v.name.replace(/^(Microsoft|Google|Apple)\s+/i, '').slice(0, 28) }));
+  }
+
   function pickVoice() {
     const all = list();
     if (!all.length) return null;
@@ -280,7 +294,7 @@ const Voice = (() => {
   const isHandsFree = () => handsFree;
 
   return {
-    canSpeak, canListen, canRecord, unlock, list, pickVoice,
+    canSpeak, canListen, canRecord, unlock, list, shortlist, pickVoice,
     speak, stopSpeaking, isSpeaking,
     startListening, stopListening, isListening,
     startHandsFree, stopHandsFree, handsFreeReply, isHandsFree,

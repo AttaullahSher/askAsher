@@ -1,12 +1,13 @@
-# Ask Asher
+# ASK
 
 A personal assistant, teacher and guide that belongs to whoever opens it. It asks about you,
 keeps a durable memory of what matters, tracks what you are actually working toward, explains
 things one step at a time, talks and listens out loud, makes images, and runs on open models —
 with an automatic fallback chain when one of them refuses.
 
-**It works the moment you open it.** No key, no signup, no account: the first model in the chain
-is a free open-weight one. Paste a key later if you want it faster.
+**It works the moment you open it.** No key, no signup, no account — it ships with a shared starter
+key and a keyless backup model. Getting your own free key takes about two minutes and ASK walks you
+through it in five steps.
 
 No backend, no build step, no npm install. Plain HTML, CSS and JavaScript. Open `index.html`
 and it runs. Everything — chats, memory, goals, logs, keys — lives in the browser's local
@@ -130,7 +131,7 @@ rail afterwards. Nothing downloads from a store — the browser keeps a copy and
 
 **iPhone / iPad:** Safari never fires the install event, so there is no button. Tap **Share** →
 **Add to Home Screen** → **Add**. It has to be Safari; Chrome on iOS cannot install web apps.
-Ask Asher detects iOS and shows those steps instead of a dead button.
+ASK detects iOS and shows those steps instead of a dead button.
 
 Once installed it opens full screen, works offline (the shell is cached; models obviously still
 need a connection), and keeps the same storage as the tab you set it up in.
@@ -215,6 +216,27 @@ node tools/make-icons.js
 It finds the mark inside the artwork, keys out the paper so no crop edge shows, and writes all six
 sizes. It also prints the strongest colour it found, which is what `--accent` in
 `assets/css/app.css` is tuned to — change that one variable and the whole interface follows.
+
+## The shared starter key
+
+ASK ships with a real Groq key so that opening it for the first time just works. It is in
+`assets/js/store.js`, base64'd and split — which keeps automated scrapers from getting it revoked
+within the hour, and is **not** secrecy. Assume it is public, because it is.
+
+What that means in practice:
+
+- Everyone who opens ASK shares its rate limit, so it slows down and sometimes refuses.
+- It may be revoked or replaced at any time.
+- The app knows this: a soft reminder appears after a few messages, the sidebar carries a
+  **Get a free key — 2 min** button, and any failure turns into the same five-step walkthrough
+  instead of an error message.
+
+Your own key goes to the top of the chain the moment it tests green, and the reminders stop.
+To swap the shipped one, replace the two base64 halves in `store.js`.
+
+## Credit
+
+ASK — programmed by **Attaullah Sher**.
 
 ## Licence
 

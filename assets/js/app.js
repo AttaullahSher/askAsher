@@ -8,6 +8,7 @@ let busy = false;
 let controller = null;
 let studioMode = 'image';
 let logFilter = 'all';
+let lastAsked = '';      // kept so "Try again" after a failure can resend it
 
 /* ── markdown (escaped first) ── */
 function esc(s) {
@@ -83,7 +84,7 @@ function renderSessions() {
     del.title = 'Delete this chat';
     del.onclick = e => {
       e.stopPropagation();
-      if (!confirm(`Delete "${s.title}"? What Ask Asher learned from it stays.`)) return;
+      if (!confirm(`Delete "${s.title}"? What ASK learned from it stays.`)) return;
       Store.deleteSession(s.id);
       renderAll();
     };
@@ -102,7 +103,7 @@ function renderGoals() {
   if (!goals.length) {
     card.innerHTML = `<div class="goal-empty">
       <b>No goal set</b>
-      <p class="muted">Tell Ask Asher what you are working toward and it keeps steering back to it.</p>
+      <p class="muted">Tell ASK what you are working toward and it keeps steering back to it.</p>
     </div>`;
     const add = el('button', 'btn btn-ghost btn-block sm', '+ Set one');
     add.onclick = askGoal;
@@ -240,7 +241,7 @@ function bubble(m) {
 
   const b = el('div', 'bubble');
   const who = el('div', 'who');
-  who.append(el('span', null, isUser ? (Store.prefs().callMe || 'You') : (Store.prefs().botName || 'Ask Asher')));
+  who.append(el('span', null, isUser ? (Store.prefs().callMe || 'You') : (Store.prefs().botName || 'ASK')));
   if (m.via) who.append(el('span', 'via', `via ${esc(m.via)}`));
   b.append(who);
   b.append(el('div', 'body', md(m.content)));
@@ -311,18 +312,22 @@ function renderStatus() {
   const chain = Providers.chain();
   const dot = $('#statusDot'), text = $('#statusText');
   const label = Providers.activeLabel();
+  const shared = Store.onStarterKey();
+
   if (!chain.length) {
     dot.className = 'dot warn';
     $('#pillDot').className = 'dot sm warn';
-    text.textContent = 'No key yet';
+    text.textContent = 'No model switched on';
     $('#activeModelLabel').textContent = 'no model';
   } else {
     dot.className = 'dot on';
     $('#pillDot').className = 'dot sm on';
-    text.textContent = `${chain.length} model${chain.length > 1 ? 's' : ''} ready`;
+    text.textContent = shared ? 'Ready — on the shared key' : 'Ready — on your own key';
     $('#activeModelLabel').textContent = label.model;
-    $('#btnModel').title = `${label.name} · ${label.model}${label.pinned ? ' (your pick)' : ' (top of the chain)'}`;
+    $('#btnModel').title = `${label.name} · ${label.model}${label.pinned ? ' (your pick)' : ' (first in line)'}`;
   }
+  // the amber button only matters while they are still on the shared key
+  $('#btnGetKey').classList.toggle('hide', !shared);
 }
 
 function renderProfileChip() {
@@ -379,7 +384,7 @@ async function send(text, { silent = false, skipPolish = false, sendAs = null } 
   holder.append(el('div', 'avatar', '◆'));
   const b = el('div', 'bubble');
   const who = el('div', 'who');
-  who.append(el('span', null, Store.prefs().botName || 'Ask Asher'));
+  who.append(el('span', null, Store.prefs().botName || 'ASK'));
   const via = el('span', 'via', '');
   who.append(via);
   b.append(who);
@@ -472,11 +477,11 @@ async function send(text, { silent = false, skipPolish = false, sendAs = null } 
       body.innerHTML = md(acc + '\n\n*(stopped)*');
       if (acc) Store.push('assistant', acc);
     } else {
-      const msg = e.friendly || e.message;
-      holder.classList.add('err');
-      body.innerHTML = md(msg);
-      Store.push('assistant', msg, { error: true });
-      Store.log('chat.error', msg.slice(0, 200));
+      // Not a wall of provider errors — a card that offers to fix it in five steps.
+      Store.log('chat.error', (e.friendly || e.message).slice(0, 200));
+      lastAsked = sendText;
+      holder.replaceWith(Keys.chatFailure(e));
+      stream.scrollTop = stream.scrollHeight;
     }
   } finally {
     busy = false;
@@ -492,6 +497,12 @@ async function send(text, { silent = false, skipPolish = false, sendAs = null } 
 /* Memory and goals both refresh in the background after a reply. */
 async function afterTurn(session) {
   const p = Store.prefs();
+
+  // Every so often, point out that the shared key is not the good version of this.
+  if (Store.nudgeDue()) {
+    $('#stream').append(Keys.nudgeCard());
+    $('#stream').scrollTop = $('#stream').scrollHeight;
+  }
 
   const every = Number(p.extractEvery) || 0;
   if (every && (session.turnsSinceExtract || 0) >= every) {
@@ -748,7 +759,7 @@ function renderDataTab() {
 function fillPrefs() {
   const p = Store.prefs();
   $('#setCallMe').value = p.callMe || '';
-  $('#setBotName').value = p.botName || 'Ask Asher';
+  $('#setBotName').value = p.botName || 'ASK';
   $('#setTone').value = p.tone || 'warm';
   $('#setLevel').value = p.level || 'new';
   $('#setLookup').value = p.lookup || 'smart';
@@ -766,7 +777,7 @@ function fillPrefs() {
 function readPrefs() {
   const p = Store.prefs();
   p.callMe = $('#setCallMe').value.trim();
-  p.botName = $('#setBotName').value.trim() || 'Ask Asher';
+  p.botName = $('#setBotName').value.trim() || 'ASK';
   p.tone = $('#setTone').value;
   p.level = $('#setLevel').value;
   p.lookup = $('#setLookup').value;
@@ -779,7 +790,16 @@ function readPrefs() {
   p.persona = $('#setPersona').value.trim();
   p.imageModel = $('#setImageModel').value;
   p.speak = $('#setSpeak').value === 'on';
-  p.voiceName = $('#setVoiceName').value;
+  const voiceChoice = $('#setVoiceName').value;
+  if (voiceChoice === '__all') {
+    // they asked for the long list — show it, keep whatever was set
+    const sel = $('#setVoiceName');
+    sel.innerHTML = '<option value=\'\'>Standard — whatever this device uses</option>' +
+      Voice.list().map(v => `<option value="${esc(v.name)}">${esc(v.name)} — ${esc(v.lang)}</option>`).join('');
+    sel.value = p.voiceName || '';
+  } else {
+    p.voiceName = voiceChoice;
+  }
   p.voiceRate = Number($('#setVoiceRate').value);
   p.voicePitch = Number($('#setVoicePitch').value);
   p.sttMode = $('#setSttMode').value;
@@ -794,11 +814,23 @@ function fillVoicePrefs() {
   $('#setVoicePitch').value = p.voicePitch ?? 1;
   $('#setSttMode').value = p.sttMode || 'browser';
 
+  /* Two picks and a default, rather than the forty-odd voices a device actually has —
+     the full list is still reachable through "every voice on this device". */
   const sel = $('#setVoiceName');
-  const voices = Voice.list();
-  sel.innerHTML = `<option value="">Whatever this device picks</option>` +
-    voices.map(v => `<option value="${esc(v.name)}">${esc(v.name)} — ${esc(v.lang)}</option>`).join('');
+  const picks = Voice.shortlist();
+  const options = [
+    `<option value="">Standard — whatever this device uses</option>`,
+    ...picks.map((v, i) => `<option value="${esc(v.name)}">${i === 0 ? 'Warm' : 'Clear'} — ${esc(v.label)}</option>`)
+  ];
+  if (p.voiceName && !picks.some(v => v.name === p.voiceName)) {
+    options.push(`<option value="${esc(p.voiceName)}">${esc(p.voiceName)}</option>`);
+  }
+  options.push(`<option value="__all">Show me every voice on this device…</option>`);
+  sel.innerHTML = options.join('');
   sel.value = p.voiceName || '';
+  $('#voiceHint').textContent = Voice.canSpeak()
+    ? 'Tap “Say something” to hear it.'
+    : 'This browser cannot read text out loud.';
 
   const bits = [];
   bits.push(Voice.canSpeak() ? 'Reading out loud: works here.' : 'Reading out loud: this browser cannot.');
@@ -1024,7 +1056,7 @@ function toggleRail(sel) {
 function exportChat() {
   const s = Store.active();
   const meName = Store.prefs().callMe || 'Me';
-  const botName = Store.prefs().botName || 'Ask Asher';
+  const botName = Store.prefs().botName || 'ASK';
   const body = `# ${s.title}\n\n_${new Date(s.created).toLocaleString()}_\n\n` +
     s.messages.map(m => `**${m.role === 'user' ? meName : botName}:**\n\n${m.content}`).join('\n\n---\n\n');
   const blob = new Blob([body], { type: 'text/markdown' });
@@ -1070,7 +1102,7 @@ function wire() {
 
   $('#btnMemMenu').onclick = () => {
     if (!Store.get().memory.length) return toast('Memory is already empty.');
-    if (confirm('Forget everything Ask Asher knows about you? Your chats stay, the memory panel empties.')) {
+    if (confirm('Forget everything ASK knows about you? Your chats stay, the memory panel empties.')) {
       Store.clearMemory(); renderMemory(); toast('Memory cleared.');
     }
   };
@@ -1102,6 +1134,15 @@ function wire() {
    'setPolish', 'setExtractEvery', 'setGoalEvery', 'setTemp', 'setPersona', 'setImageModel',
    'setSpeak', 'setVoiceName', 'setVoiceRate', 'setVoicePitch', 'setSttMode']
     .forEach(id => $('#' + id).addEventListener('input', () => { readPrefs(); renderProfileChip(); }));
+
+  $('#btnGetKey').onclick = () => Keys.open({ onDone: () => { renderStatus(); renderProviders(); } });
+  document.addEventListener('ask:open-settings', e => openSettings(e.detail || 'models'));
+  document.addEventListener('ask:retry', () => {
+    if (!lastAsked) return toast('Type it again and I will have another go.');
+    const again = lastAsked;
+    lastAsked = '';
+    send(again, { silent: true, skipPolish: true });
+  });
 
   $('#btnMic').onclick = micTap;
   $('#btnHandsFree').onclick = toggleHandsFree;
@@ -1199,7 +1240,7 @@ function pwa() {
           const fresh = reg.installing;
           fresh?.addEventListener('statechange', () => {
             if (fresh.state === 'installed' && navigator.serviceWorker.controller) {
-              toast('New version ready — reopen Ask Asher to load it.', 5000);
+              toast('New version ready — reopen ASK to load it.', 5000);
             }
           });
         });
@@ -1245,15 +1286,15 @@ function startFor({ profile, answers, fresh }) {
     if (Providers.chain().length) {
       send(Memory.greetingPrompt(answers || {}), { silent: true, skipPolish: true });
     } else {
-      openSettings('models');
-      toast('Turn a model on and Ask Asher can talk. Images already work.');
+      Keys.open({ reason: 'Every model is switched off at the moment.' });
+      toast('Turn a model back on and ASK can talk. Images already work.');
     }
   } else if (params.get('action') === 'interview') {
     setTimeout(() => quickAction('interview'), 300);
   } else if (params.get('action') === 'voice') {
     setTimeout(toggleHandsFree, 400);
   } else if (!Providers.chain().length) {
-    setTimeout(() => openSettings('models'), 600);
+    setTimeout(() => Keys.open({ reason: 'Every model is switched off at the moment.' }), 600);
   }
 }
 

@@ -3,27 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ask Asher — your own assistant</title>
+<title>ASK — your own assistant</title>
 <meta name="description" content="A personal assistant that remembers you, teaches you step by step, talks and listens, makes images, and runs on open models you choose.">
 <link rel="icon" href="assets/icons/favicon-32.png" sizes="32x32">
 <link rel="icon" href="assets/icons/icon-192.png" sizes="192x192">
 
 <!-- PWA -->
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0B1117">
-<meta name="color-scheme" content="dark">
-<meta name="application-name" content="Ask Asher">
+<meta name="theme-color" content="#F6F8FB">
+<meta name="color-scheme" content="light">
+<meta name="application-name" content="ASK">
 
 <!-- iOS home-screen app -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Ask Asher">
+<meta name="apple-mobile-web-app-title" content="ASK">
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 <meta name="format-detection" content="telephone=no">
 
 <!-- sharing -->
-<meta property="og:title" content="Ask Asher — your own assistant">
+<meta property="og:title" content="ASK — your own assistant">
 <meta property="og:description" content="Remembers you, explains things step by step, talks and listens, makes images, runs on open models.">
 <meta property="og:image" content="assets/icons/og.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -45,7 +45,7 @@
     <div class="brand">
       <span class="brand-mark" aria-hidden="true"><img src="assets/icons/icon-192.png" alt=""></span>
       <span class="brand-text">
-        <strong>Ask Asher</strong>
+        <strong>ASK</strong>
         <span id="brandSub">your own one</span>
       </span>
     </div>
@@ -62,11 +62,13 @@
         <span id="profileName">You</span>
         <span class="swap">switch</span>
       </button>
-      <button class="btn btn-ghost btn-block sm" id="btnSettings"><span class="ico">◇</span> Models &amp; keys</button>
+      <button class="btn btn-block btn-getkey" id="btnGetKey">Get a free key — 2 min</button>
+      <button class="btn btn-ghost btn-block sm" id="btnSettings">Settings</button>
       <div class="model-status" id="modelStatus">
         <span class="dot" id="statusDot"></span>
-        <span id="statusText">No key yet</span>
+        <span id="statusText">Getting ready…</span>
       </div>
+      <p class="credit">ASK — programmed by Attaullah Sher</p>
     </div>
   </aside>
 
@@ -105,7 +107,7 @@
         <button class="comp-btn" id="btnStudio" title="Make an image" aria-label="Make an image">
           <svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 5h16v14H4z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="10" r="1.6" fill="currentColor"/><path d="M5 17l4.5-5 3.5 4 2.5-2.5L19 17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
         </button>
-        <textarea id="input" rows="1" placeholder="Message Ask Asher…"></textarea>
+        <textarea id="input" rows="1" placeholder="Message ASK…"></textarea>
         <button class="comp-btn" id="btnMic" title="Hold a moment and talk" aria-label="Speak instead of typing">
           <svg viewBox="0 0 24 24" width="18" height="18"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         </button>
@@ -131,7 +133,7 @@
   <!-- ══ WHAT ASHER KNOWS ══ -->
   <aside class="rail rail-right" id="railRight">
     <div class="mem-head">
-      <div class="rail-label">You, as Ask Asher sees it</div>
+      <div class="rail-label">What ASK knows about you</div>
       <button class="icon-btn sm" id="btnMemMenu" title="Forget everything">⋯</button>
     </div>
 
@@ -170,6 +172,17 @@
   </div>
 </div>
 
+<!-- ══ GET A KEY, STEP BY STEP ══ -->
+<div class="modal" id="keysModal" hidden>
+  <div class="modal-card">
+    <header class="modal-head">
+      <h2 id="keysTitle">Get your own free key</h2>
+      <button class="icon-btn" data-close>✕</button>
+    </header>
+    <div class="modal-body" id="keysBody"></div>
+  </div>
+</div>
+
 <!-- ══ SETTINGS ══ -->
 <div class="modal" id="settingsModal" hidden>
   <div class="modal-card wide">
@@ -194,7 +207,7 @@
       <section class="tab-panel" data-panel="you">
         <div class="settings-grid">
           <label class="field"><span>What it calls you</span><input type="text" id="setCallMe" placeholder="Your name"></label>
-          <label class="field"><span>What you call it</span><input type="text" id="setBotName" placeholder="Ask Asher"></label>
+          <label class="field"><span>What you call it</span><input type="text" id="setBotName" placeholder="ASK"></label>
           <label class="field"><span>Tone</span>
             <select id="setTone">
               <option value="warm">Warm</option>
@@ -268,6 +281,7 @@
             </select>
           </label>
           <label class="field"><span>Voice</span><select id="setVoiceName"></select></label>
+          <label class="field"><span>&nbsp;</span><span class="field-hint" id="voiceHint"></span></label>
           <label class="field"><span>Speed</span><input type="range" id="setVoiceRate" min="0.6" max="1.6" step="0.05"></label>
           <label class="field"><span>Pitch</span><input type="range" id="setVoicePitch" min="0.6" max="1.4" step="0.05"></label>
           <label class="field"><span>Listening uses</span>
@@ -288,6 +302,7 @@
           <label class="field full"><span>Profiles on this device</span></label>
         </div>
         <div class="profile-manage" id="profileManage"></div>
+        <p class="credit" style="text-align:left;margin:0 0 14px">ASK — programmed by Attaullah Sher. Everything you see here is stored on this device only.</p>
         <div class="danger-row">
           <button class="btn btn-ghost sm" id="btnExportAll">Export my data</button>
           <button class="btn btn-ghost sm" id="btnImportAll">Import a backup</button>
@@ -387,7 +402,7 @@
 <div class="modal" id="iosInstall" hidden>
   <div class="modal-card">
     <header class="modal-head">
-      <h2>Add Ask Asher to your Home Screen</h2>
+      <h2>Add ASK to your Home Screen</h2>
       <button class="icon-btn" data-close>✕</button>
     </header>
     <div class="modal-body">
@@ -403,7 +418,7 @@
   </div>
 </div>
 
-<div class="offline-bar" id="offlineBar" hidden>Offline — Ask Asher still opens, but models can't be reached.</div>
+<div class="offline-bar" id="offlineBar" hidden>Offline — ASK still opens, but models can't be reached.</div>
 <div class="toast" id="toast" hidden></div>
 <input type="file" id="fileImport" accept="application/json" hidden>
 
@@ -411,6 +426,7 @@
 <script src="assets/js/providers.js"></script>
 <script src="assets/js/memory.js"></script>
 <script src="assets/js/lookup.js"></script>
+<script src="assets/js/keys.js"></script>
 <script src="assets/js/voice.js"></script>
 <script src="assets/js/images.js"></script>
 <script src="assets/js/onboarding.js"></script>
