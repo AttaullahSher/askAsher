@@ -179,8 +179,9 @@ assets/js/voice.js        speech in and out, plus hands-free voice chat
 assets/js/images.js       image generation with model fallback + canvas banner compositor
 assets/js/onboarding.js   first-run flow and the profile picker
 assets/js/app.js          UI wiring
+assets/brand/logo.png     the logo everything else is built from
 assets/icons/             192, 512, maskable-512, apple-touch-180, favicon-32, og
-tools/make-icons.js       redraws every icon from scratch — node tools/make-icons.js
+tools/make-icons.js       rebuilds every icon from the logo — node tools/make-icons.js
 proxy/worker.js           Cloudflare Worker CORS proxy for NVIDIA NIM
 ```
 
@@ -201,6 +202,19 @@ Reading aloud uses `speechSynthesis`, which every current browser has. Listening
 microphone button explains that and the Whisper option still works if you have a Groq key.
 On iPhone it has to be Safari, and iOS will not speak until you have tapped something first,
 which is why the first tap on **Read aloud** is what unlocks it.
+
+## Rebranding it
+
+Every icon is generated from `assets/brand/logo.png` by `tools/make-icons.js` — pure Node, no
+image library, no design tool. Drop in a different logo and re-run it:
+
+```bash
+node tools/make-icons.js
+```
+
+It finds the mark inside the artwork, keys out the paper so no crop edge shows, and writes all six
+sizes. It also prints the strongest colour it found, which is what `--accent` in
+`assets/css/app.css` is tuned to — change that one variable and the whole interface follows.
 
 ## Licence
 

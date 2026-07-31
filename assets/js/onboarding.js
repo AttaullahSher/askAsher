@@ -50,11 +50,7 @@ const Onboarding = (() => {
     return h;
   }
 
-  const mark = () => `<svg viewBox="0 0 40 40" class="gate-mark" aria-hidden="true">
-      <rect x="1.5" y="1.5" width="37" height="37" rx="11" fill="none" stroke="currentColor" stroke-width="2.2" opacity=".35"/>
-      <path d="M12 28.5 L20 11 L28 28.5 M15.4 22.5 H24.6" fill="none" stroke="currentColor"
-            stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>`;
+  const mark = () => `<img class="gate-mark" src="assets/icons/icon-192.png" alt="">`;
 
   /* ── 1. hello ── */
   function stepWelcome() {

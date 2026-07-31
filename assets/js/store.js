@@ -132,7 +132,7 @@ const Store = (() => {
     stats: { messages: 0, images: 0, created: Date.now() }
   });
 
-  const AVATAR_COLORS = ['#24E08C', '#4FC3F7', '#FFB74D', '#F06292', '#B388FF', '#FF8A65', '#4DD0E1', '#AED581'];
+  const AVATAR_COLORS = ['#2E90F0', '#4DD0E1', '#FFB74D', '#F06292', '#B388FF', '#FF8A65', '#4DD0E1', '#AED581'];
 
   let app = null;
   let user = null;      // the active profile's data

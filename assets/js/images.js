@@ -3,7 +3,7 @@
    the page loads. If the chosen model stalls or 404s, it retries down a fallback list. */
 const Images = (() => {
 
-  const ACCENT = '#24E08C';
+  const ACCENT = '#4DA9F5';
   const INK = '14,20,28';
 
   const MODELS = [
