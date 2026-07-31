@@ -1,4 +1,4 @@
-/* store.js — Asher's memory of everyone who uses it.
+/* store.js — Ask Asher's memory of everyone who uses it.
    Everything lives in this browser. No server, no telemetry, no account on anyone's cloud.
 
    Layout in localStorage:
@@ -14,7 +14,19 @@ const Store = (() => {
 
   const DEFAULT_PROVIDERS = [
     {
-      id: 'openrouter', name: 'OpenRouter', enabled: true, rank: 1,
+      /* The one that works before anybody has set anything up. Pollinations serves
+         GPT-OSS 20B to anonymous callers with CORS open. No streaming on the free tier,
+         so replies land in one go rather than word by word. */
+      id: 'pollinations', name: 'Free model (no key)', enabled: true, rank: 1,
+      base: 'https://text.pollinations.ai', chatPath: '/openai', key: '', model: 'openai-fast',
+      models: ['openai-fast'],
+      keyless: true, noStream: true,
+      signup: 'https://pollinations.ai',
+      blurb: 'Open-weight GPT-OSS 20B, no key, no signup. Good enough to start today.',
+      note: 'Free and anonymous, so it is rate-limited and slower than a keyed provider, and it cannot stream. Add a key below when you want it quicker.'
+    },
+    {
+      id: 'openrouter', name: 'OpenRouter', enabled: true, rank: 2,
       base: 'https://openrouter.ai/api/v1', key: '', model: 'moonshotai/kimi-k2',
       models: [
         'moonshotai/kimi-k2',
@@ -28,28 +40,28 @@ const Store = (() => {
       blurb: 'One key, most open models. Easiest place to start.'
     },
     {
-      id: 'moonshot', name: 'Moonshot (Kimi)', enabled: true, rank: 2,
+      id: 'moonshot', name: 'Moonshot (Kimi)', enabled: true, rank: 3,
       base: 'https://api.moonshot.ai/v1', key: '', model: 'kimi-k2-0905-preview',
       models: ['kimi-k2-0905-preview', 'kimi-k2-turbo-preview', 'moonshot-v1-128k', 'moonshot-v1-32k'],
       signup: 'https://platform.moonshot.ai',
       blurb: 'Kimi straight from the source. Long context, good at chat.'
     },
     {
-      id: 'deepseek', name: 'DeepSeek', enabled: true, rank: 3,
+      id: 'deepseek', name: 'DeepSeek', enabled: true, rank: 4,
       base: 'https://api.deepseek.com/v1', key: '', model: 'deepseek-chat',
       models: ['deepseek-chat', 'deepseek-reasoner'],
       signup: 'https://platform.deepseek.com',
       blurb: 'Cheap, strong, open weights. deepseek-reasoner thinks harder.'
     },
     {
-      id: 'groq', name: 'Groq', enabled: true, rank: 4,
+      id: 'groq', name: 'Groq', enabled: true, rank: 5,
       base: 'https://api.groq.com/openai/v1', key: '', model: 'openai/gpt-oss-120b',
       models: ['openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'llama-3.3-70b-versatile', 'qwen/qwen3-32b'],
       signup: 'https://console.groq.com/keys',
       blurb: 'Free tier, and faster than anything else here.'
     },
     {
-      id: 'nvidia', name: 'NVIDIA NIM', enabled: false, rank: 5,
+      id: 'nvidia', name: 'NVIDIA NIM', enabled: false, rank: 6,
       base: 'https://integrate.api.nvidia.com/v1', key: '', model: 'moonshotai/kimi-k2-instruct',
       models: [
         'moonshotai/kimi-k2-instruct',
@@ -63,7 +75,7 @@ const Store = (() => {
       note: 'NVIDIA sends no CORS headers, so a browser request is blocked no matter how good your key is. Deploy proxy/worker.js from this repo and point Base URL at it.'
     },
     {
-      id: 'ollama', name: 'Ollama (this machine)', enabled: false, rank: 6,
+      id: 'ollama', name: 'Ollama (this machine)', enabled: false, rank: 7,
       base: 'http://localhost:11434/v1', key: 'ollama', model: 'qwen3',
       models: ['qwen3', 'llama3.2', 'gemma3', 'deepseek-r1'],
       signup: 'https://ollama.com',
@@ -71,7 +83,7 @@ const Store = (() => {
       note: 'Start it with OLLAMA_ORIGINS=* ollama serve or the browser will be refused.'
     },
     {
-      id: 'custom', name: 'Custom endpoint', enabled: false, rank: 7,
+      id: 'custom', name: 'Custom endpoint', enabled: false, rank: 8,
       base: '', key: '', model: '', models: [],
       signup: '',
       blurb: 'Anything that speaks OpenAI /v1/chat/completions — your own gateway, a relay, a self-host.'
@@ -87,18 +99,26 @@ const Store = (() => {
   };
 
   const FRESH_PREFS = () => ({
-    botName: 'Asher',
+    botName: 'Ask Asher',
     callMe: '',
     tone: 'warm',            // warm | direct | playful | mentor
     replyLength: 'medium',   // short | medium | long
+    level: 'new',            // new | some | pro — how much it assumes you already know
     language: 'English',
     persona: '',
     extractEvery: 3,
     goalReviewEvery: 6,
     temperature: 0.75,
     polish: 'smart',         // off | smart | always
+    lookup: 'smart',         // off | smart | always — check the web for anything time-sensitive
     imageModel: 'flux',
-    modelChoice: null        // {providerId, model} — null means "auto, walk the chain"
+    modelChoice: null,       // {providerId, model} — null means "auto, walk the chain"
+    // voice
+    speak: false,            // read replies out loud automatically
+    voiceName: '',           // which system voice, '' means the browser's default
+    voiceRate: 1,
+    voicePitch: 1,
+    sttMode: 'browser'       // browser | whisper — where speech-to-text happens
   });
 
   const FRESH_USER = () => ({
@@ -135,7 +155,8 @@ const Store = (() => {
       if (!hit) return structuredClone(def);
       return Object.assign(structuredClone(def), hit, {
         models: hit.models?.length ? hit.models : def.models,
-        blurb: def.blurb, note: def.note, signup: def.signup, needsProxy: def.needsProxy
+        blurb: def.blurb, note: def.note, signup: def.signup,
+        needsProxy: def.needsProxy, keyless: def.keyless, noStream: def.noStream, chatPath: def.chatPath
       });
     });
     return app;
@@ -372,7 +393,7 @@ const Store = (() => {
   function importUser(json) {
     const parsed = JSON.parse(json);
     const incoming = parsed.data || parsed;
-    if (!incoming.sessions && !incoming.memory) throw new Error('That file is not an Asher backup.');
+    if (!incoming.sessions && !incoming.memory) throw new Error('That file is not an Ask Asher backup.');
     user = Object.assign(FRESH_USER(), incoming);
     user.prefs = Object.assign(FRESH_PREFS(), incoming.prefs || {});
     saveUser();

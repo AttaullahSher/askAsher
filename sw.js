@@ -1,5 +1,5 @@
-/* sw.js — makes Asher open offline. Never touches model or image traffic. */
-const VERSION = 'asher-v2';
+/* sw.js — makes Ask Asher open offline. Never touches model or image traffic. */
+const VERSION = 'asher-v3';
 const SHELL = [
   './',
   './index.html',
@@ -8,6 +8,8 @@ const SHELL = [
   './assets/js/store.js',
   './assets/js/providers.js',
   './assets/js/memory.js',
+  './assets/js/lookup.js',
+  './assets/js/voice.js',
   './assets/js/images.js',
   './assets/js/onboarding.js',
   './assets/js/app.js',

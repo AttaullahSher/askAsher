@@ -1,6 +1,6 @@
 /* onboarding.js — the first thirty seconds.
    Install prompt → make a profile → a handful of questions → one key → straight into a chat
-   that already knows who it is talking to. Also handles "who's using Asher?" on later opens. */
+   that already knows who it is talking to. Also handles "who's using it?" on later opens. */
 const Onboarding = (() => {
   const gate = () => document.getElementById('gate');
   const el = (t, c, h) => { const n = document.createElement(t); if (c) n.className = c; if (h != null) n.innerHTML = h; return n; };
@@ -59,9 +59,9 @@ const Onboarding = (() => {
   /* ── 1. hello ── */
   function stepWelcome() {
     const n = el('div');
-    const brand = el('div', 'gate-brand', `${mark()}<div><strong>Asher</strong><span>your own one, not everyone's</span></div>`);
+    const brand = el('div', 'gate-brand', `${mark()}<div><strong>Ask Asher</strong><span>your own one, not everyone's</span></div>`);
     n.append(brand);
-    n.append(el('p', 'gate-lede', 'Asher is a chatbot that belongs to you. It asks about you, remembers what matters, keeps track of what you are working toward, and makes images when you need them. Everything stays in this browser — no account, no server, nothing sent anywhere except to the model you pick.'));
+    n.append(el('p', 'gate-lede', 'Ask Asher is your own assistant, teacher and guide. It asks about you, remembers what matters, explains things one step at a time, talks and listens out loud, and makes images. It works straight away on a free open model — no key, no account — and everything stays in this browser.'));
 
     const row = el('div', 'gate-actions');
     const go = el('button', 'btn btn-primary btn-block', 'Set me up');
@@ -94,7 +94,7 @@ const Onboarding = (() => {
       n.append(steps);
       n.append(el('p', 'gate-note', 'iPhone and iPad have no install button — Safari only offers it from that menu. Chrome on iOS cannot do it at all, so use Safari.'));
     } else if (canPromptInstall()) {
-      const b = el('button', 'btn btn-primary btn-block', 'Install Asher');
+      const b = el('button', 'btn btn-primary btn-block', 'Install Ask Asher');
       b.onclick = async () => {
         installEvent.prompt();
         const { outcome } = await installEvent.userChoice;
@@ -127,7 +127,7 @@ const Onboarding = (() => {
     const nameField = el('label', 'field full');
     nameField.append(el('span', null, 'Your name'));
     const nameIn = el('input');
-    nameIn.placeholder = 'What should Asher call you?';
+    nameIn.placeholder = 'What should Ask Asher call you?';
     nameIn.maxLength = 24;
     nameIn.autocomplete = 'given-name';
     nameField.append(nameIn);
@@ -191,8 +191,8 @@ const Onboarding = (() => {
   /* ── 4. the questions ── */
   const QUESTIONS = [
     { key: 'work',    q: 'What do you actually do?',            hint: 'Job, business, studies — a sentence is plenty.', ph: 'e.g. I run a music shop in Abu Dhabi and handle the online side' },
-    { key: 'goal',    q: 'What are you working toward right now?', hint: 'The one thing you would be pleased to have moved by next month. Asher keeps coming back to this.', ph: 'e.g. get the online store bringing in real orders' },
-    { key: 'context', q: 'Anything Asher should know from the start?', hint: 'People, projects, constraints, things you are sick of explaining.', ph: 'e.g. two kids, no time before 9pm, I write in English and Urdu' }
+    { key: 'goal',    q: 'What are you working toward right now?', hint: 'The one thing you would be pleased to have moved by next month. Ask Asher keeps coming back to this.', ph: 'e.g. get the online store bringing in real orders' },
+    { key: 'context', q: 'Anything Ask Asher should know from the start?', hint: 'People, projects, constraints, things you are sick of explaining.', ph: 'e.g. two kids, no time before 9pm, I write in English and Urdu' }
   ];
 
   function stepQuestions(i = 0, answers = {}) {
@@ -232,7 +232,7 @@ const Onboarding = (() => {
   /* ── 5. how it should talk ── */
   function stepStyle(answers) {
     const n = el('div');
-    n.append(head(4, 4, 'How should Asher talk to you?', 'Change it any time in settings. Nothing here is permanent.'));
+    n.append(head(4, 4, 'How should Ask Asher talk to you?', 'Change it any time in settings. Nothing here is permanent.'));
 
     const tones = [
       ['warm', 'Warm', 'Like a friend who is good at this'],
@@ -306,7 +306,7 @@ const Onboarding = (() => {
     if (!list.length) return stepWelcome();
 
     const n = el('div');
-    n.append(el('div', 'gate-brand', `${mark()}<div><strong>Asher</strong><span>who is this?</span></div>`));
+    n.append(el('div', 'gate-brand', `${mark()}<div><strong>Ask Asher</strong><span>who is this?</span></div>`));
 
     const rows = el('div', 'profile-rows');
     for (const p of list) {
@@ -361,7 +361,7 @@ const Onboarding = (() => {
 
   function enter(p) {
     Store.switchProfile(p.id);
-    Store.log('profile.open', `${p.name} opened Asher`);
+    Store.log('profile.open', `${p.name} opened Ask Asher`);
     close();
     onFinish({ profile: p, fresh: false });
   }

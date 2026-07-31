@@ -83,7 +83,7 @@ function renderSessions() {
     del.title = 'Delete this chat';
     del.onclick = e => {
       e.stopPropagation();
-      if (!confirm(`Delete "${s.title}"? What Asher learned from it stays.`)) return;
+      if (!confirm(`Delete "${s.title}"? What Ask Asher learned from it stays.`)) return;
       Store.deleteSession(s.id);
       renderAll();
     };
@@ -102,7 +102,7 @@ function renderGoals() {
   if (!goals.length) {
     card.innerHTML = `<div class="goal-empty">
       <b>No goal set</b>
-      <p class="muted">Tell Asher what you are working toward and it keeps steering back to it.</p>
+      <p class="muted">Tell Ask Asher what you are working toward and it keeps steering back to it.</p>
     </div>`;
     const add = el('button', 'btn btn-ghost btn-block sm', '+ Set one');
     add.onclick = askGoal;
@@ -156,7 +156,7 @@ function askGoal() {
   const g = Store.addGoal(clean, { horizon: 'now', primary: true });
   if (g) Store.updateGoal(g.id, { primary: true, status: 'open' });
   renderGoals();
-  toast('Asher will keep that in mind.');
+  toast('Noted — it will keep coming back to that.');
 }
 
 function renderMemory() {
@@ -219,12 +219,12 @@ function renderWelcome(stream) {
   const w = el('div', 'welcome');
   w.innerHTML = `
     <h2>${name ? `Hello again, ${esc(name)}.` : 'Start talking.'}</h2>
-    <p>Whatever matters gets kept. Whatever doesn't, doesn't.</p>
+    <p>Type it, or tap the microphone and say it. Whatever matters gets kept.</p>
     <div class="welcome-grid">
+      <button class="wcard" data-act="teach"><strong>Teach me something</strong><span>Step by step, nothing assumed</span></button>
       <button class="wcard" data-act="interview"><strong>Get to know me</strong><span>It asks, you answer</span></button>
-      <button class="wcard" data-act="recall"><strong>What do you know?</strong><span>Read back the picture so far</span></button>
       <button class="wcard" data-act="image"><strong>Make an image</strong><span>No key needed</span></button>
-      <button class="wcard" data-act="banner"><strong>Make a banner</strong><span>Artwork with your words on it</span></button>
+      <button class="wcard" data-act="recall"><strong>What do you know?</strong><span>Read back the picture so far</span></button>
     </div>`;
   w.querySelectorAll('[data-act]').forEach(b => b.onclick = () => quickAction(b.dataset.act));
   stream.append(w);
@@ -240,7 +240,7 @@ function bubble(m) {
 
   const b = el('div', 'bubble');
   const who = el('div', 'who');
-  who.append(el('span', null, isUser ? (Store.prefs().callMe || 'You') : (Store.prefs().botName || 'Asher')));
+  who.append(el('span', null, isUser ? (Store.prefs().callMe || 'You') : (Store.prefs().botName || 'Ask Asher')));
   if (m.via) who.append(el('span', 'via', `via ${esc(m.via)}`));
   b.append(who);
   b.append(el('div', 'body', md(m.content)));
@@ -252,8 +252,59 @@ function bubble(m) {
     chip.onclick = () => { shown.hidden = !shown.hidden; chip.classList.toggle('open', !shown.hidden); };
     b.append(chip, shown);
   }
+
+  if (m.sources?.length) b.append(sourceList(m.sources));
+  if (!isUser && !m.error) b.append(msgActions(m));
+
   node.append(b);
   return node;
+}
+
+/* Where a fresh answer came from. */
+function sourceList(sources) {
+  const wrap = el('div', 'sources');
+  wrap.append(el('div', 'sources-label', 'Checked just now'));
+  for (const s of sources.slice(0, 5)) {
+    const a = el('a', 'source');
+    a.href = s.url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.innerHTML = `<b>${esc(s.from)}</b> ${esc(s.title)}${s.when ? ` <s>${esc(s.when)}</s>` : ''}`;
+    wrap.append(a);
+  }
+  return wrap;
+}
+
+/* Read it out, or ask for it again in plainer words. */
+function msgActions(m) {
+  const row = el('div', 'msg-actions');
+
+  if (Voice.canSpeak()) {
+    const speak = el('button', 'msg-act', '🔊 Read aloud');
+    speak.onclick = () => {
+      if (Voice.isSpeaking()) { Voice.stopSpeaking(); speak.textContent = '🔊 Read aloud'; return; }
+      Voice.unlock();
+      Voice.speak(m.content, { onEnd: () => { speak.textContent = '🔊 Read aloud'; } });
+      speak.textContent = '■ Stop';
+      Store.log('voice.speak', m.content.slice(0, 60));
+    };
+    row.append(speak);
+  }
+
+  const simpler = el('button', 'msg-act', 'Explain simpler');
+  simpler.onclick = () => send('That was over my head — simpler please.', {
+    skipPolish: true, sendAs: Memory.simplerPrompt()
+  });
+  row.append(simpler);
+
+  const copy = el('button', 'msg-act', 'Copy');
+  copy.onclick = async () => {
+    try { await navigator.clipboard.writeText(m.content); toast('Copied.'); }
+    catch { toast('The browser would not let me copy that.'); }
+  };
+  row.append(copy);
+
+  return row;
 }
 
 function renderStatus() {
@@ -328,7 +379,7 @@ async function send(text, { silent = false, skipPolish = false, sendAs = null } 
   holder.append(el('div', 'avatar', '◆'));
   const b = el('div', 'bubble');
   const who = el('div', 'who');
-  who.append(el('span', null, Store.prefs().botName || 'Asher'));
+  who.append(el('span', null, Store.prefs().botName || 'Ask Asher'));
   const via = el('span', 'via', '');
   who.append(via);
   b.append(who);
@@ -361,6 +412,15 @@ async function send(text, { silent = false, skipPolish = false, sendAs = null } 
       via.textContent = '';
     }
 
+    /* Anything time-sensitive gets checked against the open web first, so the answer is not
+       just whatever the model remembers from training. */
+    let found = null;
+    if (!silent && Lookup.needed(sendText)) {
+      via.textContent = 'checking the web…';
+      found = await Lookup.run(sendText);
+      via.textContent = '';
+    }
+
     /* What the model sees: the polished wording where there is one, the original otherwise.
        The stored message keeps both, so the chat still shows what was actually typed. */
     const s = Store.active();
@@ -370,6 +430,7 @@ async function send(text, { silent = false, skipPolish = false, sendAs = null } 
     }));
     const messages = [
       { role: 'system', content: Memory.systemPrompt() },
+      ...(found ? [{ role: 'system', content: found.context }] : []),
       ...history,
       ...(silent ? [{ role: 'user', content: sendText }] : [])
     ];
@@ -387,8 +448,19 @@ async function send(text, { silent = false, skipPolish = false, sendAs = null } 
 
     via.textContent = `via ${provider.name}`;
     body.innerHTML = md(reply);
-    Store.push('assistant', reply, { via: provider.name, model: provider.model });
+    const stored = Store.push('assistant', reply, {
+      via: provider.name, model: provider.model,
+      ...(found ? { sources: found.sources.slice(0, 5) } : {})
+    });
     Store.log('chat.reply', `${provider.name} · ${provider.model} · ${(ms / 1000).toFixed(1)}s`);
+
+    // swap the live bubble for the stored one so sources and the action row appear
+    holder.replaceWith(bubble(stored));
+    stream.scrollTop = stream.scrollHeight;
+
+    // read it out if they asked for that, or if we are mid voice-chat
+    if (Voice.isHandsFree()) Voice.handsFreeReply(reply);
+    else if (Store.prefs().speak) Voice.speak(reply);
 
     s.turnsSinceExtract = (s.turnsSinceExtract || 0) + 1;
     s.turnsSinceGoal = (s.turnsSinceGoal || 0) + 1;
@@ -454,6 +526,14 @@ function flash(html) {
 
 /* ── quick actions ── */
 function quickAction(act) {
+  if (act === 'teach') {
+    const topic = prompt('What do you want to be walked through?\n\nAnything — a tool, a skill, a word you keep hearing.', '');
+    if (topic === null) return;
+    const clean = topic.trim();
+    return send(clean ? `Teach me about ${clean}, from scratch.` : 'Walk me through that from scratch.', {
+      skipPolish: true, sendAs: Memory.teachPrompt(clean)
+    });
+  }
   if (act === 'interview') return send('Get to know me — ask me things.', { skipPolish: true, sendAs: Memory.interviewKickoff() });
   if (act === 'recall') {
     if (!Store.get().memory.length) return toast('Nothing remembered yet — try "Get to know me".');
@@ -668,8 +748,10 @@ function renderDataTab() {
 function fillPrefs() {
   const p = Store.prefs();
   $('#setCallMe').value = p.callMe || '';
-  $('#setBotName').value = p.botName || 'Asher';
+  $('#setBotName').value = p.botName || 'Ask Asher';
   $('#setTone').value = p.tone || 'warm';
+  $('#setLevel').value = p.level || 'new';
+  $('#setLookup').value = p.lookup || 'smart';
   $('#setLength').value = p.replyLength || 'medium';
   $('#setLanguage').value = p.language || 'English';
   $('#setPolish').value = p.polish || 'smart';
@@ -678,13 +760,16 @@ function fillPrefs() {
   $('#setTemp').value = p.temperature ?? 0.75;
   $('#setPersona').value = p.persona || '';
   $('#setImageModel').value = p.imageModel || 'flux';
+  fillVoicePrefs();
 }
 
 function readPrefs() {
   const p = Store.prefs();
   p.callMe = $('#setCallMe').value.trim();
-  p.botName = $('#setBotName').value.trim() || 'Asher';
+  p.botName = $('#setBotName').value.trim() || 'Ask Asher';
   p.tone = $('#setTone').value;
+  p.level = $('#setLevel').value;
+  p.lookup = $('#setLookup').value;
   p.replyLength = $('#setLength').value;
   p.language = $('#setLanguage').value;
   p.polish = $('#setPolish').value;
@@ -693,7 +778,97 @@ function readPrefs() {
   p.temperature = Number($('#setTemp').value);
   p.persona = $('#setPersona').value.trim();
   p.imageModel = $('#setImageModel').value;
+  p.speak = $('#setSpeak').value === 'on';
+  p.voiceName = $('#setVoiceName').value;
+  p.voiceRate = Number($('#setVoiceRate').value);
+  p.voicePitch = Number($('#setVoicePitch').value);
+  p.sttMode = $('#setSttMode').value;
   Store.save();
+}
+
+/* ── voice ── */
+function fillVoicePrefs() {
+  const p = Store.prefs();
+  $('#setSpeak').value = p.speak ? 'on' : 'off';
+  $('#setVoiceRate').value = p.voiceRate ?? 1;
+  $('#setVoicePitch').value = p.voicePitch ?? 1;
+  $('#setSttMode').value = p.sttMode || 'browser';
+
+  const sel = $('#setVoiceName');
+  const voices = Voice.list();
+  sel.innerHTML = `<option value="">Whatever this device picks</option>` +
+    voices.map(v => `<option value="${esc(v.name)}">${esc(v.name)} — ${esc(v.lang)}</option>`).join('');
+  sel.value = p.voiceName || '';
+
+  const bits = [];
+  bits.push(Voice.canSpeak() ? 'Reading out loud: works here.' : 'Reading out loud: this browser cannot.');
+  if (window.SpeechRecognition || window.webkitSpeechRecognition) bits.push('Listening: works here, no key.');
+  else if (Voice.canRecord()) bits.push('Listening: this browser has no built-in recognition, so it needs the Whisper option and a Groq key.');
+  else bits.push('Listening: not available in this browser.');
+  if (Providers.sttProvider()) bits.push(`Whisper available through ${Providers.sttProvider().name}.`);
+  $('#voiceSupport').innerHTML = bits.map(b => `<p class="note sm" style="margin:2px 0">${esc(b)}</p>`).join('');
+}
+
+function setVoiceState(state) {
+  const bar = $('#voiceBar');
+  const label = { listening: 'Listening…', transcribing: 'Writing that down…', speaking: 'Speaking…', thinking: 'Thinking…' }[state];
+  if (!label) { bar.hidden = true; return; }
+  $('#voiceState').textContent = label;
+  bar.hidden = false;
+}
+
+function micTap() {
+  Voice.unlock();
+  if (Voice.isListening()) return Voice.stopListening();
+  $('#btnMic').classList.add('on');
+  setVoiceState('listening');
+  Voice.startListening({
+    onPartial: text => { $('#input').value = text; autosize(); },
+    onFinal: text => {
+      $('#btnMic').classList.remove('on');
+      setVoiceState(null);
+      if (!text) return;
+      $('#input').value = text;
+      autosize();
+      Store.log('voice.heard', text.slice(0, 100));
+      send(text);
+    },
+    onError: e => {
+      $('#btnMic').classList.remove('on');
+      setVoiceState(null);
+      toast(e.message);
+    },
+    onState: setVoiceState
+  });
+}
+
+function toggleHandsFree() {
+  if (Voice.isHandsFree()) {
+    Voice.stopHandsFree();
+    return;
+  }
+  if (!Voice.canListen()) return toast('This browser cannot listen. Chrome, Edge or Safari can.');
+  Voice.unlock();
+  toast('Voice chat on — talk, and it answers out loud. Tap again to stop.');
+  Voice.startHandsFree({
+    onPartial: text => { $('#input').value = text; autosize(); },
+    onTranscript: text => {
+      $('#input').value = '';
+      autosize();
+      setVoiceState('thinking');
+      send(text);
+    },
+    onError: e => { toast(e.message); setVoiceState(null); },
+    onState: setVoiceState
+  });
+}
+
+function renderVoiceChrome() {
+  const on = Voice.isHandsFree();
+  $('#btnHandsFree').classList.toggle('on', on);
+  $('#handsFreeLabel').textContent = on ? 'Voice chat on' : 'Voice chat';
+  $('#btnMic').classList.toggle('on', Voice.isListening());
+  if (!on && !Voice.isListening() && !Voice.isSpeaking()) setVoiceState(null);
 }
 
 function openSettings(tab = 'models') {
@@ -849,7 +1024,7 @@ function toggleRail(sel) {
 function exportChat() {
   const s = Store.active();
   const meName = Store.prefs().callMe || 'Me';
-  const botName = Store.prefs().botName || 'Asher';
+  const botName = Store.prefs().botName || 'Ask Asher';
   const body = `# ${s.title}\n\n_${new Date(s.created).toLocaleString()}_\n\n` +
     s.messages.map(m => `**${m.role === 'user' ? meName : botName}:**\n\n${m.content}`).join('\n\n---\n\n');
   const blob = new Blob([body], { type: 'text/markdown' });
@@ -895,7 +1070,7 @@ function wire() {
 
   $('#btnMemMenu').onclick = () => {
     if (!Store.get().memory.length) return toast('Memory is already empty.');
-    if (confirm('Forget everything Asher knows about you? Your chats stay, the memory panel empties.')) {
+    if (confirm('Forget everything Ask Asher knows about you? Your chats stay, the memory panel empties.')) {
       Store.clearMemory(); renderMemory(); toast('Memory cleared.');
     }
   };
@@ -923,9 +1098,28 @@ function wire() {
     if (e.key === 'Escape') $$('.modal:not([hidden])').forEach(m => m.hidden = true);
   });
 
-  ['setCallMe', 'setBotName', 'setTone', 'setLength', 'setLanguage', 'setPolish',
-   'setExtractEvery', 'setGoalEvery', 'setTemp', 'setPersona', 'setImageModel']
+  ['setCallMe', 'setBotName', 'setTone', 'setLevel', 'setLookup', 'setLength', 'setLanguage',
+   'setPolish', 'setExtractEvery', 'setGoalEvery', 'setTemp', 'setPersona', 'setImageModel',
+   'setSpeak', 'setVoiceName', 'setVoiceRate', 'setVoicePitch', 'setSttMode']
     .forEach(id => $('#' + id).addEventListener('input', () => { readPrefs(); renderProfileChip(); }));
+
+  $('#btnMic').onclick = micTap;
+  $('#btnHandsFree').onclick = toggleHandsFree;
+  $('#btnVoiceStop').onclick = () => {
+    Voice.stopHandsFree();
+    Voice.stopListening();
+    Voice.stopSpeaking();
+    setVoiceState(null);
+  };
+  $('#btnTestVoice').onclick = e => {
+    e.preventDefault();
+    Voice.unlock();
+    const name = Store.prefs().callMe || 'there';
+    if (!Voice.speak(`Hello ${name}. This is how I'll sound when I read things out.`)) {
+      toast('This browser has no speech built in.');
+    }
+  };
+  Voice.onChange(renderVoiceChrome);
 
   $('#btnGenerate').onclick = runGenerate;
   $('#btnImprovePrompt').onclick = improvePrompt;
@@ -1005,7 +1199,7 @@ function pwa() {
           const fresh = reg.installing;
           fresh?.addEventListener('statechange', () => {
             if (fresh.state === 'installed' && navigator.serviceWorker.controller) {
-              toast('New version ready — reopen Asher to load it.', 5000);
+              toast('New version ready — reopen Ask Asher to load it.', 5000);
             }
           });
         });
@@ -1052,10 +1246,12 @@ function startFor({ profile, answers, fresh }) {
       send(Memory.greetingPrompt(answers || {}), { silent: true, skipPolish: true });
     } else {
       openSettings('models');
-      toast('One key and Asher can talk. Images already work.');
+      toast('Turn a model on and Ask Asher can talk. Images already work.');
     }
   } else if (params.get('action') === 'interview') {
     setTimeout(() => quickAction('interview'), 300);
+  } else if (params.get('action') === 'voice') {
+    setTimeout(toggleHandsFree, 400);
   } else if (!Providers.chain().length) {
     setTimeout(() => openSettings('models'), 600);
   }

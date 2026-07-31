@@ -27,6 +27,21 @@ const Memory = (() => {
     long:   'Go into detail and cover the edges, but never pad.'
   };
 
+  /* How much the person already knows. "new" is the default, because most people asking
+     for help are not experts in the thing they are asking about. */
+  const LEVEL = {
+    new: `They are new to most of what they ask about. Teach, do not just answer:
+- Give the answer first in one plain sentence, then the steps to get there.
+- Number the steps. One action per step. Say exactly what to tap, click, type or say.
+- After each step, say what they should see if it worked — that is how they know to carry on.
+- Every technical word gets explained the first time in the same breath, in brackets, in six words or less.
+- Never assume they have an account, a tool, or a setting already. Say how to get it.
+- No jargon dumps, no "simply", no "just". If a step is fiddly, say so and slow down.
+- End with the single next thing to do, and offer to walk through it.`,
+    some: `They know their way around but are not an expert. Explain the reasoning briefly, skip the beginner scaffolding, define only genuinely specialist terms, and keep steps tight.`,
+    pro: `They know this area well. Skip the basics, use the proper terms, get to the trade-offs and the edge cases. Do not explain what they already know.`
+  };
+
   const EXTRACT_PROMPT = `You extract durable facts about the user from a conversation.
 
 Return ONLY a JSON object, no prose, no markdown fences:
@@ -56,21 +71,25 @@ Rules:
   /* ── the system prompt every chat runs on ── */
   function systemPrompt() {
     const p = Store.prefs();
-    const bot = p.botName || 'Asher';
+    const bot = p.botName || 'Ask Asher';
     const name = p.callMe || Store.currentProfile()?.name || '';
     const groups = Store.memoryByCategory();
+    const today = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-    let s = `You are ${bot} — one person's own assistant. Not a company chatbot, not a search engine. You know ${name || 'them'} and you get to know them better every conversation.`;
+    let s = `You are ${bot} — one person's own assistant, teacher and guide. Not a company chatbot, not a search engine. You know ${name || 'them'} and you get to know them better every conversation.`;
     if (name) s += ` You are talking to ${name}.`;
 
+    s += `\n\nToday is ${today}. Your training stopped well before that. For anything that moves — prices, releases, versions, news, who holds a job, what a tool can do now — say plainly that it may have changed and that you are going on what you last knew, unless you have been handed fresh material below. Never state a stale fact as if it were current, and never invent a date or a source.`;
+
     s += `\n\n── How you talk ──\n${TONE[p.tone] || TONE.warm}\n${LENGTH[p.replyLength] || LENGTH.medium}`;
+    s += `\n\n── Who you are talking to ──\n${LEVEL[p.level] || LEVEL.new}`;
     s += `\n\nWrite like a person, not a product:
 - Say the useful thing first. Never open with "Great question", "Certainly", "I understand that", or a restatement of what they just asked.
 - Contractions. Sentences of different lengths. It should read like it was typed, not generated.
-- Bullet lists only when the content is genuinely a list. Prose by default.
 - No disclaimers about being an AI, no reminders of your limits unless it actually changes the answer.
 - When you do not know, say so in four words and move on.
-- One follow-up question at most, and only when the answer really depends on it.`;
+- One follow-up question at most, and only when the answer really depends on it.
+- Some of this gets read aloud, so keep sentences speakable and do not lean on symbols or tables to carry meaning.`;
 
     if (p.language && p.language !== 'English') {
       s += `\n- They prefer ${p.language}. Match the language they write in; when they mix languages, mix them back naturally.`;
@@ -172,7 +191,7 @@ Rules:
   }
 
   /* Re-read where they are heading, and how to be more useful to them.
-     This is what keeps Asher pointed at the person's actual goal instead of drifting. */
+     This is what keeps Ask Asher pointed at the person's actual goal instead of drifting. */
   async function reviewGoals(session) {
     const t = transcript(session, 20);
     if (t.count < 4) return null;
@@ -238,5 +257,21 @@ ${bits}
 Say hello in three or four sentences. Use my name. Show me you actually read the above by referring to one specific thing in it — not all of it. Then ask me one question that would help you the most. No bullet points, no list of what you can do, no welcome-to-the-app tour.`;
   }
 
-  return { systemPrompt, extract, reviewGoals, coverage, gaps, interviewKickoff, greetingPrompt, COVERAGE, TONE };
+  /* Redo the last answer for someone who did not follow it. */
+  function simplerPrompt() {
+    return `That went over my head. Say the same thing again for someone who has never done this before:
+one plain sentence on what we are doing and why, then numbered steps I can follow exactly, with what I should see after each one. Explain any word a beginner would not know, right where you use it. Nothing left implied.`;
+  }
+
+  /* Walk them through something properly, one step at a time. */
+  function teachPrompt(topic) {
+    return `Teach me ${topic ? `about ${topic}` : 'what we were just discussing'} as if I am starting from nothing.
+
+Do it like this: one sentence on what it is and why it matters to me. Then what I need before I start. Then numbered steps — one action each, what to expect after each one. Then the two mistakes beginners make here. Then the single next thing I should do today.
+
+Stop after that and ask me if any step lost me. Do not assume I know any term you use.`;
+  }
+
+  return { systemPrompt, extract, reviewGoals, coverage, gaps, interviewKickoff, greetingPrompt,
+           simplerPrompt, teachPrompt, COVERAGE, TONE, LEVEL };
 })();

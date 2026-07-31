@@ -1,8 +1,12 @@
-# Asher
+# Ask Asher
 
-A personal chatbot that belongs to whoever opens it. It asks about you, keeps a durable memory
-of what matters, tracks what you are actually working toward, makes images, and runs on open
-models you choose — with an automatic fallback chain when one of them refuses.
+A personal assistant, teacher and guide that belongs to whoever opens it. It asks about you,
+keeps a durable memory of what matters, tracks what you are actually working toward, explains
+things one step at a time, talks and listens out loud, makes images, and runs on open models —
+with an automatic fallback chain when one of them refuses.
+
+**It works the moment you open it.** No key, no signup, no account: the first model in the chain
+is a free open-weight one. Paste a key later if you want it faster.
 
 No backend, no build step, no npm install. Plain HTML, CSS and JavaScript. Open `index.html`
 and it runs. Everything — chats, memory, goals, logs, keys — lives in the browser's local
@@ -38,13 +42,32 @@ typo-heavy or vague message gets rewritten into a clear request before it goes t
 chat still shows exactly what you typed, with a small **tidied before sending** chip that reveals
 what was actually sent. Set it to never or always in settings.
 
+**Teaches, rather than just answering.** The default setting assumes you are new to whatever
+you are asking about: the answer first in one plain sentence, then numbered steps with one action
+each, what you should see after each one, and every technical word explained where it appears.
+Every reply carries an **Explain simpler** button that redoes it from scratch for a beginner, and
+**Teach me something** walks you through any topic from nothing. Set the level to comfortable or
+expert in settings and it drops the scaffolding.
+
+**Talks and listens.** Tap the microphone and speak instead of typing. Tap **Read aloud** under any
+reply to hear it. Turn on **Voice chat** and it goes hands-free: it listens, answers out loud, then
+listens again until you stop it. All of that is the browser's own speech engine — no key, nothing
+uploaded, works offline once the page is cached. If you have a Groq key you can switch listening to
+Whisper instead, which copes better with accents and mixed languages.
+
+**Knows it can be out of date.** Today's date goes into every prompt, and anything that sounds
+time-sensitive — latest, current, price, release, news, this year — gets checked against Wikipedia,
+Hacker News and DuckDuckGo before it answers, with the sources listed under the reply. Those three
+allow direct browser calls and need no key. It is not a full search engine; it is enough to stop
+confident nonsense about things that changed after the model was trained.
+
 **Makes images.** No key needed — Flux, Turbo, Kontext and Nano Banana through Pollinations, in
 five aspect ratios, with an optional seed for reproducibility. Banner mode composites artwork,
 a scrim, a headline and a sub-line onto a canvas and hands you a PNG. There is also a
 *sharpen the prompt* button that rewrites a rough idea into a proper image prompt.
 
 **Falls back.** Pick any model from the pill under the composer. If it errors — bad key, rate
-limit, retired model ID, provider down — Asher walks down the rest of the chain instead of
+limit, retired model ID, provider down — it walks down the rest of the chain instead of
 showing you a failure, and tells you underneath the reply which one actually answered.
 
 ---
@@ -52,20 +75,25 @@ showing you a failure, and tells you underneath the reply which one actually ans
 ## Models
 
 Everything below speaks the OpenAI `/v1/chat/completions` shape, which is why one code path
-covers all of it. One key is enough to start; the rest of the chain is optional.
+covers all of it. The first one needs no key at all; everything after it is optional.
 
 | # | Provider | Base URL | Default model | Key from |
 |---|---|---|---|---|
-| 1 | OpenRouter | `https://openrouter.ai/api/v1` | `moonshotai/kimi-k2` | [openrouter.ai/keys](https://openrouter.ai/keys) |
-| 2 | Moonshot (Kimi) | `https://api.moonshot.ai/v1` | `kimi-k2-0905-preview` | [platform.moonshot.ai](https://platform.moonshot.ai) |
-| 3 | DeepSeek | `https://api.deepseek.com/v1` | `deepseek-chat` | [platform.deepseek.com](https://platform.deepseek.com) |
-| 4 | Groq | `https://api.groq.com/openai/v1` | `openai/gpt-oss-120b` | [console.groq.com/keys](https://console.groq.com/keys) |
-| 5 | NVIDIA NIM | `https://integrate.api.nvidia.com/v1` | `moonshotai/kimi-k2-instruct` | [build.nvidia.com](https://build.nvidia.com) — **needs a proxy** |
-| 6 | Ollama (local) | `http://localhost:11434/v1` | your choice | no key |
-| 7 | Custom | anything you like | anything you like | — |
+| 1 | **Free model** | `https://text.pollinations.ai` | `openai-fast` (GPT-OSS 20B) | **none needed** |
+| 2 | OpenRouter | `https://openrouter.ai/api/v1` | `moonshotai/kimi-k2` | [openrouter.ai/keys](https://openrouter.ai/keys) |
+| 3 | Moonshot (Kimi) | `https://api.moonshot.ai/v1` | `kimi-k2-0905-preview` | [platform.moonshot.ai](https://platform.moonshot.ai) |
+| 4 | DeepSeek | `https://api.deepseek.com/v1` | `deepseek-chat` | [platform.deepseek.com](https://platform.deepseek.com) |
+| 5 | Groq | `https://api.groq.com/openai/v1` | `openai/gpt-oss-120b` | [console.groq.com/keys](https://console.groq.com/keys) |
+| 6 | NVIDIA NIM | `https://integrate.api.nvidia.com/v1` | `moonshotai/kimi-k2-instruct` | [build.nvidia.com](https://build.nvidia.com) — **needs a proxy** |
+| 7 | Ollama (local) | `http://localhost:11434/v1` | your choice | no key |
+| 8 | Custom | anything you like | anything you like | — |
 
-**Cheapest start:** Groq's free tier, or OpenRouter — one key and you have Kimi, DeepSeek, Qwen,
-Llama and the rest behind it.
+The free one is [Pollinations](https://pollinations.ai) serving GPT-OSS 20B to anonymous callers.
+It is rate-limited, slower, and cannot stream — replies land in one piece rather than word by word —
+but it means the app is useful before anyone has signed up for anything.
+
+**Want it faster?** Groq's free tier is the quickest, or OpenRouter — one key and you have Kimi,
+DeepSeek, Qwen, Llama and the rest behind it. A Groq key also unlocks Whisper for voice input.
 
 Model IDs get retired regularly. Every provider card has a **Load** button that asks the provider
 what your key can actually run and repopulates the list, so a stale default fixes itself.
@@ -102,7 +130,7 @@ rail afterwards. Nothing downloads from a store — the browser keeps a copy and
 
 **iPhone / iPad:** Safari never fires the install event, so there is no button. Tap **Share** →
 **Add to Home Screen** → **Add**. It has to be Safari; Chrome on iOS cannot install web apps.
-Asher detects iOS and shows those steps instead of a dead button.
+Ask Asher detects iOS and shows those steps instead of a dead button.
 
 Once installed it opens full screen, works offline (the shell is cached; models obviously still
 need a connection), and keeps the same storage as the tab you set it up in.
@@ -118,7 +146,9 @@ In `localStorage` on the device, and nowhere else:
 
 There is no server in this project. Nothing is uploaded, nothing is analysed, no account exists.
 The only outbound traffic is HTTPS straight from your browser to the model provider you chose,
-and to Pollinations when you generate an image.
+and to Pollinations when you generate an image or use the free model — plus Wikipedia, Hacker News
+and DuckDuckGo when a question needs checking. Speech in and out never leaves the device at all,
+unless you switch listening to Whisper, in which case the audio clip goes to Groq.
 
 Two things to be honest about:
 
@@ -144,6 +174,8 @@ assets/css/app.css
 assets/js/store.js        profiles, chats, memory, goals, logs — all localStorage
 assets/js/providers.js    OpenAI-compatible calls, SSE streaming, fallback chain, prompt polish
 assets/js/memory.js       fact extraction, goal review, system-prompt assembly, coverage meter
+assets/js/lookup.js       keyless web check — Wikipedia, Hacker News, DuckDuckGo
+assets/js/voice.js        speech in and out, plus hands-free voice chat
 assets/js/images.js       image generation with model fallback + canvas banner compositor
 assets/js/onboarding.js   first-run flow and the profile picker
 assets/js/app.js          UI wiring
@@ -161,6 +193,14 @@ python3 -m http.server 8080
 
 A plain `file://` open works too, except the service worker — browsers only register one over
 HTTP(S).
+
+## Voice, honestly
+
+Reading aloud uses `speechSynthesis`, which every current browser has. Listening uses
+`SpeechRecognition`, which Chrome, Edge and Safari have and Firefox does not — on Firefox the
+microphone button explains that and the Whisper option still works if you have a Groq key.
+On iPhone it has to be Safari, and iOS will not speak until you have tapped something first,
+which is why the first tap on **Read aloud** is what unlocks it.
 
 ## Licence
 

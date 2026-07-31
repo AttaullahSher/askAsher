@@ -1,10 +1,12 @@
 /* providers.js — one code path for every model.
    Everything listed speaks the OpenAI /v1/chat/completions shape, so picking a model is
    really just picking a base URL + a key + a model name. If the chosen one falls over,
-   Asher walks down the rest of the chain instead of showing an error. */
+   Ask Asher walks down the rest of the chain instead of showing an error. */
 const Providers = (() => {
 
-  const usable = p => p.enabled && p.base && p.model && (p.key || p.id === 'ollama');
+  const usable = p => p.enabled && p.base && p.model && (p.key || p.keyless || p.id === 'ollama');
+  const endpoint = (p, path) => `${p.base.replace(/\/$/, '')}${path}`;
+  const chatUrl = p => endpoint(p, p.chatPath || '/chat/completions');
 
   /* Every provider that could answer, best first. */
   function ready() {
@@ -44,7 +46,7 @@ const Providers = (() => {
     if (p.key) h['Authorization'] = `Bearer ${p.key}`;
     if (p.id === 'openrouter') {
       h['HTTP-Referer'] = location.origin;
-      h['X-Title'] = 'Asher';
+      h['X-Title'] = 'Ask Asher';
     }
     return h;
   };
@@ -68,18 +70,21 @@ const Providers = (() => {
     return e.message;
   }
 
-  /* Ask one provider. Streams tokens through onToken when given one. */
+  /* Ask one provider. Streams tokens through onToken when given one — unless the provider
+     cannot stream (the free tier can't), in which case the whole reply arrives at once and
+     onToken is called a single time so the UI still updates the same way. */
   async function callOne(p, messages, opts = {}) {
+    const wantsStream = !!opts.onToken && !p.noStream;
     const body = {
       model: p.model,
       messages,
       temperature: opts.temperature ?? Store.prefs().temperature ?? 0.75,
-      stream: !!opts.onToken
+      stream: wantsStream
     };
     if (opts.maxTokens) body.max_tokens = opts.maxTokens;
     if (opts.json) body.response_format = { type: 'json_object' };
 
-    const res = await fetch(`${p.base.replace(/\/$/, '')}/chat/completions`, {
+    const res = await fetch(chatUrl(p), {
       method: 'POST',
       headers: headers(p),
       body: JSON.stringify(body),
@@ -88,9 +93,12 @@ const Providers = (() => {
 
     if (!res.ok) throw new Error(await readError(res));
 
-    if (!opts.onToken) {
+    if (!wantsStream) {
       const data = await res.json();
-      return data.choices?.[0]?.message?.content ?? '';
+      if (data.error) throw new Error(data.error.message || String(data.error));
+      const text = data.choices?.[0]?.message?.content ?? '';
+      if (opts.onToken && text) opts.onToken(text, text);
+      return text;
     }
 
     const reader = res.body.getReader();
@@ -123,7 +131,7 @@ const Providers = (() => {
     const list = chain();
     if (!list.length) {
       const err = new Error('NO_PROVIDER');
-      err.friendly = 'No model is connected yet. Open **Models & keys** and paste one API key — a single key is enough, the rest of the chain is optional.';
+      err.friendly = 'Every model is switched off. Open **Models & keys** and turn the free one back on, or paste a key.';
       throw err;
     }
 
@@ -155,13 +163,48 @@ const Providers = (() => {
   /* Ask the provider what it can actually run, so retired model IDs fix themselves. */
   async function listModels(p) {
     let res;
-    try { res = await fetch(`${p.base.replace(/\/$/, '')}/models`, { headers: headers(p) }); }
+    try { res = await fetch(endpoint(p, '/models'), { headers: headers(p) }); }
     catch (e) { throw new Error(explain(e, p)); }
     if (!res.ok) throw new Error(await readError(res));
     const data = await res.json();
-    const ids = (data.data || data.models || []).map(m => m.id || m.name).filter(Boolean).sort();
+    const rows = Array.isArray(data) ? data : (data.data || data.models || []);
+    const ids = rows.map(m => (typeof m === 'string' ? m : m.id || m.name)).filter(Boolean).sort();
     if (!ids.length) throw new Error('the provider returned no models');
     return ids;
+  }
+
+  /* Speech to text through an OpenAI-compatible /audio/transcriptions endpoint.
+     Groq runs Whisper large v3 turbo and is the one most people here will have a key for. */
+  function sttProvider() {
+    return Store.providers()
+      .filter(p => p.enabled && p.key && (p.id === 'groq' || p.id === 'custom'))
+      .sort((a, b) => a.rank - b.rank)[0] || null;
+  }
+
+  async function transcribe(blob, { signal } = {}) {
+    const p = sttProvider();
+    if (!p) {
+      const e = new Error('NO_STT');
+      e.friendly = 'Whisper needs a Groq key (or a custom endpoint that does transcription). Switch voice input back to the browser in settings, or add one.';
+      throw e;
+    }
+    const form = new FormData();
+    form.append('file', blob, 'speech.webm');
+    form.append('model', p.sttModel || 'whisper-large-v3-turbo');
+    form.append('response_format', 'json');
+
+    let res;
+    try {
+      res = await fetch(endpoint(p, '/audio/transcriptions'), {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${p.key}` },
+        body: form,
+        signal
+      });
+    } catch (e) { throw new Error(explain(e, p)); }
+    if (!res.ok) throw new Error(await readError(res));
+    const data = await res.json();
+    return { text: (data.text || '').trim(), provider: p };
   }
 
   async function test(p) {
@@ -171,7 +214,7 @@ const Providers = (() => {
     } catch (e) { throw new Error(explain(e, p)); }
   }
 
-  return { chat, callOne, listModels, test, ready, chain, options, activeLabel };
+  return { chat, callOne, listModels, test, ready, chain, options, activeLabel, transcribe, sttProvider };
 })();
 
 

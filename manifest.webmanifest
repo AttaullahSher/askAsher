@@ -1,35 +1,78 @@
 {
-  "name": "Asher — your own chatbot",
-  "short_name": "Asher",
-  "description": "A personal chatbot that remembers you, keeps track of what you are working toward, makes images, and runs on open models you choose.",
+  "name": "Ask Asher — your own assistant",
+  "short_name": "Ask Asher",
+  "description": "A personal assistant that remembers you, teaches you step by step, talks and listens, makes images, and runs on open models you choose.",
   "start_url": "./index.html",
   "scope": "./",
-  "id": "asher-personal-chatbot",
+  "id": "ask-asher",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "any",
   "background_color": "#0B1117",
   "theme_color": "#0B1117",
-  "categories": ["productivity", "utilities", "lifestyle"],
+  "categories": [
+    "productivity",
+    "utilities",
+    "lifestyle"
+  ],
   "lang": "en",
   "dir": "ltr",
   "icons": [
-    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "shortcuts": [
     {
       "name": "New chat",
       "short_name": "New chat",
       "url": "./index.html?new=1",
-      "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "assets/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Get to know me",
       "short_name": "Interview",
       "url": "./index.html?action=interview",
-      "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "assets/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Voice chat",
+      "short_name": "Voice",
+      "url": "./index.html?action=voice",
+      "icons": [
+        {
+          "src": "assets/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }
