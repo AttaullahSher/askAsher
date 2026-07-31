@@ -6,11 +6,12 @@ const Images = (() => {
   const ACCENT = '#4DA9F5';
   const INK = '14,20,28';
 
+  /* Pollinations serves exactly one model to anonymous callers now: SANA, NVIDIA's
+     open-weights image model. The old flux/turbo names still answer but return the same
+     picture, and kontext/nanobanana now fail outright — which is where the bad images came
+     from. So: one honest option, and a wording-enhancer that genuinely improves the result. */
   const MODELS = [
-    { id: 'flux',      label: 'Flux',           blurb: 'The all-rounder. Best first choice.' },
-    { id: 'turbo',     label: 'Turbo',          blurb: 'Fastest, a little rougher.' },
-    { id: 'kontext',   label: 'Kontext',        blurb: 'Better at text and layout inside the image.' },
-    { id: 'nanobanana',label: 'Nano Banana',    blurb: 'Stylised, good for posters and covers.' }
+    { id: 'sana', label: 'Standard', blurb: 'Open-weights SANA, no key needed.' }
   ];
 
   const SIZES = [
@@ -24,10 +25,12 @@ const Images = (() => {
   let lastCanvas = null;
   let lastMeta = null;
 
-  function url(prompt, { w = 1280, h = 720, seed, model = 'flux' } = {}) {
+  function url(prompt, { w = 1280, h = 720, seed, model = 'sana', enhance } = {}) {
     const s = seed ?? Math.floor(Math.random() * 1e6);
+    const wants = enhance ?? Store.prefs().imageEnhance ?? true;
     return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}` +
-           `?width=${w}&height=${h}&seed=${s}&nologo=true&model=${encodeURIComponent(model)}`;
+           `?width=${w}&height=${h}&seed=${s}&nologo=true&model=${encodeURIComponent(model)}` +
+           (wants ? '&enhance=true' : '');
   }
 
   function loadImage(src, timeout = 75_000) {
@@ -47,23 +50,26 @@ const Images = (() => {
     });
   }
 
-  /* Try the picked model, then the others, before giving up. */
+  /* One model, but the service does drop requests, so a stall gets a fresh seed and a
+     second go before anyone is told it failed. */
   async function generate(prompt, opts = {}) {
-    const first = opts.model || Store.prefs().imageModel || 'flux';
-    const order = [first, ...MODELS.map(m => m.id).filter(m => m !== first)];
+    const model = opts.model || 'sana';
     const tried = [];
 
-    for (const model of order) {
-      const src = url(prompt, { ...opts, model });
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const seed = attempt === 0 ? opts.seed : Math.floor(Math.random() * 1e6);
+      // last go drops the wording enhancer, in case that is what it choked on
+      const enhance = attempt < 2 ? undefined : false;
+      const src = url(prompt, { ...opts, model, seed, enhance });
       try {
         const img = await loadImage(src);
-        if (model !== first) Store.log('image.fallback', `${first} failed, ${model} drew it instead`);
+        if (attempt) Store.log('image.retry', `drew it on attempt ${attempt + 1}`);
         return { img, src, model };
       } catch (e) {
-        tried.push(`${model}: ${e.message}`);
+        tried.push(`attempt ${attempt + 1}: ${e.message}`);
       }
     }
-    throw new Error(`No image model would draw that.\n\n${tried.join('\n')}\n\nTry rewording it, or check you are online.`);
+    throw new Error(`The picture service would not draw that.\n\nIt is free and gets busy, so this happens. Press Generate again — it usually works on the second go. If it keeps failing, try describing it differently.`);
   }
 
   /* ── canvas helpers ── */

@@ -63,6 +63,7 @@
         <span class="swap">switch</span>
       </button>
       <button class="btn btn-block btn-getkey" id="btnGetKey">Get a free key — 2 min</button>
+      <button class="btn btn-ghost btn-block sm" id="btnHelp">How do I…</button>
       <button class="btn btn-ghost btn-block sm" id="btnSettings">Settings</button>
       <div class="model-status" id="modelStatus">
         <span class="dot" id="statusDot"></span>
@@ -172,6 +173,17 @@
   </div>
 </div>
 
+<!-- ══ HOW DO I… ══ -->
+<div class="modal" id="helpModal" hidden>
+  <div class="modal-card">
+    <header class="modal-head">
+      <h2 id="helpTitle">How do I…</h2>
+      <button class="icon-btn" data-close>✕</button>
+    </header>
+    <div class="modal-body" id="helpBody"></div>
+  </div>
+</div>
+
 <!-- ══ GET A KEY, STEP BY STEP ══ -->
 <div class="modal" id="keysModal" hidden>
   <div class="modal-card">
@@ -263,7 +275,12 @@
             </select>
           </label>
           <label class="field"><span>Temperature</span><input type="number" id="setTemp" min="0" max="2" step="0.1"></label>
-          <label class="field"><span>Image model</span><select id="setImageModel"></select></label>
+          <label class="field"><span>Pictures</span>
+            <select id="setImageEnhance">
+              <option value="on">Improve my wording first</option>
+              <option value="off">Draw exactly what I type</option>
+            </select>
+          </label>
           <label class="field full"><span>House rules — anything it should always do or never do</span>
             <textarea id="setPersona" rows="3" placeholder="e.g. Never give me bullet lists. Assume UAE context. Push back if my plan is thin."></textarea>
           </label>
@@ -335,14 +352,13 @@
 
         <div class="row2">
           <label class="field"><span>Shape</span><select id="imgSize"></select></label>
-          <label class="field"><span>Model</span><select id="imgModel"></select></label>
+          <label class="field"><span>Same picture again</span><input type="number" id="imgSeed" placeholder="leave empty for a new one"></label>
         </div>
-        <div class="row2">
-          <label class="field"><span>Seed</span><input type="number" id="imgSeed" placeholder="random"></label>
-          <label class="field"><span>&nbsp;</span>
-            <button class="btn sm btn-block" id="btnImprovePrompt">Sharpen the prompt</button>
-          </label>
-        </div>
+        <label class="check-row">
+          <input type="checkbox" id="imgEnhance" checked>
+          <span>Improve my wording before drawing <i>— usually a much better picture</i></span>
+        </label>
+        <button class="btn sm btn-block" id="btnImprovePrompt">Rewrite my description with AI</button>
 
         <div class="banner-only hide" id="bannerFields">
           <label class="field full"><span>Headline</span><input type="text" id="banHead" placeholder="Your headline"></label>
@@ -427,6 +443,7 @@
 <script src="assets/js/memory.js"></script>
 <script src="assets/js/lookup.js"></script>
 <script src="assets/js/keys.js"></script>
+<script src="assets/js/help.js"></script>
 <script src="assets/js/voice.js"></script>
 <script src="assets/js/images.js"></script>
 <script src="assets/js/onboarding.js"></script>

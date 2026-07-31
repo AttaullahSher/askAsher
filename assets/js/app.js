@@ -323,7 +323,7 @@ function renderStatus() {
     dot.className = 'dot on';
     $('#pillDot').className = 'dot sm on';
     text.textContent = shared ? 'Ready — on the shared key' : 'Ready — on your own key';
-    $('#activeModelLabel').textContent = label.model;
+    $('#activeModelLabel').textContent = modelName(label.model).split(' — ')[0];
     $('#btnModel').title = `${label.name} · ${label.model}${label.pinned ? ' (your pick)' : ' (first in line)'}`;
   }
   // the amber button only matters while they are still on the shared key
@@ -556,6 +556,31 @@ function quickAction(act) {
   if (act === 'image' || act === 'banner') return openStudio(act);
 }
 
+/* Plain-English names for the models people will actually meet. Everything here is
+   open-weights — anyone can download and run these. */
+const MODEL_NAMES = {
+  'llama-3.3-70b-versatile': 'Llama 3.3 70B — quick and good at most things',
+  'openai/gpt-oss-120b': 'GPT-OSS 120B — the strongest here',
+  'openai/gpt-oss-20b': 'GPT-OSS 20B — lighter and faster',
+  'openai/gpt-oss-20b:free': 'GPT-OSS 20B — free, lighter and faster',
+  'qwen/qwen3.6-27b': 'Qwen 3.6 27B — strong at other languages',
+  'llama-3.1-8b-instant': 'Llama 3.1 8B — fastest, simplest answers',
+  'openai-fast': 'GPT-OSS 20B — the no-key one',
+  'moonshotai/kimi-k2': 'Kimi K2 — long memory, natural writing',
+  'kimi-k2-0905-preview': 'Kimi K2 — long memory, natural writing',
+  'kimi-k2-turbo-preview': 'Kimi K2 Turbo — same, quicker',
+  'deepseek/deepseek-chat': 'DeepSeek V3 — careful and cheap',
+  'deepseek-chat': 'DeepSeek V3 — careful and cheap',
+  'deepseek/deepseek-r1': 'DeepSeek R1 — thinks before it answers',
+  'deepseek-reasoner': 'DeepSeek R1 — thinks before it answers',
+  'qwen/qwen3-235b-a22b': 'Qwen 3 235B — big, strong at languages',
+  'meta-llama/llama-3.3-70b-instruct': 'Llama 3.3 70B — quick and good at most things',
+  'mistralai/mistral-small-3.2-24b-instruct': 'Mistral Small 3.2 — tidy and efficient',
+  'google/gemma-4-31b-it:free': 'Gemma 4 31B — free, good at explaining',
+  'nvidia/nemotron-3-super-120b-a12b:free': 'Nemotron 3 Super — free, very capable'
+};
+const modelName = id => MODEL_NAMES[id] || id;
+
 /* ── model picker ── */
 function openModelSheet() {
   const wrap = $('#modelOptions');
@@ -581,7 +606,9 @@ function openModelSheet() {
       lastProvider = o.providerName;
     }
     const on = choice && choice.providerId === o.providerId && choice.model === o.model;
-    const b = el('button', 'model-opt' + (on ? ' on' : ''), `<strong>${esc(o.model)}</strong>`);
+    const pretty = modelName(o.model);
+    const b = el('button', 'model-opt' + (on ? ' on' : ''),
+      pretty === o.model ? `<strong>${esc(o.model)}</strong>` : `<strong>${esc(pretty)}</strong><span>${esc(o.model)}</span>`);
     b.onclick = () => {
       Store.prefs().modelChoice = { providerId: o.providerId, model: o.model };
       Store.save();
@@ -639,7 +666,6 @@ function renderProviders() {
 
     const keyField = el('label', 'field full');
     const keyLabel = el('span', null, 'API key');
-    if (p.signup) keyLabel.innerHTML = `API key <a href="${esc(p.signup)}" target="_blank" rel="noopener">get one</a>`;
     keyField.append(keyLabel);
     const keyIn = el('input');
     keyIn.type = 'password';
@@ -648,6 +674,17 @@ function renderProviders() {
     keyIn.oninput = () => { p.key = keyIn.value.trim(); Store.saveApp(); renderStatus(); };
     keyField.append(keyIn);
     bodyEl.append(keyField);
+
+    if (p.signup) {
+      // outside the label on purpose: a link inside one gets eaten by the label's own click
+      const help = el('div', 'field full p-help');
+      const walk = el('button', 'btn sm', 'Walk me through getting a key');
+      walk.onclick = e => { e.preventDefault(); $('#settingsModal').hidden = true; Keys.open({ onDone: () => { renderStatus(); openSettings('models'); } }); };
+      const site = el('button', 'btn sm', 'Open their site ↗');
+      site.onclick = e => { e.preventDefault(); Keys.openLink(p.signup); };
+      help.append(walk, site);
+      bodyEl.append(help);
+    }
 
     const baseField = el('label', 'field');
     baseField.append(el('span', null, 'Base URL'));
@@ -770,7 +807,7 @@ function fillPrefs() {
   $('#setGoalEvery').value = String(p.goalReviewEvery ?? 6);
   $('#setTemp').value = p.temperature ?? 0.75;
   $('#setPersona').value = p.persona || '';
-  $('#setImageModel').value = p.imageModel || 'flux';
+  $('#setImageEnhance').value = p.imageEnhance === false ? 'off' : 'on';
   fillVoicePrefs();
 }
 
@@ -788,7 +825,7 @@ function readPrefs() {
   p.goalReviewEvery = Number($('#setGoalEvery').value);
   p.temperature = Number($('#setTemp').value);
   p.persona = $('#setPersona').value.trim();
-  p.imageModel = $('#setImageModel').value;
+  p.imageEnhance = $('#setImageEnhance').value === 'on';
   p.speak = $('#setSpeak').value === 'on';
   const voiceChoice = $('#setVoiceName').value;
   if (voiceChoice === '__all') {
@@ -922,7 +959,7 @@ function openStudio(mode) {
   $('#studioTitle').textContent = mode === 'banner' ? 'Banner studio' : 'Image studio';
   $('#bannerFields').classList.toggle('hide', mode !== 'banner');
   if (mode === 'banner' && !$('#imgSize').value.startsWith('1500')) $('#imgSize').value = '1500x500';
-  $('#imgModel').value = Store.prefs().imageModel || 'flux';
+  $('#imgEnhance').checked = Store.prefs().imageEnhance !== false;
   $('#studioModal').hidden = false;
 }
 
@@ -933,7 +970,7 @@ async function runGenerate() {
   const [w, h] = $('#imgSize').value.split('x').map(Number);
   const seedRaw = $('#imgSeed').value.trim();
   const seed = seedRaw ? Number(seedRaw) : undefined;
-  const model = $('#imgModel').value;
+  const enhance = $('#imgEnhance').checked;
 
   const btn = $('#btnGenerate');
   btn.disabled = true; btn.textContent = 'Drawing…';
@@ -944,13 +981,14 @@ async function runGenerate() {
   try {
     const canvas = studioMode === 'banner'
       ? await Images.banner({
-          prompt, w, h, seed, model,
+          prompt, w, h, seed,
+          enhance,
           headline: $('#banHead').value.trim(),
           sub: $('#banSub').value.trim(),
           pos: $('#banPos').value,
           scrim: Number($('#banScrim').value)
         })
-      : await Images.toCanvas(prompt, { w, h, seed, model });
+      : await Images.toCanvas(prompt, { w, h, seed, enhance });
 
     const target = $('#bannerCanvas');
     target.width = canvas.width; target.height = canvas.height;
@@ -1131,10 +1169,12 @@ function wire() {
   });
 
   ['setCallMe', 'setBotName', 'setTone', 'setLevel', 'setLookup', 'setLength', 'setLanguage',
-   'setPolish', 'setExtractEvery', 'setGoalEvery', 'setTemp', 'setPersona', 'setImageModel',
+   'setPolish', 'setExtractEvery', 'setGoalEvery', 'setTemp', 'setPersona', 'setImageEnhance',
    'setSpeak', 'setVoiceName', 'setVoiceRate', 'setVoicePitch', 'setSttMode']
     .forEach(id => $('#' + id).addEventListener('input', () => { readPrefs(); renderProfileChip(); }));
 
+  $('#btnHelp').onclick = () => Help.open();
+  $('#imgEnhance').addEventListener('change', () => { Store.prefs().imageEnhance = $('#imgEnhance').checked; Store.save(); });
   $('#btnGetKey').onclick = () => Keys.open({ onDone: () => { renderStatus(); renderProviders(); } });
   document.addEventListener('ask:open-settings', e => openSettings(e.detail || 'models'));
   document.addEventListener('ask:retry', () => {
@@ -1212,11 +1252,10 @@ function wire() {
       const { outcome } = await ev.userChoice;
       Onboarding.clearInstallEvent();
       if (outcome === 'accepted') $('#btnInstall').hidden = true;
-    } else if (Onboarding.isIOS) {
-      $('#iosInstall').hidden = false;
-    } else {
-      toast('Use your browser menu → Install app.');
+      return;
     }
+    // No browser prompt on offer — show the steps for whatever they are actually holding.
+    Help.open('install');
   };
 }
 
@@ -1264,10 +1303,7 @@ function pwa() {
 /* ── boot ── */
 function fillSelects() {
   $('#imgSize').innerHTML = Images.SIZES.map(s => `<option value="${s.id}">${s.label}</option>`).join('');
-  $('#imgSize').value = '1280x720';
-  const models = Images.MODELS.map(m => `<option value="${m.id}">${m.label} — ${m.blurb}</option>`).join('');
-  $('#imgModel').innerHTML = models;
-  $('#setImageModel').innerHTML = models;
+  $('#imgSize').value = '1024x1024';
 }
 
 function startFor({ profile, answers, fresh }) {

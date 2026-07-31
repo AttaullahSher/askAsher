@@ -80,17 +80,10 @@ const Onboarding = (() => {
   /* ── 2. install ── */
   function stepInstall() {
     const n = el('div');
-    n.append(head(1, 4, 'Put it on your home screen', 'It runs full screen, opens offline, and keeps its own icon. Takes ten seconds and it is the difference between a bookmark and an app.'));
+    const guide = Help.installSteps();
+    n.append(head(1, 4, guide.title, 'On your home screen it opens full screen, keeps its own icon, and still opens when the signal drops.'));
 
-    if (isIOS) {
-      const steps = el('ol', 'gate-steps');
-      steps.innerHTML = `
-        <li>Tap <strong>Share</strong> in the Safari bar — the square with an arrow out of it.</li>
-        <li>Scroll down, tap <strong>Add to Home Screen</strong>.</li>
-        <li>Tap <strong>Add</strong>. Come back here and carry on.</li>`;
-      n.append(steps);
-      n.append(el('p', 'gate-note', 'iPhone and iPad have no install button — Safari only offers it from that menu. Chrome on iOS cannot do it at all, so use Safari.'));
-    } else if (canPromptInstall()) {
+    if (canPromptInstall()) {
       const b = el('button', 'btn btn-primary btn-block', 'Install ASK');
       b.onclick = async () => {
         installEvent.prompt();
@@ -100,10 +93,15 @@ const Onboarding = (() => {
         b.disabled = true;
       };
       n.append(b);
-      n.append(el('p', 'gate-note', 'Nothing downloads from a store. The browser just keeps a copy and gives it an icon.'));
-    } else {
-      n.append(el('p', 'gate-note', 'Your browser has not offered the install prompt yet. Open the browser menu and look for <strong>Install app</strong> or <strong>Add to Home screen</strong> — or skip this, it works fine as a tab and you can install later from the sidebar.'));
+      n.append(el('p', 'gate-note', 'Nothing downloads from a store. The browser keeps a copy and gives it an icon.'));
+      const or = el('p', 'gate-note', 'If that button does nothing, do it by hand instead:');
+      n.append(or);
     }
+
+    const steps = el('ol', 'gate-steps');
+    guide.steps.forEach(s => steps.append(el('li', null, s)));
+    n.append(steps);
+    if (guide.note) n.append(el('p', 'gate-note', guide.note));
 
     const row = el('div', 'gate-actions');
     const next = el('button', 'btn btn-primary btn-block', 'Done — next');
