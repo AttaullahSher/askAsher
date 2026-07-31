@@ -8,9 +8,50 @@ const Keys = (() => {
   const el = (t, c, h) => { const n = document.createElement(t); if (c) n.className = c; if (h != null) n.innerHTML = h; return n; };
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-  /* The three worth walking someone through. The rest live in advanced settings. */
-  const WALKTHROUGH = ['groq', 'openrouter', 'deepseek'];
+  /* Everything you can walk someone through, best first. "custom" is last and covers
+     anything else that speaks the OpenAI format. */
+  const WALKTHROUGH = ['groq', 'openrouter', 'deepseek', 'moonshot', 'ollama', 'custom'];
   const provider = id => Store.providers().find(p => p.id === id);
+
+  /* Opening a link out of an installed app is fussier than it looks. window.open with
+     noopener returns null even when it worked, and the attempt spends the tap's user
+     activation — so a "did that work?" fallback afterwards is already too late and gets
+     blocked. A freshly built anchor, clicked once, is the one thing that reliably opens a
+     tab in a browser, an installed PWA and most in-app webviews. Failing everything, the
+     address stays on screen to copy by hand. */
+  function openLink(url) {
+    try {
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.style.display = 'none';
+      document.body.append(a);
+      a.click();
+      a.remove();
+      return true;
+    } catch {
+      try { window.open(url, '_blank'); return true; } catch { return false; }
+    }
+  }
+
+  function linkRow(url) {
+    const wrap = el('div', 'link-row');
+    const go = el('button', 'btn btn-primary btn-block', `Open ${new URL(url).hostname.replace('www.', '')} ↗`);
+    go.onclick = () => openLink(url);
+    wrap.append(go);
+
+    const manual = el('div', 'link-manual');
+    manual.innerHTML = `<span>Nothing opened? Type this into your browser:</span><code>${esc(url)}</code>`;
+    const copy = el('button', 'btn-link', 'copy the address');
+    copy.onclick = async () => {
+      try { await navigator.clipboard.writeText(url); copy.textContent = 'copied ✓'; }
+      catch { copy.textContent = 'select it above and copy'; }
+    };
+    manual.append(copy);
+    wrap.append(manual);
+    return wrap;
+  }
 
   let afterSave = null;
 
@@ -33,16 +74,19 @@ const Keys = (() => {
       ? 'ASK is running on a shared key that everybody who opens it uses. That is fine for trying it out, but it gets slow and it runs out. Your own key is free, takes about two minutes, and no card is asked for.'
       : 'You already have your own key in. Add another and ASK will use it as a backup if the first one is busy.'));
 
+    const TIME = { groq: 'about 2 minutes', openrouter: 'about 2 minutes', deepseek: 'about 3 minutes',
+                   moonshot: 'about 3 minutes', ollama: 'computer only', custom: 'you bring the details' };
+
     for (const id of WALKTHROUGH) {
       const p = provider(id);
       if (!p) continue;
-      const mine = p.key && p.key !== Store.starterKey();
+      const mine = p.enabled && p.key && p.key !== Store.starterKey();
 
       const card = el('button', 'keys-card' + (mine ? ' done' : ''));
       card.innerHTML = `
         <span class="keys-card-top">
           <b>${esc(p.friendly || p.name)}</b>
-          ${mine ? '<i class="keys-tick">key added ✓</i>' : '<i class="keys-time">about 2 minutes</i>'}
+          ${mine ? '<i class="keys-tick">set up ✓</i>' : `<i class="keys-time">${esc(TIME[id] || '')}</i>`}
         </span>
         <span class="keys-card-blurb">${esc(p.blurb || '')}</span>`;
       card.onclick = () => walk(id);
@@ -75,19 +119,37 @@ const Keys = (() => {
     });
     body.append(steps);
 
-    const go = el('a', 'btn btn-primary btn-block', `Open ${new URL(p.signup).hostname.replace('www.', '')} ↗`);
-    go.href = p.signup;
-    go.target = '_blank';
-    go.rel = 'noopener';
-    body.append(go);
+    if (p.signup) body.append(linkRow(p.signup));
+
+    /* "Something else" needs an address and a model name as well as a key. */
+    let baseIn = null, modelIn = null;
+    if (p.id === 'custom') {
+      const bf = el('label', 'field full keys-field');
+      bf.append(el('span', null, 'Address it answers on'));
+      baseIn = el('input');
+      baseIn.placeholder = 'https://…/v1';
+      baseIn.value = p.base || '';
+      baseIn.spellcheck = false;
+      bf.append(baseIn);
+      body.append(bf);
+
+      const mf = el('label', 'field full');
+      mf.append(el('span', null, 'Model name'));
+      modelIn = el('input');
+      modelIn.placeholder = 'e.g. llama-3.3-70b';
+      modelIn.value = p.model || '';
+      modelIn.spellcheck = false;
+      mf.append(modelIn);
+      body.append(mf);
+    }
 
     const field = el('label', 'field full keys-field');
-    field.append(el('span', null, 'Paste your key here'));
+    field.append(el('span', null, p.id === 'ollama' ? 'Key (leave empty for Ollama)' : 'Paste your key here'));
     const input = el('input');
     input.type = 'text';
     input.autocomplete = 'off';
     input.spellcheck = false;
-    input.placeholder = p.id === 'groq' ? 'gsk_…' : (p.id === 'openrouter' ? 'sk-or-…' : 'sk-…');
+    input.placeholder = p.id === 'groq' ? 'gsk_…' : (p.id === 'openrouter' ? 'sk-or-…' : (p.id === 'ollama' ? 'not needed' : 'sk-…'));
     field.append(input);
     body.append(field);
 
@@ -98,16 +160,21 @@ const Keys = (() => {
     const save = el('button', 'btn btn-primary btn-block', 'Save and check it');
     save.onclick = async () => {
       const key = input.value.trim();
-      if (!key) { input.focus(); return; }
+      const needsKey = p.id !== 'ollama';
+      if (needsKey && !key) { input.focus(); return; }
+      if (baseIn && !baseIn.value.trim()) { baseIn.focus(); return; }
+      if (modelIn && !modelIn.value.trim()) { modelIn.focus(); return; }
 
       save.disabled = true;
       save.textContent = 'Checking…';
       status.hidden = false;
       status.className = 'keys-status';
-      status.textContent = 'Asking the provider whether the key works…';
+      status.textContent = 'Trying it out…';
 
-      const previous = p.key;
-      p.key = key;
+      const previous = { key: p.key, base: p.base, model: p.model };
+      p.key = key || (p.id === 'ollama' ? 'ollama' : '');
+      if (baseIn) p.base = baseIn.value.trim();
+      if (modelIn) p.model = modelIn.value.trim();
       p.enabled = true;
       try {
         await Providers.test(p);
@@ -120,11 +187,13 @@ const Keys = (() => {
         Store.dismissNudges();
 
         status.className = 'keys-status ok';
-        status.innerHTML = `Working. ASK is on your own ${esc(p.name)} key now — faster, and nobody else is sharing it.`;
+        status.innerHTML = p.id === 'ollama'
+          ? `Working. ASK is talking to Ollama on this computer — nothing leaves the machine now.`
+          : `Working. ASK is on your own ${esc(p.friendly ? p.name : p.name)} key now — faster, and nobody else is sharing it.`;
         save.textContent = 'Done ✓';
         setTimeout(() => { close(); afterSave?.(); }, 1400);
       } catch (e) {
-        p.key = previous;
+        Object.assign(p, previous);
         Store.saveApp();
         status.className = 'keys-status bad';
         status.innerHTML = friendlyKeyError(e.message, p);
@@ -206,5 +275,5 @@ const Keys = (() => {
     return wrap;
   }
 
-  return { open, close, chatFailure, nudgeCard, friendlyKeyError };
+  return { open, close, chatFailure, nudgeCard, friendlyKeyError, openLink };
 })();

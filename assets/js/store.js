@@ -57,7 +57,10 @@ const Store = (() => {
         'deepseek/deepseek-r1',
         'qwen/qwen3-235b-a22b',
         'meta-llama/llama-3.3-70b-instruct',
-        'mistralai/mistral-small-3.2-24b-instruct'
+        'mistralai/mistral-small-3.2-24b-instruct',
+        'openai/gpt-oss-20b:free',
+        'google/gemma-4-31b-it:free',
+        'nvidia/nemotron-3-super-120b-a12b:free'
       ],
       signup: 'https://openrouter.ai/keys',
       blurb: 'One key, most open models. Kimi, DeepSeek, Qwen, Llama.',
@@ -90,7 +93,15 @@ const Store = (() => {
       base: 'https://api.moonshot.ai/v1', key: '', model: 'kimi-k2-0905-preview',
       models: ['kimi-k2-0905-preview', 'kimi-k2-turbo-preview', 'moonshot-v1-128k', 'moonshot-v1-32k'],
       signup: 'https://platform.moonshot.ai',
-      blurb: 'Kimi straight from the source. Long memory, good at chat.'
+      blurb: 'Kimi straight from the source. Long memory, good at chat.',
+      friendly: 'Moonshot — the long-memory one',
+      steps: [
+        'Open the page below. Moonshot opens in a new tab.',
+        'Sign up with an email or a phone number.',
+        'Find <b>API Keys</b> in the console and press <b>Create</b>.',
+        'Copy the key it gives you — it starts with <b>sk-</b>.',
+        'Come back here and paste it in the box.'
+      ]
     },
     {
       id: 'nvidia', name: 'NVIDIA NIM', enabled: false, rank: 6,
@@ -111,14 +122,30 @@ const Store = (() => {
       base: 'http://localhost:11434/v1', key: 'ollama', model: 'qwen3',
       models: ['qwen3', 'llama3.2', 'gemma3', 'deepseek-r1'],
       signup: 'https://ollama.com',
-      blurb: 'Fully local, no key, nothing leaves the machine.',
+      blurb: 'Runs on your own computer. Nothing leaves the machine, no key at all.',
+      friendly: 'Ollama — on your own computer',
+      steps: [
+        'This one is for a laptop or desktop, not a phone.',
+        'Install Ollama from the page below.',
+        'Open a terminal and run <b>ollama pull qwen3</b> to fetch a model.',
+        'Start it so the browser is allowed in: <b>OLLAMA_ORIGINS=* ollama serve</b>.',
+        'Come back and press Save — no key is needed, just leave the box empty.'
+      ],
       note: 'Start it with OLLAMA_ORIGINS=* ollama serve or the browser will be refused.'
     },
     {
       id: 'custom', name: 'Custom endpoint', enabled: false, rank: 8,
       base: '', key: '', model: '', models: [],
       signup: '',
-      blurb: 'Anything that speaks OpenAI /v1/chat/completions — your own gateway, a relay, a self-host.'
+      blurb: 'Any other service that speaks the OpenAI format.',
+      friendly: 'Something else',
+      steps: [
+        'You need three things from whoever runs the service.',
+        'The <b>address</b> it answers on — it usually ends in <b>/v1</b>.',
+        'The <b>model name</b> you are allowed to use.',
+        'Your <b>key</b>, if it needs one.',
+        'Put all three in below and ASK will test them before saving.'
+      ]
     }
   ];
 
@@ -143,7 +170,8 @@ const Store = (() => {
     temperature: 0.75,
     polish: 'smart',         // off | smart | always
     lookup: 'smart',         // off | smart | always — check the web for anything time-sensitive
-    imageModel: 'flux',
+    imageModel: 'sana',
+    imageEnhance: true,     // let the service improve the wording before it draws
     modelChoice: null,       // {providerId, model} — null means "auto, walk the chain"
     // voice
     speak: false,            // read replies out loud automatically

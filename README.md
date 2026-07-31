@@ -62,8 +62,8 @@ Hacker News and DuckDuckGo before it answers, with the sources listed under the 
 allow direct browser calls and need no key. It is not a full search engine; it is enough to stop
 confident nonsense about things that changed after the model was trained.
 
-**Makes images.** No key needed — Flux, Turbo, Kontext and Nano Banana through Pollinations, in
-five aspect ratios, with an optional seed for reproducibility. Banner mode composites artwork,
+**Makes images.** No key needed — the open-weights SANA model through Pollinations, in five
+aspect ratios, with an optional seed for repeating a picture. Banner mode composites artwork,
 a scrim, a headline and a sub-line onto a canvas and hands you a PNG. There is also a
 *sharpen the prompt* button that rewrites a rough idea into a proper image prompt.
 
@@ -119,8 +119,14 @@ Ollama needs starting with `OLLAMA_ORIGINS=* ollama serve` or the browser gets r
 
 ### Images
 
-Images come from [Pollinations](https://pollinations.ai) over a plain GET, so they work before you
-have added any key at all. If the chosen model refuses or stalls, the next one gets a go.
+Images come from [Pollinations](https://pollinations.ai) over a plain GET, so they work before
+you have added any key at all.
+
+Anonymous callers get exactly one model there: **SANA**, NVIDIA's open-weights image model. The
+old `flux` and `turbo` names still answer but hand back the same picture, and `kontext` and
+`nanobanana` now fail outright — they moved behind an account. So ASK offers one honest option
+instead of a menu of four, plus a wording enhancer that measurably improves the result, and it
+retries with a fresh seed when the free service drops a request.
 
 ---
 
@@ -176,6 +182,8 @@ assets/js/store.js        profiles, chats, memory, goals, logs — all localStor
 assets/js/providers.js    OpenAI-compatible calls, SSE streaming, fallback chain, prompt polish
 assets/js/memory.js       fact extraction, goal review, system-prompt assembly, coverage meter
 assets/js/lookup.js       keyless web check — Wikipedia, Hacker News, DuckDuckGo
+assets/js/keys.js         the step-by-step walkthrough to a free key
+assets/js/help.js         how-do-I sheet, with device-specific install steps
 assets/js/voice.js        speech in and out, plus hands-free voice chat
 assets/js/images.js       image generation with model fallback + canvas banner compositor
 assets/js/onboarding.js   first-run flow and the profile picker
@@ -216,6 +224,34 @@ node tools/make-icons.js
 It finds the mark inside the artwork, keys out the paper so no crop edge shows, and writes all six
 sizes. It also prints the strongest colour it found, which is what `--accent` in
 `assets/css/app.css` is tuned to — change that one variable and the whole interface follows.
+
+## Adding a model
+
+**Get a free key — 2 min** in the sidebar opens a walkthrough covering Groq, OpenRouter, DeepSeek,
+Moonshot, Ollama on your own computer, and *Something else* for any other OpenAI-compatible
+service. Each one is five numbered steps — tap the link, sign in, press Create Key, copy, paste —
+and ASK tests the key before it saves it. A key that works goes to the front of the chain.
+
+Links open through a freshly-built anchor rather than `window.open`. `window.open` with
+`noopener` returns null even when it worked *and* spends the tap's user activation, so the
+"did that work?" fallback after it is already too late to fire — which is why the buttons used to
+do nothing. The address is also printed on screen with a copy button, for the in-app browsers that
+refuse to open anything at all.
+
+Everything on offer is open-weights: Llama 3.3, GPT-OSS, Qwen 3, DeepSeek V3 and R1, Kimi K2,
+Gemma 4, Nemotron, Mistral Small. The picker says what each one is good at rather than showing
+its ID.
+
+## How do I…
+
+A help sheet in the sidebar answers the six things people actually get stuck on, in steps: putting
+ASK on the home screen, getting a free key, talking to it, making a picture, letting someone else
+use the phone, and deleting what it remembers.
+
+The install steps are worked out from the device — Android gets the Chrome menu route, iPhone gets
+the Safari share-sheet route, a desktop gets the address-bar icon. And if ASK was opened inside
+Facebook, Instagram or WhatsApp it says so first, because those in-app browsers cannot install
+anything at all.
 
 ## The shared starter key
 

@@ -741,3 +741,41 @@ button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit
 .fail-detail[hidden]{display:none;}
 .fail-detail div{margin-bottom:4px;}
 .field-hint{font-size:12.5px; color:var(--muted-2); line-height:1.5; display:block;}
+
+/* ═══ how do I… ═══ */
+.help-row{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  width:100%; text-align:left; cursor:pointer; font-size:15.5px;
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--r);
+  padding:15px 16px; margin-bottom:8px; transition:.14s;
+}
+.help-row:hover{border-color:var(--accent); box-shadow:var(--shadow);}
+.help-row i{font-style:normal; color:var(--muted-2); font-size:20px; line-height:1;}
+#helpBody .keys-steps{margin-top:16px;}
+#helpBody .btn-block{margin-top:10px;}
+#helpBody .btn-link{display:block; margin:0 auto 4px;}
+
+/* a link that still works when the browser swallows window.open */
+.link-row{margin-bottom:4px;}
+.link-manual{
+  margin-top:8px; padding:10px 12px; background:var(--panel-2);
+  border-radius:var(--r-sm); font-size:12.5px; color:var(--muted);
+}
+.link-manual span{display:block; margin-bottom:4px;}
+.link-manual code{
+  display:block; font-family:var(--mono); font-size:12px; color:var(--text);
+  word-break:break-all; -webkit-user-select:all; user-select:all; margin-bottom:6px;
+}
+.link-manual .btn-link{padding:0;}
+
+/* a plain checkbox row that does not look like a form */
+.check-row{
+  display:flex; gap:10px; align-items:flex-start; cursor:pointer;
+  background:var(--panel-2); border-radius:var(--r); padding:12px 13px; font-size:14px;
+}
+.check-row input{width:20px; height:20px; margin:1px 0 0; accent-color:var(--accent); flex:0 0 20px;}
+.check-row i{font-style:normal; color:var(--muted-2);}
+
+.model-opt span{display:block; font-size:12px; color:var(--muted-2); margin-top:2px;}
+.p-help{display:flex; gap:8px; flex-wrap:wrap;}
+.p-help .btn{flex:1; min-width:150px;}

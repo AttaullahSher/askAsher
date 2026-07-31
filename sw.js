@@ -1,5 +1,5 @@
 /* sw.js — makes ASK open offline. Never touches model or image traffic. */
-const VERSION = 'ask-v5';
+const VERSION = 'ask-v6';
 const SHELL = [
   './',
   './index.html',
@@ -10,6 +10,7 @@ const SHELL = [
   './assets/js/memory.js',
   './assets/js/lookup.js',
   './assets/js/keys.js',
+  './assets/js/help.js',
   './assets/js/voice.js',
   './assets/js/images.js',
   './assets/js/onboarding.js',
