@@ -1,7 +1,8 @@
 'use client';
 
+import { Appreciation } from './Appreciation';
 import { Block, Overlay } from './Overlay';
-import { bio, bioClose, facts, roles } from '@/content/profile';
+import { bio, bioClose, contact, facts, roles } from '@/content/profile';
 import { site } from '@/content/site';
 
 /** The personal file. The one thing on this site that is not about software. */
@@ -78,6 +79,34 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
             ))}
           </ul>
         </Block>
+
+        <Block label="Reach me">
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {contact.map((c) => (
+              <li key={c.label}>
+                <a
+                  href={c.href}
+                  target={c.href.startsWith('http') ? '_blank' : undefined}
+                  rel="noreferrer"
+                  className="group flex h-full flex-col items-start px-4 py-3 text-left transition-colors duration-300"
+                  style={{ border: '1px solid var(--hud-line)' }}
+                >
+                  <span
+                    className="font-display text-xs font-bold uppercase transition-colors duration-300 group-hover:text-[var(--color-signal)]"
+                    style={{ letterSpacing: '0.24em' }}
+                  >
+                    {c.label}
+                  </span>
+                  <span className="hud-sm mt-1" style={{ letterSpacing: '0.14em' }}>
+                    {c.note}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </Block>
+
+        <Appreciation />
       </div>
     </Overlay>
   );

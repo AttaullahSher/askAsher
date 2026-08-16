@@ -28,18 +28,24 @@ export const audio: { track: string | null } = {
 };
 
 /**
- * Outbound links. Leave a value as an empty string and its chip simply will not
- * render — no dead links, no placeholder URLs pointing nowhere.
+ * Outbound links shown on the page itself. Empty by design: contact lives
+ * inside the personal file (`profile.ts`), so you get it after you have read
+ * something rather than before.
  */
-export const links: { label: string; href: string; note: string }[] = [
-  { label: 'ASK', href: 'ask/', note: 'live assistant — built here' },
-  { label: 'GitHub', href: 'https://github.com/attaullahsher', note: 'source, experiments' },
-  { label: 'Instagram', href: 'https://instagram.com/attaullah.sher', note: 'probably where you came from' },
-  { label: 'Email', href: 'mailto:attaullah.sher@me.com', note: 'for anything real' },
-].filter((l) => l.href.length > 0);
+export const links: { label: string; href: string; note: string }[] = [];
 
 /** The three lines of the opening. Kept short on purpose. */
 export const intro = ['HELLO.', "I'M ASHER.", 'I BUILD THINGS.'] as const;
+
+/**
+ * The standing hero, under the name. Longer than the opening line on purpose —
+ * this is the sentence somebody actually reads before deciding to scroll.
+ */
+export const heroLines = {
+  lead: 'I build the software that runs quietly underneath',
+  sub: 'Shops, documents, data, and a few things that exist only because I was curious at the wrong hour.',
+  cue: 'Scroll down to see what I do',
+} as const;
 
 export type SectorId = 'code' | 'automation' | 'ai' | 'security' | 'player';
 

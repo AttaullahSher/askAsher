@@ -100,45 +100,54 @@ export function AiSector({ sector }: { sector: Sector }) {
         </div>
       </div>
 
-      {/* modules — deployed by the core, not selected by the visitor */}
-      <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {aiModules.map((m, i) => {
-          const isSel = highlighted?.id === m.id;
-          return (
-            <li
-              key={m.id}
-              className="bracket h-full px-4 py-4 transition-all duration-500"
-              style={{
-                border: `1px solid ${isSel ? 'var(--accent)' : 'var(--hud-line)'}`,
-                background: isSel
-                  ? 'color-mix(in oklab, var(--accent) 8%, transparent)'
-                  : 'color-mix(in oklab, var(--color-smoke) 45%, transparent)',
-                opacity: live ? 1 : 0.22,
-                transform: live ? 'none' : 'translateY(10px)',
-                transitionDelay: live ? `${i * 70}ms` : '0ms',
-                ['--bracket-color' as string]: isSel
-                  ? 'var(--accent)'
-                  : 'var(--color-steel-700)',
-              }}
-            >
+      {/*
+        One readout that follows the ring, rather than six cards stacked into a
+        wall of text. The ring already says there are six of them.
+      */}
+      <div
+        className="bracket mt-8 flex min-h-[8.5rem] flex-col justify-center px-5 py-5"
+        style={{
+          border: `1px solid ${live ? 'var(--accent)' : 'var(--hud-line)'}`,
+          background: 'color-mix(in oklab, var(--color-smoke) 50%, transparent)',
+          ['--bracket-color' as string]: 'var(--accent)',
+          opacity: live ? 1 : 0.4,
+          transition: 'opacity 700ms ease, border-color 700ms ease',
+        }}
+        aria-live="off"
+      >
+        {highlighted ? (
+          <>
+            <div className="flex items-center gap-2.5">
               <span
-                className="font-display block text-xs font-bold uppercase transition-colors duration-500"
-                style={{
-                  letterSpacing: '0.2em',
-                  color: isSel ? 'var(--accent)' : 'var(--color-bone)',
-                }}
-              >
-                {m.label}
-              </span>
+                aria-hidden
+                className="block h-1.5 w-1.5 rounded-full"
+                style={{ background: 'var(--accent)' }}
+              />
               <span
-                className="mt-2 block text-xs leading-relaxed"
-                style={{ color: 'var(--color-muted)' }}
+                className="font-display text-sm font-bold uppercase"
+                style={{ letterSpacing: '0.2em', color: 'var(--accent)' }}
               >
-                {m.body}
+                {highlighted.label}
               </span>
-            </li>
-          );
-        })}
+              <span className="hud-sm ml-auto tabular-nums">
+                {String(aiModules.indexOf(highlighted) + 1).padStart(2, '0')}
+                <span style={{ opacity: 0.4 }}> / {String(aiModules.length).padStart(2, '0')}</span>
+              </span>
+            </div>
+            <p className="prose-body mt-3">{highlighted.body}</p>
+          </>
+        ) : (
+          <p className="hud-sm">Modules offline</p>
+        )}
+      </div>
+
+      {/* Everything, for anyone who would rather read than watch. */}
+      <ul className="sr-only">
+        {aiModules.map((m) => (
+          <li key={m.id}>
+            {m.label}: {m.body}
+          </li>
+        ))}
       </ul>
 
       <p className="hud-sm mt-8 leading-relaxed" style={{ color: 'var(--color-steel-500)' }}>

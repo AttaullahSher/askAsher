@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useExperience } from '@/lib/experience';
-import { intro, site } from '@/content/site';
+import { heroLines, intro, site } from '@/content/site';
 
 /**
  * Opening cinematic and resting hero.
@@ -140,10 +140,17 @@ export function Hero() {
         </h1>
 
         <p
-          className="font-display mt-5 text-[clamp(0.95rem,3.4vw,1.5rem)] font-semibold uppercase"
-          style={{ letterSpacing: '0.42em', textIndent: '0.42em', color: 'var(--color-muted)' }}
+          className="font-display mt-5 max-w-2xl text-[clamp(0.95rem,3.6vw,1.6rem)] font-semibold uppercase leading-snug"
+          style={{ letterSpacing: '0.1em', color: 'var(--color-bone)' }}
         >
-          I build things
+          {heroLines.lead}
+        </p>
+
+        <p
+          className="prose-body mt-4 max-w-md text-balance"
+          style={{ color: 'var(--color-muted)' }}
+        >
+          {heroLines.sub}
         </p>
       </div>
 
@@ -160,8 +167,11 @@ function ScrollCue({ visible }: { visible: boolean }) {
       style={{ opacity: visible ? 1 : 0, paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <div className="flex flex-col items-center gap-2.5">
-        <span className="hud-sm" style={{ color: 'var(--color-bone)' }}>
-          Scroll
+        <span
+          className="hud-sm whitespace-nowrap"
+          style={{ color: 'var(--color-bone)' }}
+        >
+          {heroLines.cue}
         </span>
         <span
           className="relative block h-9 w-px overflow-hidden"
