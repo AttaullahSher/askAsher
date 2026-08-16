@@ -100,6 +100,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             [data-noscript-hide]{display:none!important}
             .reveal,.reveal-wipe{opacity:1!important;transform:none!important;clip-path:none!important}
             [data-hero-rest]{opacity:1!important;transform:none!important}
+            [data-main]{opacity:1!important}
           `}</style>
         </noscript>
       </head>

@@ -21,13 +21,22 @@ const Terminal = lazy(() => import('./Terminal').then((m) => ({ default: m.Termi
 const byId = Object.fromEntries(sectors.map((s) => [s.id, s]));
 
 export function Experience() {
-  const { terminalOpen } = useExperience();
+  const { terminalOpen, entered } = useExperience();
 
   return (
     <>
       <Atmosphere />
 
-      <main className="relative z-10">
+      {/*
+        Held back until the gate is dismissed. The gate is deliberately
+        translucent so the drop zone stays visible behind it — which also means
+        anything else on the page would show through it.
+      */}
+      <main
+        data-main
+        className="relative z-10 transition-opacity duration-700"
+        style={{ opacity: entered ? 1 : 0 }}
+      >
         <Hero />
         <Manifest />
         {byId.code && <CodeSector sector={byId.code} />}

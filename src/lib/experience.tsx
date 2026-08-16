@@ -72,6 +72,19 @@ export function ExperienceProvider({ children }: { children: ReactNode }) {
     document.body.dataset.locked = String(!entered);
   }, [entered]);
 
+  /**
+   * Start at the top, always.
+   *
+   * Browsers — and Instagram's in-app browser especially — restore the previous
+   * scroll position on a reload or a back gesture. Locking the body does not
+   * undo that: the page stays parked wherever it was, so the gate ends up
+   * sitting over the middle of the site instead of over the opening.
+   */
+  useEffect(() => {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
+  }, []);
+
   // Warm the audio probe while the gate is still up, so ENTER is instant.
   useEffect(() => {
     void getAmbient().prepare();
