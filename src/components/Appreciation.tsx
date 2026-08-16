@@ -4,34 +4,63 @@ import { useState } from 'react';
 import { usePersistentState } from '@/lib/hooks';
 import { appreciation, contact } from '@/content/profile';
 
+type Stage = 'idle' | 'form' | 'sending' | 'done' | 'failed';
+
 /**
- * The heart at the bottom of the personal file.
+ * The heart at the bottom of the personal file, and the note under it.
  *
- * Honest about what it is: this page is a static export with no server behind
- * it, so the tally lives in the visitor's own browser and the seed is a
- * starting number rather than a measurement. A note is not silently swallowed
- * either — it is handed to the visitor's mail app so it actually arrives.
- * Swap both for a real endpoint and this component barely changes.
+ * The note posts straight to FormSubmit and resolves in place — no page
+ * navigation, no mail app. `mailto:` was the first attempt and it is simply
+ * unreliable: Instagram's in-app browser, which is where most of this site's
+ * traffic comes from, frequently swallows it and nothing happens at all.
+ *
+ * The tally is honest about its own limits: a static export has no server, so
+ * the count lives in this visitor's browser and the seed is a starting number
+ * rather than a measurement.
  */
 export function Appreciation() {
-  const [tapped, setTapped] = usePersistentState<boolean>('asher.appreciated', false);
-  const [open, setOpen] = useState(false);
+  const [appreciated, setAppreciated] = usePersistentState<boolean>(
+    'asher.appreciated',
+    false,
+  );
+  const [stage, setStage] = useState<Stage>('idle');
   const [name, setName] = useState('');
   const [line, setLine] = useState('');
+  /** Honeypot. A human never sees it; a bot fills it and gets dropped. */
+  const [trap, setTrap] = useState('');
 
-  const count = appreciation.seed + (tapped ? 1 : 0);
-  const mailto = contact.find((c) => c.href.startsWith('mailto:'))?.href ?? '';
+  const count = appreciation.seed + (appreciated ? 1 : 0);
+  const instagram = contact.find((c) => c.href.includes('instagram'))?.href;
 
-  const send = () => {
-    if (!mailto || !line.trim()) return;
+  const send = async () => {
+    if (!line.trim() || stage === 'sending') return;
+    if (trap) {
+      // Silently accept and discard — a bot gets no signal either way.
+      setStage('done');
+      return;
+    }
+
+    setStage('sending');
     const who = name.trim() || 'someone';
-    const url =
-      mailto +
-      '?subject=' +
-      encodeURIComponent(`A line from ${who}`) +
-      '&body=' +
-      encodeURIComponent(`${line.trim()}\n\n— ${who}`);
-    window.location.href = url;
+
+    try {
+      const res = await fetch(appreciation.endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          name: who,
+          message: line.trim(),
+          _subject: `ASHER — a line from ${who}`,
+          _template: 'table',
+          _captcha: 'false',
+        }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      setAppreciated(true);
+      setStage('done');
+    } catch {
+      setStage('failed');
+    }
   };
 
   return (
@@ -44,13 +73,13 @@ export function Appreciation() {
     >
       <button
         type="button"
-        onClick={() => setTapped(true)}
-        disabled={tapped}
-        aria-label={tapped ? 'Already appreciated' : 'Appreciate this'}
-        aria-pressed={tapped}
+        onClick={() => setAppreciated(true)}
+        disabled={appreciated}
+        aria-label={appreciated ? 'Already appreciated' : 'Appreciate this'}
+        aria-pressed={appreciated}
         className="group relative mx-auto grid h-14 w-14 place-items-center transition-transform duration-300 hover:scale-110 disabled:cursor-default disabled:hover:scale-100"
       >
-        {!tapped && (
+        {!appreciated && (
           <span
             aria-hidden
             className="absolute inset-0 rounded-full"
@@ -63,7 +92,7 @@ export function Appreciation() {
         <svg width="30" height="27" viewBox="0 0 30 27" aria-hidden>
           <path
             d="M15 25.5 3.6 14.3a6.6 6.6 0 1 1 9.3-9.4L15 7l2.1-2.1a6.6 6.6 0 1 1 9.3 9.4L15 25.5Z"
-            fill={tapped ? 'var(--color-signal)' : 'none'}
+            fill={appreciated ? 'var(--color-signal)' : 'none'}
             stroke="var(--color-signal)"
             strokeWidth="1.6"
             style={{ transition: 'fill 400ms var(--ease-out-expo)' }}
@@ -71,67 +100,123 @@ export function Appreciation() {
         </svg>
       </button>
 
-      <p className="hud-sm mt-4">
+      <p className="hud-sm mt-4" aria-live="polite">
         <span
           className="tabular-nums"
           style={{ color: 'var(--color-signal)', fontSize: '1.05rem', letterSpacing: '0.12em' }}
         >
           {count}
         </span>
-        <span className="ml-2">{tapped ? 'including you' : 'people appreciated this'}</span>
+        <span className="ml-2">
+          {appreciated ? 'including you' : 'people appreciated this'}
+        </span>
       </p>
 
-      {!open ? (
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="hud-sm mt-5 px-4 py-2.5 transition-colors hover:text-[var(--color-signal)]"
-          style={{ border: '1px solid var(--hud-line)' }}
-        >
-          {appreciation.prompt} →
-        </button>
-      ) : (
-        <div className="mt-5 space-y-2.5 text-left">
-          <Field
-            label="Name"
-            value={name}
-            onChange={setName}
-            placeholder="Optional"
-            autoFocus
-          />
-          <Field
-            label="One line"
-            value={line}
-            onChange={setLine}
-            placeholder="Say something short."
-          />
-          <div className="flex items-center gap-2 pt-1">
-            <button
-              type="button"
-              onClick={send}
-              disabled={!line.trim()}
-              className="hud-sm px-4 py-2.5 transition-all disabled:opacity-35"
-              style={{
-                border: '1px solid color-mix(in oklab, var(--color-signal) 50%, transparent)',
-                color: 'var(--color-signal)',
-                background: 'color-mix(in oklab, var(--color-signal) 8%, transparent)',
-              }}
+      {/* Everything below resolves in this one slot. */}
+      <div className="mt-5">
+        {stage === 'idle' && (
+          <button
+            type="button"
+            onClick={() => setStage('form')}
+            className="hud-sm px-4 py-2.5 transition-colors hover:text-[var(--color-signal)]"
+            style={{ border: '1px solid var(--hud-line)' }}
+          >
+            {appreciation.prompt} →
+          </button>
+        )}
+
+        {(stage === 'form' || stage === 'sending') && (
+          <form
+            className="space-y-2.5 text-left"
+            onSubmit={(e) => {
+              e.preventDefault();
+              void send();
+            }}
+          >
+            <Field label="Name" value={name} onChange={setName} placeholder="Optional" autoFocus />
+            <Field
+              label="One line"
+              value={line}
+              onChange={setLine}
+              placeholder="Say something short."
+            />
+
+            {/* honeypot */}
+            <input
+              type="text"
+              name="_honey"
+              value={trap}
+              onChange={(e) => setTrap(e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden
+              className="sr-only"
+            />
+
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                type="submit"
+                disabled={!line.trim() || stage === 'sending'}
+                className="hud-sm px-4 py-2.5 transition-all disabled:opacity-35"
+                style={{
+                  border: '1px solid color-mix(in oklab, var(--color-signal) 50%, transparent)',
+                  color: 'var(--color-signal)',
+                  background: 'color-mix(in oklab, var(--color-signal) 8%, transparent)',
+                }}
+              >
+                {stage === 'sending' ? 'Sending…' : 'Send →'}
+              </button>
+              {stage === 'form' && (
+                <button
+                  type="button"
+                  onClick={() => setStage('idle')}
+                  className="hud-sm px-3 py-2.5 transition-colors hover:text-[var(--color-bone)]"
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
+          </form>
+        )}
+
+        {stage === 'done' && (
+          <div style={{ animation: 'fade-in 500ms var(--ease-out-expo) both' }}>
+            <p
+              className="font-display text-lg font-extrabold uppercase"
+              style={{ letterSpacing: '0.08em', color: 'var(--color-signal)' }}
             >
-              Send →
-            </button>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="hud-sm px-3 py-2.5 transition-colors hover:text-[var(--color-bone)]"
-            >
-              Cancel
-            </button>
+              {appreciation.thanksTitle}
+            </p>
+            <p className="prose-body mt-2">{appreciation.thanksBody}</p>
           </div>
-          <p className="hud-sm pt-1" style={{ color: 'var(--color-steel-500)' }}>
-            {appreciation.hint}
-          </p>
-        </div>
-      )}
+        )}
+
+        {stage === 'failed' && (
+          <div style={{ animation: 'fade-in 400ms var(--ease-out-expo) both' }}>
+            <p className="prose-body">{appreciation.failBody}</p>
+            <div className="mt-3 flex items-center justify-center gap-2">
+              {instagram && (
+                <a
+                  href={instagram}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hud-sm px-4 py-2.5 transition-colors hover:text-[var(--color-signal)]"
+                  style={{ border: '1px solid var(--hud-line)' }}
+                >
+                  Instagram →
+                </a>
+              )}
+              <button
+                type="button"
+                onClick={() => setStage('form')}
+                className="hud-sm px-3 py-2.5 transition-colors hover:text-[var(--color-bone)]"
+              >
+                Try again
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </section>
   );
 }

@@ -75,13 +75,21 @@ export const contact: { label: string; href: string; note: string }[] = [
 ];
 
 /**
- * Appreciation counter.
+ * Appreciation counter and the note form under it.
  *
- * `seed` is a starting number, not a measurement — see the note in
- * `Appreciation.tsx`. Taps are counted on the visitor's own device.
+ * `seed` is a starting number, not a measurement — the tally lives in the
+ * visitor's own browser, since this is a static export with no server.
+ *
+ * `endpoint` posts the note to FormSubmit, which relays it to the address in
+ * the URL. It must be activated once: submit a note yourself, then click the
+ * confirmation link FormSubmit emails you. Until that is done, nothing is
+ * delivered. Swap this for any endpoint that accepts a JSON POST.
  */
 export const appreciation = {
   seed: 257,
+  endpoint: 'https://formsubmit.co/ajax/attaullah.sher@me.com',
   prompt: 'Leave a line',
-  hint: 'Opens your mail app — nothing is stored on this page.',
+  thanksTitle: 'Received.',
+  thanksBody: 'It will be read. Probably tonight.',
+  failBody: 'That did not go through. Instagram is the reliable way.',
 };

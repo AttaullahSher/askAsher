@@ -40,8 +40,10 @@ export function Overlay({
         return;
       }
       if (e.key !== 'Tab') return;
+      // Inputs belong in here too — the personal file has a form in it, and
+      // leaving them out lets Tab walk straight out of a modal dialog.
       const focusables = panelRef.current?.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled])',
+        'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled])',
       );
       if (!focusables || focusables.length === 0) return;
       const first = focusables[0];
