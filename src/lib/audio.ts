@@ -107,13 +107,14 @@ export class Ambient {
     master.connect(ctx.destination);
     this.master = master;
 
-    // --- sub: two near-unison sines, beating slowly against each other
-    for (const f of [55, 55.24]) {
+    // --- sub: three near-unison sines an octave lower than before, beating
+    // slowly against each other. This is the floor the whole thing sits on.
+    for (const f of [36.7, 36.95, 55]) {
       const o = ctx.createOscillator();
       const g = ctx.createGain();
       o.type = 'sine';
       o.frequency.value = f;
-      g.gain.value = 0.5;
+      g.gain.value = f < 40 ? 0.62 : 0.34;
       o.connect(g).connect(master);
       o.start();
       this.nodes.push(o);
@@ -131,10 +132,12 @@ export class Ambient {
     padGain.gain.value = 0.055;
     padGain.connect(lp);
 
+    // Minor second stacked under the fifth — the interval that will not settle.
     for (const [freq, detune] of [
       [110, -7],
       [164.81, 5],
-      [261.63, -3],
+      [233.08, -4],
+      [246.94, 6],
     ] as const) {
       const o = ctx.createOscillator();
       o.type = 'sawtooth';
@@ -161,10 +164,10 @@ export class Ambient {
     noise.loop = true;
     const bp = ctx.createBiquadFilter();
     bp.type = 'bandpass';
-    bp.frequency.value = 760;
-    bp.Q.value = 0.7;
+    bp.frequency.value = 620;
+    bp.Q.value = 0.6;
     const windGain = ctx.createGain();
-    windGain.gain.value = 0.02;
+    windGain.gain.value = 0.026;
     noise.connect(bp).connect(windGain).connect(master);
     noise.start();
     this.nodes.push(noise);
@@ -176,26 +179,62 @@ export class Ambient {
       bp.frequency.setTargetAtTime(520 + Math.random() * 620, this.ctx.currentTime, 3);
     }, 4200);
 
-    // --- pulse: a soft low thump every few seconds. The heartbeat.
+    // --- metal: a sparse, far-off struck tone. The one thing in the mix with
+    // a transient, so the ear keeps waiting for the next one.
+    const strike = () => {
+      if (!this.ctx || !this.master) return;
+      const t = this.ctx.currentTime;
+      const bp2 = this.ctx.createBiquadFilter();
+      bp2.type = 'bandpass';
+      bp2.frequency.value = 1400 + Math.random() * 1400;
+      bp2.Q.value = 12;
+      const g = this.ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.05, t + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 2.6);
+      const src = this.ctx.createBufferSource();
+      src.buffer = makeNoise(this.ctx, 0.4);
+      src.connect(bp2).connect(g).connect(this.master);
+      src.start(t);
+      src.stop(t + 2.7);
+    };
+
+    // --- pulse: a two-beat heartbeat rather than a single thump, and it
+    // tightens as it goes. Tension without a melody to get bored of.
+    let beat = 0;
     const schedulePulse = () => {
       if (!this.ctx || !this.master) return;
       const t = this.ctx.currentTime;
 
-      const o = this.ctx.createOscillator();
-      const g = this.ctx.createGain();
-      o.type = 'sine';
-      o.frequency.setValueAtTime(58, t);
-      o.frequency.exponentialRampToValueAtTime(34, t + 0.7);
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(0.28, t + 0.05);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
-      o.connect(g).connect(this.master);
-      o.start(t);
-      o.stop(t + 1.7);
+      const thump = (at: number, level: number) => {
+        if (!this.ctx || !this.master) return;
+        const o = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        o.type = 'sine';
+        o.frequency.setValueAtTime(64, at);
+        o.frequency.exponentialRampToValueAtTime(30, at + 0.55);
+        g.gain.setValueAtTime(0.0001, at);
+        g.gain.exponentialRampToValueAtTime(level, at + 0.04);
+        g.gain.exponentialRampToValueAtTime(0.0001, at + 1.3);
+        o.connect(g).connect(this.master);
+        o.start(at);
+        o.stop(at + 1.4);
+      };
+
+      thump(t, 0.3);
+      thump(t + 0.34, 0.18);
+
+      beat += 1;
+      if (beat % 3 === 0) strike();
+      if (this.lowpass) {
+        // Breathe the pad open on every fourth beat.
+        const open = beat % 4 === 0;
+        this.lowpass.frequency.setTargetAtTime(open ? 520 : 300, t, 1.6);
+      }
     };
 
     schedulePulse();
-    this.pulseTimer = window.setInterval(schedulePulse, 5600);
+    this.pulseTimer = window.setInterval(schedulePulse, 4600);
   }
 
   /* ---------------------------------------------------------------- control */

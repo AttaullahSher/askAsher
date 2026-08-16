@@ -7,7 +7,7 @@ export const site = {
   name: 'ASHER',
   tagline: 'Code. Create. Automate. Play.',
   description:
-    'A quiet room, a few screens, and whatever refused to stay solved. This is the part I let people see.',
+    'A dark room, several screens, and whatever refused to stay solved. This is the part I let people see.',
   /** Used for canonical URLs and Open Graph. Change this if you move the site. */
   url: 'https://attaullahsher.github.io/askAsher/',
   locale: 'en',
@@ -42,8 +42,8 @@ export const intro = ['HELLO.', "I'M ASHER.", 'I BUILD THINGS.'] as const;
  * this is the sentence somebody actually reads before deciding to scroll.
  */
 export const heroLines = {
-  lead: 'I build the software that runs quietly underneath',
-  sub: 'Shops, documents, data, and a few things that exist only because I was curious at the wrong hour.',
+  lead: 'I build the things you never notice working',
+  sub: 'Shops, documents, data, and a few that exist only because somebody said it could not be done at three in the morning.',
   cue: 'Scroll down to see what I do',
 } as const;
 
@@ -63,7 +63,7 @@ export const sectors: Sector[] = [
     id: 'code',
     index: '01',
     title: 'CODE',
-    subtitle: 'The raw material. Scanning.',
+    subtitle: 'The raw material. Nothing here was learned from a course.',
     accent: 'var(--accent-code)',
   },
   {
@@ -91,7 +91,7 @@ export const sectors: Sector[] = [
     id: 'player',
     index: '05',
     title: 'PLAYER',
-    subtitle: 'Where the reflexes came from.',
+    subtitle: 'Where the reflexes were trained. They never left.',
     accent: 'var(--accent-player)',
   },
 ];

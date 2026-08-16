@@ -37,15 +37,15 @@ export const roles: Role[] = [
 
 /** Read in order. Each line earns its place or it goes. */
 export const bio: string[] = [
-  'Four things run at once, most days. A company to steer, a music business I own part of, hours given to the people who keep a city quiet, and a course I am still not finished with. None of them politely wait their turn.',
+  'Four things run at once, most days. A company to steer, a music business I own part of, hours given to the people who keep a city quiet, and a course I am in no particular hurry to finish. None of them wait their turn, and I stopped asking them to.',
   'Most of the work is unglamorous. Someone is losing an hour a day to something a machine should be doing, and I make it cost nothing. Done properly, nobody notices — which is exactly the point. The systems that get talked about are usually the ones that broke.',
-  'None of it would survive on its own. There is a version of me that never leaves the screen, and he is unbearable company. So there are long dinners, worse jokes, and people in my life who have never once asked what a database is and never will. That is the part that keeps the rest running.',
+  'None of it would survive on its own. There is a version of me that never leaves the screen, and he is unbearable company. So there are long dinners, worse jokes, and people in my life who have never once asked what a database is and never will. I am reliably the last one still awake, and rarely the only one. That is the part that keeps the rest running.',
   'The remainder is curiosity with a keyboard. I take things apart to find where they give. I have never once regretted knowing how something works, and I have occasionally regretted finding out at four in the morning.',
   'The same reflex does not politely stop at software. Rooms, habits, the half-second before somebody answers — I notice, and I have long since stopped mentioning it. Most of what I know about people, they never told me and will never hear repeated. Discretion is not a courtesy I extend. It is the only way I have ever been able to live with knowing things.',
 ];
 
 /** The closing note. Deliberately the shortest thing on the page. */
-export const bioClose = 'Better in person than in text. Better at 2am than at 9.';
+export const bioClose = 'Better in person than in text. Better at 2am than at 9. You will work out which one you got.';
 
 /** Small factual chips under the roles. */
 export const facts: { k: string; v: string }[] = [

@@ -63,12 +63,14 @@ export function Terminal() {
         desc: 'who is asher',
         run: () => [
           { kind: 'accent', text: 'asher' },
-          { kind: 'out', text: 'builder · creative developer · automation + ai · gamer' },
-          { kind: 'dim', text: 'writes software so that people stop doing the same thing twice.' },
+          { kind: 'out', text: 'builder · operator · automation + ai · plays to win' },
+          { kind: 'dim', text: 'writes software so people stop doing the same thing twice.' },
+          { kind: 'dim', text: 'notices the rest. mentions almost none of it.' },
+          { kind: 'dim', text: 'you found the shell, so you are already ahead of most.' },
         ],
       },
       sectors: {
-        desc: 'list the six sectors',
+        desc: 'list the sectors',
         run: () =>
           sectors.map((s) => ({
             kind: 'out' as const,
@@ -141,13 +143,16 @@ export function Terminal() {
       sudo: {
         desc: '?',
         run: () => [
-          { kind: 'dim', text: 'asher is not in the sudoers file.' },
-          { kind: 'dim', text: 'this incident has been laughed at.' },
+          { kind: 'dim', text: 'you are not in the sudoers file.' },
+          { kind: 'dim', text: 'i am. this incident has been logged and quietly enjoyed.' },
         ],
       },
       contact: {
         desc: 'where to find me',
-        run: () => [{ kind: 'out', text: `${site.url}` }, { kind: 'dim', text: 'links are at the bottom of the page.' }],
+        run: () => [
+          { kind: 'out', text: `${site.url}` },
+          { kind: 'dim', text: 'open "who i am" at the end of the page. it is in there.' },
+        ],
       },
       asher: {
         desc: '',
@@ -156,8 +161,9 @@ export function Terminal() {
           return [
             ...BANNER.map((text) => ({ kind: 'accent' as const, text })),
             { kind: 'dim', text: '' },
-            { kind: 'out', text: 'you went looking. that is the whole point.' },
-            { kind: 'dim', text: 'everything on this page was written by hand, on purpose.' },
+            { kind: 'out', text: 'you went looking. most people do not.' },
+            { kind: 'dim', text: 'every line on this page was written by hand, on purpose.' },
+            { kind: 'dim', text: 'so was the part you have not found.' },
           ];
         },
       },

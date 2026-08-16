@@ -95,4 +95,4 @@ export const securityScope =
  * awareness is a reflex, and the discipline is what he does about it.
  */
 export const securityClose =
-  'The habit was never breaking things. It is noticing — immediately, without trying, without being asked — exactly where a thing would give. That part does not switch off when you close the laptop. What you do with it afterwards is the only thing that has ever mattered.';
+  'The habit was never breaking things. It is noticing — immediately, without trying, without being asked — exactly where a thing would give. That does not switch off when the laptop does, and it has never once stopped at software. What I do with it afterwards is the only part anyone should care about, and the answer has always been nothing.';

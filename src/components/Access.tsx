@@ -1,6 +1,7 @@
 'use client';
 
 import { lazy, Suspense, useState } from 'react';
+import { CurveMark, CurveRule } from './Curve';
 import { useInView } from '@/lib/hooks';
 import { useExperience } from '@/lib/experience';
 import { asset } from '@/lib/paths';
@@ -28,6 +29,11 @@ export function Access() {
       id="outro"
       className="relative flex min-h-[100svh] flex-col items-center justify-center px-5 py-20 text-center sm:px-8 sm:py-24"
     >
+      <CurveMark
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[38rem] w-40 -translate-x-1/2 -translate-y-1/2"
+        opacity={0.07}
+      />
+
       <p className="hud-sm reveal mb-8" data-in={inView}>
         End of transmission
       </p>
@@ -38,8 +44,13 @@ export function Access() {
         building
       </h2>
 
+      <CurveRule
+        className="reveal mt-5 w-full max-w-sm"
+        style={{ ['--d' as string]: '140ms' }}
+      />
+
       <p
-        className="prose-body reveal mt-6 max-w-md text-balance"
+        className="prose-body reveal mt-4 max-w-md text-balance"
         data-in={inView}
         style={{ ['--d' as string]: '180ms' }}
       >

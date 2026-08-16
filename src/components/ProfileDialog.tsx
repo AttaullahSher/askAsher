@@ -1,6 +1,7 @@
 'use client';
 
 import { Appreciation } from './Appreciation';
+import { CurveMark, CurveRule } from './Curve';
 import { Block, Overlay } from './Overlay';
 import { bio, bioClose, contact, facts, roles } from '@/content/profile';
 import { site } from '@/content/site';
@@ -14,7 +15,13 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
       title={site.name}
       onClose={onClose}
     >
-      <div className="space-y-8">
+      <div className="relative space-y-8">
+        {/* the motif, sitting behind the file rather than on it */}
+        <CurveMark
+          className="pointer-events-none absolute -right-6 top-10 h-[26rem] w-32"
+          opacity={0.1}
+        />
+
         <Block label="Standing">
           <ul className="grid gap-px" style={{ background: 'var(--hud-line)' }}>
             {roles.map((r) => (
@@ -48,8 +55,10 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
           </div>
         </Block>
 
+        <CurveRule className="w-full" />
+
         <div
-          className="bracket px-5 py-5"
+          className="bracket relative px-5 py-5"
           style={{
             border: '1px solid color-mix(in oklab, var(--color-signal) 34%, transparent)',
             background: 'color-mix(in oklab, var(--color-signal) 6%, transparent)',

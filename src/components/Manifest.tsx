@@ -6,9 +6,9 @@ import { site } from '@/content/site';
 const WORDS = ['CODE.', 'CREATE.', 'AUTOMATE.', 'PLAY.'];
 
 const AXIOMS = [
-  { k: '01', v: 'Build. Do not narrate.' },
-  { k: '02', v: 'If it repeats, it gets automated.' },
-  { k: '03', v: 'Every system has a seam.' },
+  { k: '01', v: 'I read the room before the docs.' },
+  { k: '02', v: 'If it repeats, it stops needing me.' },
+  { k: '03', v: 'Everything has a seam. I find it early.' },
 ];
 
 /**
@@ -67,8 +67,8 @@ export function Manifest() {
           data-in={inView}
           style={{ ['--d' as string]: '650ms', color: 'var(--color-muted)' }}
         >
-          Most of it runs somewhere quiet and nobody thinks about it. That is the
-          part I am proud of.
+          Most of it is running somewhere right now and nobody is thinking about
+          it. That is the part I am proud of.
         </p>
 
         <ul className="mt-14 grid gap-px sm:grid-cols-3" style={{ background: 'var(--hud-line)' }}>
