@@ -49,7 +49,7 @@ export function Outro() {
 
       {links.length > 0 && (
         <ul
-          className="reveal mt-12 flex w-full max-w-md flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-center sm:justify-center"
+          className="reveal mt-12 grid w-full max-w-md gap-2 sm:max-w-2xl sm:grid-cols-2"
           data-in={inView}
           style={{ ['--d' as string]: '380ms' }}
         >
@@ -59,7 +59,7 @@ export function Outro() {
                 href={asset(l.href)}
                 target={l.href.startsWith('http') ? '_blank' : undefined}
                 rel="noreferrer"
-                className="group flex h-full flex-col items-start px-5 py-3.5 text-left transition-colors duration-300 sm:min-w-[13rem]"
+                className="group flex h-full flex-col items-start px-5 py-3.5 text-left transition-colors duration-300"
                 style={{ border: '1px solid var(--hud-line)' }}
               >
                 <span

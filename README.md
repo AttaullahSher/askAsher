@@ -58,6 +58,10 @@ file host with no server behind it.
 One-time setup: **Settings → Pages → Build and deployment → Source → GitHub
 Actions**.
 
+`.github/workflows/ci.yml` runs lint, typecheck and a base-path build on every
+pull request and every non-`main` branch, so a regression fails there rather
+than in production.
+
 The workflow sets `NEXT_PUBLIC_BASE_PATH` to `/<repo-name>` because project
 pages are served from a subdirectory. Everything in the app resolves asset and
 link URLs through `src/lib/paths.ts`, so there is nothing else to change.

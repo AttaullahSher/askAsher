@@ -32,10 +32,10 @@ export const audio: { track: string | null } = {
  * render — no dead links, no placeholder URLs pointing nowhere.
  */
 export const links: { label: string; href: string; note: string }[] = [
-  { label: 'GitHub', href: 'https://github.com/attaullahsher', note: 'source, experiments' },
   { label: 'ASK', href: 'ask/', note: 'live assistant — built here' },
-  // { label: 'Instagram', href: 'https://instagram.com/YOUR_HANDLE', note: '' },
-  // { label: 'Email',     href: 'mailto:you@example.com',            note: '' },
+  { label: 'GitHub', href: 'https://github.com/attaullahsher', note: 'source, experiments' },
+  { label: 'Instagram', href: 'https://instagram.com/attaullah.sher', note: 'probably where you came from' },
+  { label: 'Email', href: 'mailto:attaullah.sher@me.com', note: 'for anything real' },
 ].filter((l) => l.href.length > 0);
 
 /** The three lines of the opening. Kept short on purpose. */
