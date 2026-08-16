@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import type { Build } from '@/content/builds';
 import { asset } from '@/lib/paths';
 
@@ -48,7 +49,10 @@ export function BuildDialog({ build, onClose }: { build: Build; onClose: () => v
     };
   }, [onClose]);
 
-  return (
+  // Portalled to <body>: <main> establishes its own stacking context, so a
+  // dialog rendered inside it could never sit above the fixed HUD. This only
+  // ever renders after a click, so `document` is always there.
+  return createPortal(
     <div
       className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center"
       role="presentation"
@@ -73,7 +77,7 @@ export function BuildDialog({ build, onClose }: { build: Build; onClose: () => v
         aria-modal="true"
         aria-labelledby={`build-${build.id}-title`}
         tabIndex={-1}
-        className="scanlines relative max-h-[88svh] w-full overflow-y-auto sm:max-w-2xl"
+        className="relative max-h-[88svh] w-full overflow-y-auto sm:max-w-2xl"
         style={{
           border: '1px solid var(--hud-line)',
           background: 'linear-gradient(180deg, #0c1119 0%, #070a10 100%)',
@@ -164,7 +168,8 @@ export function BuildDialog({ build, onClose }: { build: Build; onClose: () => v
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

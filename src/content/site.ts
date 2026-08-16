@@ -14,6 +14,20 @@ export const site = {
 } as const;
 
 /**
+ * Ambient sound.
+ *
+ * `track: null` — the browser synthesises an original cinematic drone with the
+ * Web Audio API. Nothing to ship, nothing to licence. This is the default.
+ *
+ * `track: 'audio/ambient.mp3'` — drop a file at `public/audio/ambient.mp3`, set
+ * this to its path, and it is used instead. Use something you own or something
+ * licensed for the purpose. If it fails to load, the drone takes over.
+ */
+export const audio: { track: string | null } = {
+  track: null,
+};
+
+/**
  * Outbound links. Leave a value as an empty string and its chip simply will not
  * render — no dead links, no placeholder URLs pointing nowhere.
  */

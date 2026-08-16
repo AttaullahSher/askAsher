@@ -168,7 +168,7 @@ function Core({
           r="88"
           fill="none"
           stroke="var(--hud-line)"
-          strokeWidth="0.6"
+          strokeWidth="1"
           vectorEffect="non-scaling-stroke"
         />
         {/* rotating dashed ring */}
@@ -176,10 +176,10 @@ function Core({
           r="72"
           fill="none"
           stroke={live ? 'var(--accent)' : 'var(--color-steel-700)'}
-          strokeWidth="1"
+          strokeWidth="1.5"
           strokeDasharray="14 9"
           vectorEffect="non-scaling-stroke"
-          opacity={live ? 0.85 : 0.4}
+          opacity={live ? 1 : 0.45}
           style={{
             transformOrigin: 'center',
             animation: live ? 'spin 26s linear infinite' : undefined,
@@ -190,10 +190,10 @@ function Core({
           r="56"
           fill="none"
           stroke={live ? 'var(--accent)' : 'var(--color-steel-700)'}
-          strokeWidth="0.6"
+          strokeWidth="1"
           strokeDasharray="3 7"
           vectorEffect="non-scaling-stroke"
-          opacity={0.5}
+          opacity={live ? 0.7 : 0.35}
           style={{
             transformOrigin: 'center',
             animation: live ? 'spin-r 40s linear infinite' : undefined,
@@ -223,7 +223,7 @@ function Core({
               <circle
                 cx={x}
                 cy={y}
-                r={sel ? 4 : 2.4}
+                r={sel ? 5 : 3.2}
                 fill={live ? 'var(--accent)' : 'var(--color-steel-700)'}
                 opacity={live ? (sel ? 1 : 0.6) : 0.35}
                 style={{ transition: 'all 320ms var(--ease-out-expo)' }}
@@ -237,13 +237,18 @@ function Core({
           r="30"
           fill={
             online
-              ? 'color-mix(in oklab, var(--accent) 20%, transparent)'
+              ? 'color-mix(in oklab, var(--accent) 26%, #05070c)'
               : 'color-mix(in oklab, var(--color-steel-900) 70%, transparent)'
           }
           stroke={live ? 'var(--accent)' : 'var(--color-steel-500)'}
-          strokeWidth="1"
+          strokeWidth="1.5"
           vectorEffect="non-scaling-stroke"
-          style={{ transition: 'fill 800ms ease, stroke 800ms ease' }}
+          style={{
+            transition: 'fill 800ms ease, stroke 800ms ease',
+            filter: online
+              ? 'drop-shadow(0 0 14px color-mix(in oklab, var(--accent) 55%, transparent))'
+              : undefined,
+          }}
         />
         {online && (
           <circle
@@ -259,7 +264,11 @@ function Core({
 
       <span
         className="hud-sm relative z-10 text-center leading-tight transition-colors duration-700"
-        style={{ color: live ? 'var(--accent)' : 'var(--color-bone)', maxWidth: '5.5rem' }}
+        style={{
+          color: live ? 'var(--color-hot)' : 'var(--color-bone)',
+          maxWidth: '5.5rem',
+          textShadow: live ? '0 0 12px color-mix(in oklab, var(--accent) 70%, transparent)' : undefined,
+        }}
       >
         {online ? 'Online' : state === 'booting' ? 'Booting' : 'Initialise core'}
       </span>

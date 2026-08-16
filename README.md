@@ -104,17 +104,20 @@ honestly in four short blocks, it does not go in yet.
 Nothing autoplays. The visitor either chooses **Enter experience** (with sound)
 or **Enter without sound**, and a control in the corner toggles it at any time.
 
-There are two audio paths, in order of preference:
+Two paths, selected by `audio.track` in `src/content/site.ts`:
 
-1. **A file at `public/audio/ambient.mp3`.** Drop one in and it is picked up
-   automatically — nothing else to change. Use something you own or something
-   licensed for the purpose.
-2. **No file:** a cinematic drone is synthesised in the browser with the Web
-   Audio API — sub, a slowly-filtered minor pad, wind, and a low pulse. Original
-   by construction, zero bytes shipped, and no licensing question to answer.
+1. **`track: null`** — the default, and what the repo ships with. A cinematic
+   drone is synthesised in the browser with the Web Audio API: sub, a
+   slowly-filtered minor pad, wind, and a low pulse. Original by construction,
+   zero bytes shipped, no licensing question to answer. It sounds intentional,
+   not like a placeholder.
+2. **`track: 'audio/ambient.mp3'`** — put a file at `public/audio/`, point this
+   at it, and it is used instead. Use something you own or something licensed
+   for the purpose. If it will not play, the drone takes over rather than the
+   page going silently broken.
 
-That is the state the repo ships in. It sounds intentional, not like a
-placeholder.
+The choice is configured rather than sniffed at runtime: probing for a file that
+is usually not there would put a 404 in every visitor's console.
 
 ---
 

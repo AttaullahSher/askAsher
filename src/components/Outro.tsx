@@ -49,7 +49,7 @@ export function Outro() {
 
       {links.length > 0 && (
         <ul
-          className="reveal mt-12 flex flex-wrap items-center justify-center gap-2"
+          className="reveal mt-12 flex w-full max-w-md flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-center sm:justify-center"
           data-in={inView}
           style={{ ['--d' as string]: '380ms' }}
         >
@@ -59,7 +59,7 @@ export function Outro() {
                 href={asset(l.href)}
                 target={l.href.startsWith('http') ? '_blank' : undefined}
                 rel="noreferrer"
-                className="group flex flex-col items-start px-5 py-3 text-left transition-colors duration-300"
+                className="group flex h-full flex-col items-start px-5 py-3.5 text-left transition-colors duration-300 sm:min-w-[13rem]"
                 style={{ border: '1px solid var(--hud-line)' }}
               >
                 <span
@@ -84,9 +84,9 @@ export function Outro() {
         onClick={() => setTerminalOpen(true)}
         className="hud-sm reveal mt-14 px-3 py-2 transition-colors hover:text-[var(--color-signal)]"
         data-in={inView}
-        style={{ ['--d' as string]: '460ms', color: 'var(--color-steel-500)' }}
+        style={{ ['--d' as string]: '460ms' }}
       >
-        You have not found everything yet →
+        Some of this page is hidden →
       </button>
 
       <p

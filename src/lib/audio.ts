@@ -1,22 +1,24 @@
 'use client';
 
 import { asset } from './paths';
+import { audio as audioConfig } from '@/content/site';
 
 /**
  * Ambient sound for the experience.
  *
- * Two paths, in order of preference:
+ * Two paths, chosen by `audio.track` in `content/site.ts`:
  *
- *   1. A file at `public/audio/ambient.mp3`. Drop one in and it is used
- *      automatically — nothing else to change.
- *   2. If that file is absent, a cinematic drone is synthesised in the browser
- *      with the Web Audio API. Original by construction, zero bytes shipped,
- *      no licensing question to answer.
+ *   1. A file, if one is configured. If it will not play, we fall through.
+ *   2. Otherwise a cinematic drone synthesised in the browser with the Web
+ *      Audio API. Original by construction, zero bytes shipped, no licensing
+ *      question to answer.
+ *
+ * Configured rather than probed on purpose: guessing would mean a request for a
+ * file that usually is not there, and a 404 in everybody's console.
  *
  * Nothing ever autoplays. Everything starts from the entry gesture.
  */
 
-const TRACK = 'audio/ambient.mp3';
 const MASTER_LEVEL = 0.13;
 
 type Status = 'idle' | 'running' | 'suspended';
@@ -32,16 +34,9 @@ export class Ambient {
   private hasFile: boolean | null = null;
   private status: Status = 'idle';
 
-  /** Cheap probe so `start()` does not stall on the first gesture. */
+  /** Warms the decision so `start()` never stalls on the first gesture. */
   async prepare(): Promise<void> {
-    if (this.hasFile !== null) return;
-    try {
-      const res = await fetch(asset(TRACK), { method: 'HEAD', cache: 'force-cache' });
-      const type = res.headers.get('content-type') ?? '';
-      this.hasFile = res.ok && !type.includes('text/html');
-    } catch {
-      this.hasFile = false;
-    }
+    this.hasFile = Boolean(audioConfig.track);
   }
 
   get isRunning(): boolean {
@@ -58,7 +53,7 @@ export class Ambient {
 
     if (this.hasFile === null) await this.prepare();
 
-    if (this.hasFile) {
+    if (this.hasFile && audioConfig.track) {
       this.startFile();
     } else {
       this.startSynth();
@@ -67,7 +62,7 @@ export class Ambient {
   }
 
   private startFile() {
-    const el = new Audio(asset(TRACK));
+    const el = new Audio(asset(audioConfig.track ?? ''));
     el.loop = true;
     el.preload = 'auto';
     el.volume = 0;
