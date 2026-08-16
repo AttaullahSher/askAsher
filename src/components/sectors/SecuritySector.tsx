@@ -4,7 +4,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { Section } from '@/components/Section';
 import { useInView } from '@/lib/hooks';
 import { useExperience } from '@/lib/experience';
-import { securityPrinciples, securityRun, securityScope } from '@/content/security';
+import {
+  securityClose,
+  securityPrinciples,
+  securityRun,
+  securityScope,
+} from '@/content/security';
 import type { Sector } from '@/content/site';
 
 const LINE_MS = 340;
@@ -178,6 +183,8 @@ export function SecuritySector({ sector }: { sector: Sector }) {
           </li>
         ))}
       </ul>
+
+      <p className="prose-body mt-8 max-w-2xl">{securityClose}</p>
     </Section>
   );
 }

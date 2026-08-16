@@ -1,6 +1,10 @@
 /**
- * The SECURITY sector. Deliberately defensive: this is a posture check on a
- * site you own, not an attack. Nothing here teaches anyone anything offensive.
+ * The SECURITY sector.
+ *
+ * Written as capability plus restraint, which is the only version of this that
+ * is both true and worth reading. The posture run is defensive — a check on
+ * something the operator owns — and there is nothing offensive here for anyone
+ * to copy. The edge comes from what is implied, never from a claim.
  */
 export interface SecurityStep {
   id: string;
@@ -32,8 +36,8 @@ export const securityRun: SecurityStep[] = [
     phase: 'IDENTIFY',
     lines: [
       'finding · form accepts unbounded input',
-      'finding · error page leaks stack frame',
-      'severity · low, low',
+      'finding · error page leaks a stack frame',
+      'severity · low, low. noted anyway.',
     ],
   },
   {
@@ -57,13 +61,38 @@ export const securityRun: SecurityStep[] = [
 ];
 
 export const securityPrinciples: { label: string; body: string }[] = [
-  { label: 'Web security', body: 'How the browser actually enforces trust — origins, cookies, CSP.' },
-  { label: 'Secure coding', body: 'Validate at the edge. Encode on the way out. Never trust shape.' },
-  { label: 'Reconnaissance', body: 'Understanding what a system exposes before assuming it is closed.' },
-  { label: 'Vulnerability awareness', body: 'Reading advisories for the things I ship, not just the news.' },
-  { label: 'Privacy', body: 'Collect less. Keep it shorter. Encrypt what remains.' },
-  { label: 'Defensive thinking', body: 'Design assuming the input is hostile and the network is not there.' },
+  {
+    label: 'Surface',
+    body: 'Every convenience is a door. Most of them were fitted by someone who never came back to close them.',
+  },
+  {
+    label: 'Devices',
+    body: 'A phone is a microphone, a camera, a radio and a very long memory. It was never only a phone.',
+  },
+  {
+    label: 'Signal',
+    body: 'People give away more in the shape of their traffic than in anything they actually say.',
+  },
+  {
+    label: 'Secure coding',
+    body: 'Validate at the edge. Encode on the way out. Assume the input arrived wanting something.',
+  },
+  {
+    label: 'Privacy',
+    body: 'Collect less. Keep it shorter. The safest record is the one that was never written.',
+  },
+  {
+    label: 'Restraint',
+    body: 'Knowing how is common enough. Choosing not to is the part almost nobody trains.',
+  },
 ];
 
 export const securityScope =
-  'Scope: systems I own, or have been invited to test. What runs below is a defensive posture check — a mindset, not a method.';
+  'Scope: systems I own, or have been invited to test. What runs below is a posture check on my own asset — a habit, not a method.';
+
+/**
+ * The closing line. Says what he is without ever claiming anything: the
+ * awareness is a reflex, and the discipline is what he does about it.
+ */
+export const securityClose =
+  'The habit was never breaking things. It is noticing — immediately, without trying, without being asked — exactly where a thing would give. That part does not switch off when you close the laptop. What you do with it afterwards is the only thing that has ever mattered.';

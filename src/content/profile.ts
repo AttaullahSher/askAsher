@@ -41,6 +41,7 @@ export const bio: string[] = [
   'Most of the work is unglamorous. Someone is losing an hour a day to something a machine should be doing, and I make it cost nothing. Done properly, nobody notices — which is exactly the point. The systems that get talked about are usually the ones that broke.',
   'None of it would survive on its own. There is a version of me that never leaves the screen, and he is unbearable company. So there are long dinners, worse jokes, and people in my life who have never once asked what a database is and never will. That is the part that keeps the rest running.',
   'The remainder is curiosity with a keyboard. I take things apart to find where they give. I have never once regretted knowing how something works, and I have occasionally regretted finding out at four in the morning.',
+  'The same reflex does not politely stop at software. Rooms, habits, the half-second before somebody answers — I notice, and I have long since stopped mentioning it. Most of what I know about people, they never told me and will never hear repeated. Discretion is not a courtesy I extend. It is the only way I have ever been able to live with knowing things.',
 ];
 
 /** The closing note. Deliberately the shortest thing on the page. */
@@ -52,6 +53,8 @@ export const facts: { k: string; v: string }[] = [
   { k: 'Works in', v: 'English · Urdu' },
   { k: 'Hours', v: 'Late' },
   { k: 'Answers to', v: 'Asher' },
+  { k: 'Notices', v: 'Most of it' },
+  { k: 'Repeats', v: 'None of it' },
 ];
 
 /**

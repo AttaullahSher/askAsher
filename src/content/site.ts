@@ -84,7 +84,7 @@ export const sectors: Sector[] = [
     id: 'security',
     index: '04',
     title: 'SECURITY',
-    subtitle: 'Ethical security. Curiosity with boundaries.',
+    subtitle: 'Everything is more open than its owner thinks. That is a reason to be careful, not clever.',
     accent: 'var(--accent-security)',
   },
   {
