@@ -1,0 +1,40 @@
+name: CI
+
+# Runs on branches and pull requests. The deploy workflow only fires on main,
+# so without this a pull request would carry no checks at all.
+on:
+  pull_request:
+  push:
+    branches-ignore: [main]
+
+permissions:
+  contents: read
+
+# Keyed on the branch, not the ref: a pull request and the push that opened it
+# would otherwise land in separate groups and run the same job twice.
+concurrency:
+  group: ci-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      - run: npm run typecheck
+
+      # Built the way GitHub Pages serves it, so a base-path regression fails
+      # here rather than in production.
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}

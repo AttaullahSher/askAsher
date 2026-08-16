@@ -1,6 +1,18 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# next
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# misc
 .DS_Store
 Thumbs.db
-node_modules/
 *.log
-asher-*.json
-asher-log-*.csv
+.env*.local
+.vercel
+.staging/

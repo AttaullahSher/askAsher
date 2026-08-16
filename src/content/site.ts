@@ -1,0 +1,98 @@
+/**
+ * Everything a human would want to change lives here.
+ * No component hard-codes a name, a link or a sentence.
+ */
+
+export const site = {
+  name: 'ASHER',
+  tagline: 'Code. Create. Automate. Play.',
+  description:
+    'A digital playground for the things I build, break, automate and experiment with.',
+  /** Used for canonical URLs and Open Graph. Change this if you move the site. */
+  url: 'https://attaullahsher.github.io/askAsher/',
+  locale: 'en',
+} as const;
+
+/**
+ * Ambient sound.
+ *
+ * `track: null` — the browser synthesises an original cinematic drone with the
+ * Web Audio API. Nothing to ship, nothing to licence. This is the default.
+ *
+ * `track: 'audio/ambient.mp3'` — drop a file at `public/audio/ambient.mp3`, set
+ * this to its path, and it is used instead. Use something you own or something
+ * licensed for the purpose. If it fails to load, the drone takes over.
+ */
+export const audio: { track: string | null } = {
+  track: null,
+};
+
+/**
+ * Outbound links. Leave a value as an empty string and its chip simply will not
+ * render — no dead links, no placeholder URLs pointing nowhere.
+ */
+export const links: { label: string; href: string; note: string }[] = [
+  { label: 'ASK', href: 'ask/', note: 'live assistant — built here' },
+  { label: 'GitHub', href: 'https://github.com/attaullahsher', note: 'source, experiments' },
+  { label: 'Instagram', href: 'https://instagram.com/attaullah.sher', note: 'probably where you came from' },
+  { label: 'Email', href: 'mailto:attaullah.sher@me.com', note: 'for anything real' },
+].filter((l) => l.href.length > 0);
+
+/** The three lines of the opening. Kept short on purpose. */
+export const intro = ['HELLO.', "I'M ASHER.", 'I BUILD THINGS.'] as const;
+
+export type SectorId = 'code' | 'automation' | 'ai' | 'security' | 'builds' | 'player';
+
+export interface Sector {
+  id: SectorId;
+  index: string;
+  title: string;
+  subtitle: string;
+  /** CSS custom-property name from the theme — keeps colour out of components. */
+  accent: string;
+}
+
+export const sectors: Sector[] = [
+  {
+    id: 'code',
+    index: '01',
+    title: 'CODE',
+    subtitle: 'The raw material. Languages, runtimes and the glue between them.',
+    accent: 'var(--accent-code)',
+  },
+  {
+    id: 'automation',
+    index: '02',
+    title: 'AUTOMATION',
+    subtitle: 'If a person does it twice, it should not need a person the third time.',
+    accent: 'var(--accent-automation)',
+  },
+  {
+    id: 'ai',
+    index: '03',
+    title: 'AI',
+    subtitle: 'Models as components, not magic. Wired into things that already run.',
+    accent: 'var(--accent-ai)',
+  },
+  {
+    id: 'security',
+    index: '04',
+    title: 'SECURITY',
+    subtitle: 'Ethical security. Curiosity with boundaries.',
+    accent: 'var(--accent-security)',
+  },
+  {
+    id: 'builds',
+    index: '05',
+    title: 'BUILDS',
+    subtitle: 'Things that exist and are being used.',
+    accent: 'var(--accent-builds)',
+  },
+  {
+    id: 'player',
+    index: '06',
+    title: 'PLAYER',
+    subtitle: 'Where the reflexes come from.',
+    accent: 'var(--accent-player)',
+  },
+];
