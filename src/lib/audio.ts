@@ -4,33 +4,42 @@ import { asset } from './paths';
 import { audio as audioConfig } from '@/content/site';
 
 /**
- * Ambient sound for the experience.
+ * Music for the experience.
  *
  * Two paths, chosen by `audio.track` in `content/site.ts`:
  *
  *   1. A file, if one is configured. If it will not play, we fall through.
- *   2. Otherwise a cinematic drone synthesised in the browser with the Web
+ *   2. Otherwise a cinematic score is synthesised in the browser with the Web
  *      Audio API. Original by construction, zero bytes shipped, no licensing
  *      question to answer.
  *
  * Configured rather than probed on purpose: guessing would mean a request for a
  * file that usually is not there, and a 404 in everybody's console.
  *
+ * The synthesised version is written as a trailer cue rather than a drone: a
+ * sixteen-second phrase of pulse, riser and impact over a held bed, alternating
+ * heavy and light so the loop has somewhere to go. Drama needs a shape — a
+ * texture that never resolves just becomes wallpaper.
+ *
  * Nothing ever autoplays. Everything starts from the entry gesture.
  */
 
-const MASTER_LEVEL = 0.13;
+const MASTER_LEVEL = 0.26;
+/** Seconds. One full phrase: build, rise, hit, decay. */
+const PHRASE = 16;
 
 type Status = 'idle' | 'running' | 'suspended';
 
 export class Ambient {
   private ctx: AudioContext | null = null;
   private master: GainNode | null = null;
+  private bus: GainNode | null = null;
   private element: HTMLAudioElement | null = null;
   private nodes: AudioScheduledSourceNode[] = [];
-  private pulseTimer: number | null = null;
-  private windTimer: number | null = null;
+  private timers: number[] = [];
   private lowpass: BiquadFilterNode | null = null;
+  private noiseBuf: AudioBuffer | null = null;
+  private phrase = 0;
   private hasFile: boolean | null = null;
   private status: Status = 'idle';
 
@@ -61,6 +70,8 @@ export class Ambient {
     this.status = 'running';
   }
 
+  /* ------------------------------------------------------------------- file */
+
   private startFile() {
     const el = new Audio(asset(audioConfig.track ?? ''));
     el.loop = true;
@@ -89,6 +100,100 @@ export class Ambient {
     requestAnimationFrame(step);
   }
 
+  /* ------------------------------------------------------------------ voices */
+
+  /** A low drum. Pitch drops fast — that fall is what reads as weight. */
+  private kick(at: number, level: number, from = 110, to = 34) {
+    const ctx = this.ctx;
+    const bus = this.bus;
+    if (!ctx || !bus) return;
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(from, at);
+    o.frequency.exponentialRampToValueAtTime(to, at + 0.16);
+    g.gain.setValueAtTime(0.0001, at);
+    g.gain.exponentialRampToValueAtTime(level, at + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, at + 0.9);
+    o.connect(g).connect(bus);
+    o.start(at);
+    o.stop(at + 1);
+  }
+
+  /** Noise climbing through a bandpass. The three seconds before the hit. */
+  private riser(at: number, dur: number) {
+    const ctx = this.ctx;
+    const bus = this.bus;
+    if (!ctx || !bus || !this.noiseBuf) return;
+    const src = ctx.createBufferSource();
+    src.buffer = this.noiseBuf;
+    src.loop = true;
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.Q.value = 4;
+    bp.frequency.setValueAtTime(240, at);
+    bp.frequency.exponentialRampToValueAtTime(5200, at + dur);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, at);
+    g.gain.exponentialRampToValueAtTime(0.085, at + dur * 0.92);
+    g.gain.exponentialRampToValueAtTime(0.0001, at + dur + 0.12);
+    src.connect(bp).connect(g).connect(bus);
+    src.start(at);
+    src.stop(at + dur + 0.2);
+  }
+
+  /** The hit. Sub drop, a wide noise slam, and a brass-ish stab on top. */
+  private impact(at: number) {
+    const ctx = this.ctx;
+    const bus = this.bus;
+    if (!ctx || !bus || !this.noiseBuf) return;
+
+    this.kick(at, 0.62, 150, 26);
+
+    // Slam.
+    const src = ctx.createBufferSource();
+    src.buffer = this.noiseBuf;
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.setValueAtTime(4200, at);
+    lp.frequency.exponentialRampToValueAtTime(320, at + 1.6);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, at);
+    g.gain.exponentialRampToValueAtTime(0.16, at + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, at + 2.2);
+    src.connect(lp).connect(g).connect(bus);
+    src.start(at);
+    src.stop(at + 2.3);
+
+    // Stab — detuned saws through a fast filter envelope. Reads as brass.
+    const sg = ctx.createGain();
+    const sf = ctx.createBiquadFilter();
+    sf.type = 'lowpass';
+    sf.Q.value = 6;
+    sf.frequency.setValueAtTime(340, at);
+    sf.frequency.exponentialRampToValueAtTime(1900, at + 0.09);
+    sf.frequency.exponentialRampToValueAtTime(380, at + 1.5);
+    sg.gain.setValueAtTime(0.0001, at);
+    sg.gain.exponentialRampToValueAtTime(0.075, at + 0.05);
+    sg.gain.exponentialRampToValueAtTime(0.0001, at + 1.9);
+    sf.connect(sg).connect(bus);
+
+    for (const [f, d] of [
+      [55, -6],
+      [82.41, 4],
+      [110, -9],
+      [164.81, 7],
+    ] as const) {
+      const o = ctx.createOscillator();
+      o.type = 'sawtooth';
+      o.frequency.value = f;
+      o.detune.value = d;
+      o.connect(sf);
+      o.start(at);
+      o.stop(at + 2);
+    }
+  }
+
   /* ------------------------------------------------------------------ synth */
 
   private startSynth() {
@@ -100,39 +205,58 @@ export class Ambient {
 
     const ctx = new Ctx();
     this.ctx = ctx;
+    this.noiseBuf = makeNoise(ctx, 3);
 
     const master = ctx.createGain();
     master.gain.setValueAtTime(0.0001, ctx.currentTime);
-    master.gain.exponentialRampToValueAtTime(MASTER_LEVEL, ctx.currentTime + 3.5);
+    master.gain.exponentialRampToValueAtTime(MASTER_LEVEL, ctx.currentTime + 3);
     master.connect(ctx.destination);
     this.master = master;
 
-    // --- sub: three near-unison sines an octave lower than before, beating
-    // slowly against each other. This is the floor the whole thing sits on.
-    for (const f of [36.7, 36.95, 55]) {
+    // Everything goes through a limiter-ish compressor so the impacts have
+    // somewhere to land without the bed ducking out of existence.
+    const comp = ctx.createDynamicsCompressor();
+    // Loose on purpose: tight compression is what turns a trailer hit into a
+    // polite bump. This catches the peaks and otherwise stays out of the way.
+    comp.threshold.value = -10;
+    comp.knee.value = 8;
+    comp.ratio.value = 3.5;
+    comp.attack.value = 0.006;
+    comp.release.value = 0.3;
+    comp.connect(master);
+
+    const bus = ctx.createGain();
+    bus.gain.value = 1;
+    bus.connect(comp);
+    this.bus = bus;
+
+    // --- bed: sub, and a minor-second pad that refuses to settle
+    for (const [f, level] of [
+      [36.7, 0.5],
+      [36.95, 0.42],
+      [55, 0.26],
+    ] as const) {
       const o = ctx.createOscillator();
       const g = ctx.createGain();
       o.type = 'sine';
       o.frequency.value = f;
-      g.gain.value = f < 40 ? 0.62 : 0.34;
-      o.connect(g).connect(master);
+      g.gain.value = level;
+      o.connect(g).connect(bus);
       o.start();
       this.nodes.push(o);
     }
 
-    // --- pad: detuned saws through a slowly swept lowpass (A minor)
     const lp = ctx.createBiquadFilter();
     lp.type = 'lowpass';
-    lp.frequency.value = 320;
+    lp.frequency.value = 300;
     lp.Q.value = 3;
-    lp.connect(master);
+    lp.connect(bus);
     this.lowpass = lp;
 
-    const padGain = ctx.createGain();
-    padGain.gain.value = 0.055;
-    padGain.connect(lp);
+    const pad = ctx.createGain();
+    pad.gain.value = 0.05;
+    pad.connect(lp);
 
-    // Minor second stacked under the fifth — the interval that will not settle.
     for (const [freq, detune] of [
       [110, -7],
       [164.81, 5],
@@ -143,98 +267,60 @@ export class Ambient {
       o.type = 'sawtooth';
       o.frequency.value = freq;
       o.detune.value = detune;
-      o.connect(padGain);
+      o.connect(pad);
       o.start();
       this.nodes.push(o);
     }
 
-    // LFO on the cutoff — this is what stops it sounding like a test tone.
     const lfo = ctx.createOscillator();
     const lfoDepth = ctx.createGain();
     lfo.type = 'sine';
     lfo.frequency.value = 0.031;
-    lfoDepth.gain.value = 190;
+    lfoDepth.gain.value = 170;
     lfo.connect(lfoDepth).connect(lp.frequency);
     lfo.start();
     this.nodes.push(lfo);
 
-    // --- wind: band-passed noise with a slow random walk on its level
+    // --- wind, well under everything
     const noise = ctx.createBufferSource();
-    noise.buffer = makeNoise(ctx, 3);
+    noise.buffer = this.noiseBuf;
     noise.loop = true;
     const bp = ctx.createBiquadFilter();
     bp.type = 'bandpass';
     bp.frequency.value = 620;
     bp.Q.value = 0.6;
     const windGain = ctx.createGain();
-    windGain.gain.value = 0.026;
-    noise.connect(bp).connect(windGain).connect(master);
+    windGain.gain.value = 0.02;
+    noise.connect(bp).connect(windGain).connect(bus);
     noise.start();
     this.nodes.push(noise);
 
-    this.windTimer = window.setInterval(() => {
-      if (!this.ctx) return;
-      const target = 0.012 + Math.random() * 0.03;
-      windGain.gain.setTargetAtTime(target, this.ctx.currentTime, 2.2);
-      bp.frequency.setTargetAtTime(520 + Math.random() * 620, this.ctx.currentTime, 3);
-    }, 4200);
+    // --- the cue itself, scheduled a phrase at a time
+    const runPhrase = () => {
+      if (!this.ctx || !this.bus) return;
+      const t = this.ctx.currentTime + 0.05;
+      const heavy = this.phrase % 2 === 0;
+      this.phrase += 1;
 
-    // --- metal: a sparse, far-off struck tone. The one thing in the mix with
-    // a transient, so the ear keeps waiting for the next one.
-    const strike = () => {
-      if (!this.ctx || !this.master) return;
-      const t = this.ctx.currentTime;
-      const bp2 = this.ctx.createBiquadFilter();
-      bp2.type = 'bandpass';
-      bp2.frequency.value = 1400 + Math.random() * 1400;
-      bp2.Q.value = 12;
-      const g = this.ctx.createGain();
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(0.05, t + 0.008);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 2.6);
-      const src = this.ctx.createBufferSource();
-      src.buffer = makeNoise(this.ctx, 0.4);
-      src.connect(bp2).connect(g).connect(this.master);
-      src.start(t);
-      src.stop(t + 2.7);
-    };
+      // Pulse: four on the floor, doubling up in the back half of a heavy bar.
+      const beat = PHRASE / 8;
+      for (let i = 0; i < 8; i += 1) {
+        const at = t + i * beat;
+        if (i % 2 === 0) this.kick(at, heavy ? 0.34 : 0.2);
+        else if (heavy && i > 3) this.kick(at + beat * 0.5, 0.12, 90, 40);
+      }
 
-    // --- pulse: a two-beat heartbeat rather than a single thump, and it
-    // tightens as it goes. Tension without a melody to get bored of.
-    let beat = 0;
-    const schedulePulse = () => {
-      if (!this.ctx || !this.master) return;
-      const t = this.ctx.currentTime;
-
-      const thump = (at: number, level: number) => {
-        if (!this.ctx || !this.master) return;
-        const o = this.ctx.createOscillator();
-        const g = this.ctx.createGain();
-        o.type = 'sine';
-        o.frequency.setValueAtTime(64, at);
-        o.frequency.exponentialRampToValueAtTime(30, at + 0.55);
-        g.gain.setValueAtTime(0.0001, at);
-        g.gain.exponentialRampToValueAtTime(level, at + 0.04);
-        g.gain.exponentialRampToValueAtTime(0.0001, at + 1.3);
-        o.connect(g).connect(this.master);
-        o.start(at);
-        o.stop(at + 1.4);
-      };
-
-      thump(t, 0.3);
-      thump(t + 0.34, 0.18);
-
-      beat += 1;
-      if (beat % 3 === 0) strike();
-      if (this.lowpass) {
-        // Breathe the pad open on every fourth beat.
-        const open = beat % 4 === 0;
-        this.lowpass.frequency.setTargetAtTime(open ? 520 : 300, t, 1.6);
+      if (heavy) {
+        this.riser(t + PHRASE * 0.55, PHRASE * 0.28);
+        this.impact(t + PHRASE * 0.84);
+        // Open the pad up into the hit, then let it close again.
+        this.lowpass?.frequency.setTargetAtTime(760, t + PHRASE * 0.6, 1.6);
+        this.lowpass?.frequency.setTargetAtTime(300, t + PHRASE * 0.9, 2.4);
       }
     };
 
-    schedulePulse();
-    this.pulseTimer = window.setInterval(schedulePulse, 4600);
+    runPhrase();
+    this.timers.push(window.setInterval(runPhrase, PHRASE * 1000));
   }
 
   /* ---------------------------------------------------------------- control */
@@ -268,12 +354,12 @@ export class Ambient {
   /** Overdrive opens the filter and leans on the pad. */
   setIntensity(hot: boolean): void {
     if (!this.ctx || !this.lowpass) return;
-    this.lowpass.frequency.setTargetAtTime(hot ? 900 : 320, this.ctx.currentTime, 1.2);
+    this.lowpass.frequency.setTargetAtTime(hot ? 900 : 300, this.ctx.currentTime, 1.2);
   }
 
   dispose(): void {
-    if (this.pulseTimer) window.clearInterval(this.pulseTimer);
-    if (this.windTimer) window.clearInterval(this.windTimer);
+    for (const t of this.timers) window.clearInterval(t);
+    this.timers = [];
     for (const n of this.nodes) {
       try {
         n.stop();
@@ -287,6 +373,7 @@ export class Ambient {
     void this.ctx?.close().catch(() => {});
     this.ctx = null;
     this.master = null;
+    this.bus = null;
     this.status = 'idle';
   }
 }
