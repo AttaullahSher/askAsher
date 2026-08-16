@@ -3,7 +3,7 @@
 import { Appreciation } from './Appreciation';
 import { CurveMark, CurveRule } from './Curve';
 import { Block, Overlay } from './Overlay';
-import { bio, bioClose, contact, facts, roles } from '@/content/profile';
+import { bio, bioClose, contact, facts, offRecord, roles } from '@/content/profile';
 import { site } from '@/content/site';
 
 /** The personal file. The one thing on this site that is not about software. */
@@ -72,6 +72,22 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
             {bioClose}
           </p>
         </div>
+
+        <Block label="Off the record">
+          <ul className="grid grid-cols-2 gap-px" style={{ background: 'var(--hud-line)' }}>
+            {offRecord.map((f) => (
+              <li key={f.k} className="px-4 py-3" style={{ background: 'var(--color-void)' }}>
+                <span className="hud-sm block">{f.k}</span>
+                <span
+                  className="mt-1 block text-sm leading-snug"
+                  style={{ color: 'var(--color-signal)', fontFamily: 'var(--font-mono)' }}
+                >
+                  {f.v}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </Block>
 
         <Block label="Detail">
           <ul className="grid grid-cols-2 gap-px" style={{ background: 'var(--hud-line)' }}>

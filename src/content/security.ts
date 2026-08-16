@@ -87,12 +87,11 @@ export const securityPrinciples: { label: string; body: string }[] = [
   },
 ];
 
-export const securityScope =
-  'Scope: systems I own, or have been invited to test. What runs below is a posture check on my own asset — a habit, not a method.';
+export const securityScope = 'Scope: what I own, or what I was invited to look at.';
 
 /**
  * The closing line. Says what he is without ever claiming anything: the
  * awareness is a reflex, and the discipline is what he does about it.
  */
 export const securityClose =
-  'The habit was never breaking things. It is noticing — immediately, without trying, without being asked — exactly where a thing would give. That does not switch off when the laptop does, and it has never once stopped at software. What I do with it afterwards is the only part anyone should care about, and the answer has always been nothing.';
+  'The habit was never breaking things. It is noticing where a thing would give — immediately, without trying, without being asked. That does not stop at software, and it does not switch off. What I do about it is the only part that matters, and the answer has always been nothing.';

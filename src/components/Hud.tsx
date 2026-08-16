@@ -96,6 +96,8 @@ export function Hud() {
         </span>
       </button>
 
+      <Compass />
+
       {/* status */}
       <span
         className="hud-sm absolute right-4 top-5 sm:right-6 sm:top-7"
@@ -187,6 +189,109 @@ export function Hud() {
     </div>
   );
 }
+
+/**
+ * The heading strip across the top. Lifted in spirit from tactical shooters,
+ * where it is the single most recognisable piece of HUD furniture — and it
+ * earns its place here because it is genuinely driven by where you are on the
+ * page rather than being decoration pretending to be data.
+ */
+function Compass() {
+  const railRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const k = max > 0 ? window.scrollY / max : 0;
+      // One full sweep over the length of the page.
+      const deg = k * 360;
+      if (railRef.current) {
+        railRef.current.style.transform = `translateX(${-deg * 2}px)`;
+        railRef.current.dataset.heading = String(Math.round(deg));
+      }
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  // 0–720° so the strip can scroll a full turn without running out of tape.
+  const ticks = [];
+  for (let d = 0; d <= 720; d += 15) {
+    const card = CARDINALS[(d % 360) as keyof typeof CARDINALS];
+    ticks.push(
+      <span
+        key={d}
+        className="relative flex shrink-0 flex-col items-center justify-end"
+        style={{ width: 30, height: 14 }}
+      >
+        {card ? (
+          <span
+            className="absolute top-0 text-[9px] font-bold"
+            style={{
+              fontFamily: 'var(--font-mono)',
+              color: 'var(--color-bone)',
+              letterSpacing: '0.05em',
+            }}
+          >
+            {card}
+          </span>
+        ) : (
+          <span
+            className="absolute top-1.5 block w-px"
+            style={{ height: 4, background: 'var(--color-steel-500)' }}
+          />
+        )}
+      </span>,
+    );
+  }
+
+  return (
+    <div
+      aria-hidden
+      className="absolute left-1/2 top-4 -translate-x-1/2 overflow-hidden sm:top-6"
+      style={{
+        width: 'min(40vw, 180px)',
+        height: 16,
+        maskImage: 'linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent)',
+        WebkitMaskImage: 'linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent)',
+      }}
+    >
+      <div
+        ref={railRef}
+        className="flex items-end"
+        style={{ marginLeft: 'calc(50% - 15px)', willChange: 'transform' }}
+      >
+        {ticks}
+      </div>
+      <span
+        className="absolute left-1/2 top-0 block w-px -translate-x-1/2"
+        style={{ height: 16, background: 'var(--color-signal)' }}
+      />
+    </div>
+  );
+}
+
+const CARDINALS: Record<number, string> = {
+  0: 'N',
+  45: 'NE',
+  90: 'E',
+  135: 'SE',
+  180: 'S',
+  225: 'SW',
+  270: 'W',
+  315: 'NW',
+};
 
 function Control({
   label,

@@ -106,6 +106,9 @@ export class AtmosphereScene {
   private drop = { x: 0.74, y: 0.2, t: 0 };
   private dropHit = { x: 0, y: 0, r: 0 };
 
+  /** Signal flare: fired occasionally, arcs up, burns, falls. */
+  private sig = { t: -1, next: 9, x: 0.3, dir: 1 };
+
   constructor(
     private canvas: HTMLCanvasElement,
     private tier: Tier,
@@ -312,6 +315,7 @@ export class AtmosphereScene {
     this.drawFog(dt, push);
     this.drawGround(horizon, push, t);
     this.drawGroundProps(horizon, push);
+    this.drawFlare(dt, horizon);
     this.drawEmbers(dt);
     this.drawMotes(dt, t);
     this.drawVignette();
@@ -542,6 +546,78 @@ export class AtmosphereScene {
       ctx.lineTo(cx + cw, cy - ch);
       ctx.stroke();
     }
+
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
+  /**
+   * A signal flare somewhere out past the skyline. The one genuinely loud
+   * thing in the frame, which is why it happens roughly twice a minute rather
+   * than constantly — scarcity is what makes anyone look up.
+   */
+  private drawFlare(dt: number, horizon: number) {
+    const { ctx, w } = this;
+
+    if (this.sig.t < 0) {
+      this.sig.next -= dt;
+      if (this.sig.next <= 0) {
+        this.sig.t = 0;
+        this.sig.x = 0.12 + Math.random() * 0.76;
+        this.sig.dir = Math.random() > 0.5 ? 1 : -1;
+      }
+      return;
+    }
+
+    this.sig.t += dt;
+    const life = 6.5;
+    if (this.sig.t > life) {
+      this.sig.t = -1;
+      this.sig.next = 22 + Math.random() * 26;
+      return;
+    }
+
+    const k = this.sig.t / life;
+    // Up fast, hang, then drift down under its own canopy.
+    const rise = 1 - Math.pow(1 - Math.min(k / 0.28, 1), 3);
+    const fall = k < 0.28 ? 0 : Math.pow((k - 0.28) / 0.72, 1.7);
+    const x = w * this.sig.x + this.sig.dir * (18 + fall * 60);
+    const y = horizon * (0.94 - rise * 0.68 + fall * 0.5);
+
+    // Fades in over the climb and out over the last third.
+    const alpha = Math.min(k / 0.08, 1) * (k > 0.72 ? 1 - (k - 0.72) / 0.28 : 1);
+    const hot = this.overdrive;
+    const rgb = hot ? '255,190,90' : '255,110,60';
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+
+    // Smoke trail hanging behind the climb.
+    ctx.globalAlpha = alpha * 0.1;
+    ctx.strokeStyle = `rgba(${rgb},1)`;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(w * this.sig.x, horizon * 0.94);
+    ctx.stroke();
+
+    // Halo.
+    const g = ctx.createRadialGradient(x, y, 0, x, y, 90);
+    g.addColorStop(0, `rgba(${rgb},${0.5 * alpha})`);
+    g.addColorStop(0.3, `rgba(${rgb},${0.14 * alpha})`);
+    g.addColorStop(1, `rgba(${rgb},0)`);
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(x, y, 90, 0, Math.PI * 2);
+    ctx.fill();
+
+    // The burning point itself, guttering.
+    ctx.globalAlpha = alpha * (0.75 + Math.random() * 0.25);
+    ctx.fillStyle = `rgb(${rgb})`;
+    ctx.beginPath();
+    ctx.arc(x, y, 2.4, 0, Math.PI * 2);
+    ctx.fill();
 
     ctx.restore();
     ctx.globalAlpha = 1;
