@@ -22,6 +22,16 @@ const mono = JetBrains_Mono({
 
 const title = `${site.name} — ${site.tagline}`;
 
+/**
+ * Absolute, and built here rather than via `asset()`.
+ *
+ * Open Graph image URLs are resolved against `metadataBase`, which already
+ * carries the deploy's base path. Handing it a path that `asset()` had already
+ * prefixed produced `/askAsher/askAsher/og.png` — a 404, and a dead preview on
+ * every link share. Resolving against `site.url` once is unambiguous.
+ */
+const ogImage = new URL('og.png', site.url).toString();
+
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
@@ -55,7 +65,7 @@ export const metadata: Metadata = {
     url: site.url,
     images: [
       {
-        url: asset('og.png'),
+        url: ogImage,
         width: 1200,
         height: 630,
         alt: `${site.name} — ${site.tagline}`,
@@ -66,7 +76,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title,
     description: site.description,
-    images: [asset('og.png')],
+    images: [ogImage],
   },
   robots: { index: true, follow: true },
 };
