@@ -124,10 +124,17 @@ body[data-locked='true'] {
   background: var(--color-steel-700);
 }
 
-:focus-visible {
-  outline: 2px solid var(--color-signal);
-  outline-offset: 3px;
-  border-radius: 2px;
+/*
+ * In the base layer on purpose. Unlayered rules outrank every Tailwind
+ * utility, so declaring this at the top level would make `focus-visible:*`
+ * utilities silently do nothing anywhere in the app.
+ */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
 }
 
 /* ============================================================================
