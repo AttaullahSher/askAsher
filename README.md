@@ -1,295 +1,209 @@
-# ASK
+# ASHER
 
-A personal assistant, teacher and guide that belongs to whoever opens it. It asks about you,
-keeps a durable memory of what matters, tracks what you are actually working toward, explains
-things one step at a time, talks and listens out loud, makes images, and runs on open models —
-with an automatic fallback chain when one of them refuses.
-
-**It works the moment you open it.** No key, no signup, no account — it ships with a shared starter
-key and a keyless backup model. Getting your own free key takes about two minutes and ASK walks you
-through it in five steps.
-
-No backend, no build step, no npm install. Plain HTML, CSS and JavaScript. Open `index.html`
-and it runs. Everything — chats, memory, goals, logs, keys — lives in the browser's local
-storage on the device. Nothing is sent anywhere except directly to the model provider you pick.
+An interactive personal microsite — a character introduction, not a portfolio.
+Built to be opened from a phone, from an Instagram bio link, and to make the
+visitor curious rather than informed.
 
 **Live:** https://attaullahsher.github.io/askAsher/
 
 ---
 
-## What it does
+## What it is
 
-**Sets itself up the first time you open it.** Offers to install as an app, makes you a profile,
-asks three questions about who you are and what you are working toward, asks how you want to be
-spoken to, then opens a chat that already knows the answers.
+A single dark, cinematic page:
 
-**One profile per person.** Three to five people can share a device and each gets their own chats,
-their own memory, their own goals and their own activity log. Nothing crosses between them.
-A profile can carry an optional PIN — a latch to stop accidental snooping, not real security
-(see [Where your data lives](#where-your-data-lives)).
-
-**Remembers you.** Every few replies it re-reads the conversation and pins anything durable —
-"Runs a music shop in Abu Dhabi", "Prefers short replies", "Writes in English and Urdu" —
-sorted into seven categories with a coverage meter showing how filled-in the picture is.
-Everything is visible in the right-hand rail and deletable with one tap.
-
-**Keeps your goal in view.** Separately from the facts, it tracks what you are trying to achieve,
-picks a primary goal, and works out one line on how to be more useful to you next. That goes into
-every system prompt, so answers keep getting pointed back at the thing that matters — without the
-bot announcing that it is doing so. Goals you finish drop off on their own.
-
-**Tidies your messages before sending them.** Set to *only when they're rough* by default: a short,
-typo-heavy or vague message gets rewritten into a clear request before it goes to the model. The
-chat still shows exactly what you typed, with a small **tidied before sending** chip that reveals
-what was actually sent. Set it to never or always in settings.
-
-**Teaches, rather than just answering.** The default setting assumes you are new to whatever
-you are asking about: the answer first in one plain sentence, then numbered steps with one action
-each, what you should see after each one, and every technical word explained where it appears.
-Every reply carries an **Explain simpler** button that redoes it from scratch for a beginner, and
-**Teach me something** walks you through any topic from nothing. Set the level to comfortable or
-expert in settings and it drops the scaffolding.
-
-**Talks and listens.** Tap the microphone and speak instead of typing. Tap **Read aloud** under any
-reply to hear it. Turn on **Voice chat** and it goes hands-free: it listens, answers out loud, then
-listens again until you stop it. All of that is the browser's own speech engine — no key, nothing
-uploaded, works offline once the page is cached. If you have a Groq key you can switch listening to
-Whisper instead, which copes better with accents and mixed languages.
-
-**Knows it can be out of date.** Today's date goes into every prompt, and anything that sounds
-time-sensitive — latest, current, price, release, news, this year — gets checked against Wikipedia,
-Hacker News and DuckDuckGo before it answers, with the sources listed under the reply. Those three
-allow direct browser calls and need no key. It is not a full search engine; it is enough to stop
-confident nonsense about things that changed after the model was trained.
-
-**Makes images.** No key needed — the open-weights SANA model through Pollinations, in five
-aspect ratios, with an optional seed for repeating a picture. Banner mode composites artwork,
-a scrim, a headline and a sub-line onto a canvas and hands you a PNG. There is also a
-*sharpen the prompt* button that rewrites a rough idea into a proper image prompt.
-
-**Falls back.** Pick any model from the pill under the composer. If it errors — bad key, rate
-limit, retired model ID, provider down — it walks down the rest of the chain instead of
-showing you a failure, and tells you underneath the reply which one actually answered.
+- **Entry gate.** Nothing animates and nothing makes a sound until the visitor
+  chooses to enter. The scene is already alive behind the gate, so it reads as a
+  held frame rather than a loading screen.
+- **Opening.** A slow camera push into a night drop zone, three lines of type,
+  then the standing title. Skippable from the first beat.
+- **Six sectors.** `01 CODE` (a constellation of tools, not a logo grid) ·
+  `02 AUTOMATION` (one pipeline running end to end) · `03 AI` (a core the
+  visitor brings online) · `04 SECURITY` (a defensive posture run) ·
+  `05 BUILDS` (real projects, each opening as a dossier) · `06 PLAYER` (a
+  loadout, no invented stats).
+- **Hidden things.** Five of them. The console will point you at the first.
 
 ---
 
-## Models
-
-Everything below speaks the OpenAI `/v1/chat/completions` shape, which is why one code path
-covers all of it. The first one needs no key at all; everything after it is optional.
-
-| # | Provider | Base URL | Default model | Key from |
-|---|---|---|---|---|
-| 1 | **Free model** | `https://text.pollinations.ai` | `openai-fast` (GPT-OSS 20B) | **none needed** |
-| 2 | OpenRouter | `https://openrouter.ai/api/v1` | `moonshotai/kimi-k2` | [openrouter.ai/keys](https://openrouter.ai/keys) |
-| 3 | Moonshot (Kimi) | `https://api.moonshot.ai/v1` | `kimi-k2-0905-preview` | [platform.moonshot.ai](https://platform.moonshot.ai) |
-| 4 | DeepSeek | `https://api.deepseek.com/v1` | `deepseek-chat` | [platform.deepseek.com](https://platform.deepseek.com) |
-| 5 | Groq | `https://api.groq.com/openai/v1` | `openai/gpt-oss-120b` | [console.groq.com/keys](https://console.groq.com/keys) |
-| 6 | NVIDIA NIM | `https://integrate.api.nvidia.com/v1` | `moonshotai/kimi-k2-instruct` | [build.nvidia.com](https://build.nvidia.com) — **needs a proxy** |
-| 7 | Ollama (local) | `http://localhost:11434/v1` | your choice | no key |
-| 8 | Custom | anything you like | anything you like | — |
-
-The free one is [Pollinations](https://pollinations.ai) serving GPT-OSS 20B to anonymous callers.
-It is rate-limited, slower, and cannot stream — replies land in one piece rather than word by word —
-but it means the app is useful before anyone has signed up for anything.
-
-**Want it faster?** Groq's free tier is the quickest, or OpenRouter — one key and you have Kimi,
-DeepSeek, Qwen, Llama and the rest behind it. A Groq key also unlocks Whisper for voice input.
-
-Model IDs get retired regularly. Every provider card has a **Load** button that asks the provider
-what your key can actually run and repopulates the list, so a stale default fixes itself.
-**Test this connection** reports either the reply or the exact error.
-
-### The NVIDIA caveat
-
-NVIDIA NIM sends no `Access-Control-Allow-Origin` header, so a browser request is blocked no matter
-how valid your key is. `proxy/worker.js` in this repo is a Cloudflare Worker that forwards to
-`https://integrate.api.nvidia.com`, adds the CORS headers, and streams the response body straight
-through so token-by-token replies still work:
+## Running it
 
 ```bash
-npm i -g wrangler
-wrangler deploy proxy/worker.js --name asher-nim-proxy --compatibility-date 2024-11-01
+npm install
+npm run dev          # http://localhost:3000
 ```
 
-Then set NVIDIA's Base URL to `https://asher-nim-proxy.<your-subdomain>.workers.dev/v1`.
+Other scripts:
 
-Groq, OpenRouter, Moonshot and DeepSeek all send CORS headers correctly and need no proxy.
-Ollama needs starting with `OLLAMA_ORIGINS=* ollama serve` or the browser gets refused.
+| Script | What it does |
+| --- | --- |
+| `npm run build` | Static export into `out/` |
+| `npm run start` | Serve the built `out/` locally |
+| `npm run lint` | ESLint (Next core-web-vitals + TypeScript) |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run assets` | Regenerate the favicons and the Open Graph card |
 
-### Images
-
-Images come from [Pollinations](https://pollinations.ai) over a plain GET, so they work before
-you have added any key at all.
-
-Anonymous callers get exactly one model there: **SANA**, NVIDIA's open-weights image model. The
-old `flux` and `turbo` names still answer but hand back the same picture, and `kontext` and
-`nanobanana` now fail outright — they moved behind an account. So ASK offers one honest option
-instead of a menu of four, plus a wording enhancer that measurably improves the result, and it
-retries with a fresh seed when the free service drops a request.
+Node 20+ is required. Node 22 is what CI uses.
 
 ---
 
-## Installing it
+## Deploying
 
-**Android / Chrome / Edge:** the setup flow offers an install button, and there is one in the left
-rail afterwards. Nothing downloads from a store — the browser keeps a copy and gives it an icon.
+The site is a fully static export (`output: 'export'`), so it will sit on any
+file host with no server behind it.
 
-**iPhone / iPad:** Safari never fires the install event, so there is no button. Tap **Share** →
-**Add to Home Screen** → **Add**. It has to be Safari; Chrome on iOS cannot install web apps.
-ASK detects iOS and shows those steps instead of a dead button.
+### GitHub Pages (what this repo is set up for)
 
-Once installed it opens full screen, works offline (the shell is cached; models obviously still
-need a connection), and keeps the same storage as the tab you set it up in.
+`.github/workflows/deploy.yml` builds and publishes on every push to `main`.
+One-time setup: **Settings → Pages → Build and deployment → Source → GitHub
+Actions**.
 
----
+The workflow sets `NEXT_PUBLIC_BASE_PATH` to `/<repo-name>` because project
+pages are served from a subdirectory. Everything in the app resolves asset and
+link URLs through `src/lib/paths.ts`, so there is nothing else to change.
 
-## Where your data lives
+### A custom domain, Vercel, Netlify, or any static host
 
-In `localStorage` on the device, and nowhere else:
-
-- `asher.v2.app` — the profile directory, provider settings and API keys
-- `asher.v2.u.<profile-id>` — one entry per person: chats, memory, goals, activity log, preferences
-
-There is no server in this project. Nothing is uploaded, nothing is analysed, no account exists.
-The only outbound traffic is HTTPS straight from your browser to the model provider you chose,
-and to Pollinations when you generate an image or use the free model — plus Wikipedia, Hacker News
-and DuckDuckGo when a question needs checking. Speech in and out never leaves the device at all,
-unless you switch listening to Whisper, in which case the audio clip goes to Groq.
-
-Two things to be honest about:
-
-- **API keys in browser storage are readable by anything running script on the page.** Use a
-  spend-capped key. This is fine for a personal app on your own device; it is not fine for a key
-  with a large balance behind it.
-- **The profile PIN is a latch, not a lock.** It stops a housemate opening your chats by accident.
-  It does not encrypt anything, and anyone who can open the browser's developer tools can read
-  around it. Profiles are for separation, not security.
-
-Export your data any time from **Models & keys → Your data** (JSON, restorable on another device)
-and your activity log as CSV.
-
----
-
-## Layout
-
-```
-index.html
-manifest.webmanifest
-sw.js                     app-shell cache; never caches model or image traffic
-assets/css/app.css
-assets/js/store.js        profiles, chats, memory, goals, logs — all localStorage
-assets/js/providers.js    OpenAI-compatible calls, SSE streaming, fallback chain, prompt polish
-assets/js/memory.js       fact extraction, goal review, system-prompt assembly, coverage meter
-assets/js/lang.js         works out English / Roman Urdu / Urdu from what you type
-assets/js/lookup.js       keyless web check — Wikipedia, Hacker News, DuckDuckGo
-assets/js/keys.js         the step-by-step walkthrough to a free key
-assets/js/help.js         how-do-I sheet, with device-specific install steps
-assets/js/voice.js        speech in and out, plus hands-free voice chat
-assets/js/images.js       image generation with model fallback + canvas banner compositor
-assets/js/onboarding.js   first-run flow and the profile picker
-assets/js/app.js          UI wiring
-assets/brand/logo.png     the logo everything else is built from
-assets/icons/             192, 512, maskable-512, apple-touch-180, favicon-32, og
-tools/make-icons.js       rebuilds every icon from the logo — node tools/make-icons.js
-proxy/worker.js           Cloudflare Worker CORS proxy for NVIDIA NIM
-```
-
-## Running it locally
+Build with no base path and upload `out/`:
 
 ```bash
-python3 -m http.server 8080
-# then open http://localhost:8080
+npm run build        # NEXT_PUBLIC_BASE_PATH unset → root deploy
 ```
 
-A plain `file://` open works too, except the service worker — browsers only register one over
-HTTP(S).
+On Vercel, the default settings work as-is.
 
-## Language
+---
 
-Nobody picks a language. ASK reads what you write and answers the same way:
+## Editing the content
 
-- **English** — plain English in, plain English out.
-- **Roman Urdu** — *"mujhe product add karna hai"*. This is the one a language menu always gets
-  wrong: the letters are Latin, so every detector calls it English and answers in English. ASK
-  matches it on vocabulary instead — words that are common in Roman Urdu and rare in English —
-  and replies in Roman Urdu.
-- **Urdu script** — detected from the script itself, answered in Urdu script.
+No component hard-codes a sentence. Everything a human would want to change
+lives in `src/content/`:
 
-It weighs your last five messages, newest heaviest, so switching mid-conversation is picked up on
-the next reply. You can still pin one language permanently in **Settings → How it talks**, and the
-setting line tells you which language it is using right now and why.
+| File | What is in it |
+| --- | --- |
+| `site.ts` | Name, tagline, description, canonical URL, outbound links, the six sector titles |
+| `builds.ts` | The projects in sector 05, each with what / why / does / tech |
+| `stack.ts` | Technologies in sector 01, their positions in the field map and the edges between them |
+| `automation.ts` | The pipeline stages and their log lines |
+| `ai.ts` | The AI modules and the core boot log |
+| `security.ts` | The posture run and the principles list |
+| `player.ts` | The loadout slots |
 
-## Voice, honestly
+**Links.** In `site.ts`, a link with an empty `href` simply does not render —
+there are no dead placeholder URLs on the page. Add your Instagram or an email
+by uncommenting and filling in the relevant line.
 
-Reading aloud uses `speechSynthesis`, which every current browser has. Listening uses
-`SpeechRecognition`, which Chrome, Edge and Safari have and Firefox does not — on Firefox the
-microphone button explains that and the Whisper option still works if you have a Groq key.
-On iPhone it has to be Safari, and iOS will not speak until you have tapped something first,
-which is why the first tap on **Read aloud** is what unlocks it.
+**Builds.** The rule for `builds.ts` is written at the top of the file: no
+invented metrics, no awards, no client logos. If a build cannot be described
+honestly in four short blocks, it does not go in yet.
 
-## Rebranding it
+---
 
-Every icon is generated from `assets/brand/logo.png` by `tools/make-icons.js` — pure Node, no
-image library, no design tool. Drop in a different logo and re-run it:
+## Sound
 
-```bash
-node tools/make-icons.js
+Nothing autoplays. The visitor either chooses **Enter experience** (with sound)
+or **Enter without sound**, and a control in the corner toggles it at any time.
+
+There are two audio paths, in order of preference:
+
+1. **A file at `public/audio/ambient.mp3`.** Drop one in and it is picked up
+   automatically — nothing else to change. Use something you own or something
+   licensed for the purpose.
+2. **No file:** a cinematic drone is synthesised in the browser with the Web
+   Audio API — sub, a slowly-filtered minor pad, wind, and a low pulse. Original
+   by construction, zero bytes shipped, and no licensing question to answer.
+
+That is the state the repo ships in. It sounds intentional, not like a
+placeholder.
+
+---
+
+## Performance and the choices behind it
+
+The primary visitor arrives from Instagram's in-app browser, on a phone, over
+mobile data. Everything below follows from that.
+
+**Canvas 2D, not WebGL.** The atmosphere is layered 2D parallax — sky, stars,
+three procedural silhouette ridges, drifting fog, an airdrop, a receding ground
+grid, embers. It holds 60fps on hardware where a shader-based fog volume does
+not, costs a few kilobytes instead of a 3D runtime, and needs no fallback path:
+if the 2D context is unavailable, a CSS gradient carries the page and nothing
+else changes.
+
+**No animation library.** No GSAP, no Framer Motion. Reveals are two CSS classes
+(`.reveal`, `.reveal-wipe`) plus a delay variable, driven by a small
+`IntersectionObserver` hook. That is the entire motion system, and it is why the
+JavaScript payload is what it is.
+
+**Work is scoped to what is on screen.** The render loop pauses when the tab is
+hidden. The pipeline and the security run only animate while their section is
+visible. Canvas resolution and particle counts scale to a coarse device tier.
+The build dossier and the hidden terminal are lazily loaded and only ever
+fetched after a deliberate tap.
+
+**The scene recedes.** After the opening, a scrim brings the drop zone down to a
+trace. Without it, the skyline sits behind every heading and each sector reads
+as text pasted over a photograph.
+
+---
+
+## Accessibility
+
+- `prefers-reduced-motion` is honoured, and there is a manual toggle in the
+  corner that persists. In reduced mode the cinematic is skipped entirely, the
+  pipeline and posture run show their finished state, and nothing is hidden —
+  reveals simply resolve at once.
+- Every interactive element is a real button or link, reachable by keyboard,
+  with a visible focus ring. The build dossier and the terminal trap focus and
+  close on `Escape`.
+- With JavaScript disabled the page is still readable: a `<noscript>` style
+  resolves the reveals and removes the gate.
+- Text uses `16px` inputs so iOS does not zoom the page on focus, and honours
+  `text-size-adjust` so Instagram's browser does not reflow it.
+
+---
+
+## Structure
+
+```
+src/
+  app/           layout (fonts, metadata, OG), page, globals.css, robots, sitemap
+  components/    Gate, Hero, Manifest, Section shell, Hud, Terminal,
+                 BuildDialog, EasterEggs, Toast, Atmosphere
+    sectors/     one component per sector
+  content/       all copy and data — see the table above
+  lib/           scene (the canvas engine), audio, hooks, experience context, paths
+public/
+  ask/           the previous site, kept live at /ask/ so a real build is reachable
+  icons/         generated favicon set
+  og.png         generated share card
+  sw.js          kill-switch for the old service worker (see below)
+scripts/
+  generate-assets.mjs   builds the icons and the OG card from SVG
 ```
 
-It finds the mark inside the artwork, keys out the paper so no crop edge shows, and writes all six
-sizes. It also prints the strongest colour it found, which is what `--accent` in
-`assets/css/app.css` is tuned to — change that one variable and the whole interface follows.
+**Theme.** Every colour, font and easing is a token in the `@theme` block at the
+top of `src/app/globals.css`. Sector accents are one level of indirection on top
+of that (`--accent-code`, `--accent-security`, …), so a sector can be re-skinned
+in one line, and the canvas reads the same values.
 
-## Adding a model
+---
 
-**Get a free key — 2 min** in the sidebar opens a walkthrough covering Groq, OpenRouter, DeepSeek,
-Moonshot, Ollama on your own computer, and *Something else* for any other OpenAI-compatible
-service. Each one is five numbered steps — tap the link, sign in, press Create Key, copy, paste —
-and ASK tests the key before it saves it. A key that works goes to the front of the chain.
+## Two notes on what was already here
 
-Links open through a freshly-built anchor rather than `window.open`. `window.open` with
-`noopener` returns null even when it worked *and* spends the tap's user activation, so the
-"did that work?" fallback after it is already too late to fire — which is why the buttons used to
-do nothing. The address is also printed on screen with a copy button, for the in-app browsers that
-refuse to open anything at all.
+**`/ask/`.** The previous occupant of this repo — a browser-only assistant with
+durable memory and voice — is preserved at `/ask/` and linked from sector 05, so
+the site can point at something real and working rather than describing it.
 
-Everything on offer is open-weights: Llama 3.3, GPT-OSS, Qwen 3, DeepSeek V3 and R1, Kimi K2,
-Gemma 4, Nemotron, Mistral Small. The picker says what each one is good at rather than showing
-its ID.
+**`public/sw.js`.** That older site registered a caching service worker at the
+root of this URL, and browsers that still have it installed would keep serving
+its cached shell. The file now at that path is a kill-switch: it drops those
+caches, unregisters itself, and reloads the window. Safe to delete once the old
+install base has aged out.
 
-## How do I…
-
-A help sheet in the sidebar answers the six things people actually get stuck on, in steps: putting
-ASK on the home screen, getting a free key, talking to it, making a picture, letting someone else
-use the phone, and deleting what it remembers.
-
-The install steps are worked out from the device — Android gets the Chrome menu route, iPhone gets
-the Safari share-sheet route, a desktop gets the address-bar icon. And if ASK was opened inside
-Facebook, Instagram or WhatsApp it says so first, because those in-app browsers cannot install
-anything at all.
-
-## The shared starter key
-
-ASK ships with a real Groq key so that opening it for the first time just works. It is in
-`assets/js/store.js`, base64'd and split — which keeps automated scrapers from getting it revoked
-within the hour, and is **not** secrecy. Assume it is public, because it is.
-
-What that means in practice:
-
-- Everyone who opens ASK shares its rate limit, so it slows down and sometimes refuses.
-- It may be revoked or replaced at any time.
-- The app knows this: a soft reminder appears after a few messages, the sidebar carries a
-  **Get a free key — 2 min** button, and any failure turns into the same five-step walkthrough
-  instead of an error message.
-
-Your own key goes to the top of the chain the moment it tests green, and the reminders stop.
-To swap the shipped one, replace the two base64 halves in `store.js`.
-
-## Credit
-
-ASK — programmed by **Attaullah Sher**.
+---
 
 ## Licence
 
-MIT. See `LICENSE`.
+MIT — see [LICENSE](LICENSE). The name, the copy and the visual identity are
+personal; the code is yours to learn from.
