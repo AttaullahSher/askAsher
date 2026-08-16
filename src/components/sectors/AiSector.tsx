@@ -2,31 +2,37 @@
 
 import { useEffect, useState } from 'react';
 import { Section } from '@/components/Section';
+import { useInView } from '@/lib/hooks';
 import { useExperience } from '@/lib/experience';
 import { aiBootLog, aiDisclaimer, aiModules } from '@/content/ai';
 import type { Sector } from '@/content/site';
 
 /**
- * The core comes online when the visitor asks it to. Everything here is
+ * The core brings itself online as you reach it. Everything here is
  * presentation — the disclaimer says so plainly, because pretending a canvas
  * animation is inference would be the cheapest thing on the site.
  */
 export function AiSector({ sector }: { sector: Sector }) {
-  const { motion, markFound } = useExperience();
+  const { ref, inView } = useInView<HTMLDivElement>({ threshold: 0.3 });
+  const { motion } = useExperience();
   const [state, setState] = useState<'idle' | 'booting' | 'online'>('idle');
   const [lines, setLines] = useState<string[]>([]);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [cycle, setCycle] = useState(0);
 
-  const boot = () => {
-    if (state !== 'idle') return;
-    markFound('core');
+  // Boots on arrival rather than on a tap — nothing in the descent asks to be
+  // clicked.
+  useEffect(() => {
+    if (!inView) return;
     if (motion === 'reduced') {
-      setLines(aiBootLog);
-      setState('online');
-      return;
+      const id = window.setTimeout(() => {
+        setLines(aiBootLog);
+        setState('online');
+      }, 0);
+      return () => window.clearTimeout(id);
     }
-    setState('booting');
-  };
+    const id = window.setTimeout(() => setState((s) => (s === 'idle' ? 'booting' : s)), 500);
+    return () => window.clearTimeout(id);
+  }, [inView, motion]);
 
   useEffect(() => {
     if (state !== 'booting') return;
@@ -46,12 +52,19 @@ export function AiSector({ sector }: { sector: Sector }) {
   const online = state === 'online';
   const live = state !== 'idle';
 
+  // Once online, the ring walks its own modules.
+  useEffect(() => {
+    if (!online || motion === 'reduced' || !inView) return;
+    const id = window.setInterval(() => setCycle((c) => c + 1), 2400);
+    return () => window.clearInterval(id);
+  }, [online, motion, inView]);
+
+  const highlighted = online ? aiModules[cycle % aiModules.length] : null;
+
   return (
     <Section sector={sector} wide>
-      <div className="flex flex-col items-center">
-        <Core state={state} onActivate={boot} selectedAngle={
-          selected ? (aiModules.find((m) => m.id === selected)?.angle ?? null) : null
-        } />
+      <div ref={ref} className="flex flex-col items-center">
+        <Core state={state} selectedAngle={highlighted?.angle ?? null} />
 
         {/* boot readout */}
         <div
@@ -87,49 +100,42 @@ export function AiSector({ sector }: { sector: Sector }) {
         </div>
       </div>
 
-      {/* modules */}
+      {/* modules — deployed by the core, not selected by the visitor */}
       <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {aiModules.map((m, i) => {
-          const isSel = selected === m.id;
+          const isSel = highlighted?.id === m.id;
           return (
-            <li key={m.id}>
-              <button
-                type="button"
-                disabled={!live}
-                aria-pressed={isSel}
-                onPointerEnter={() => live && setSelected(m.id)}
-                onFocus={() => live && setSelected(m.id)}
-                onClick={() => setSelected((s) => (s === m.id ? null : m.id))}
-                className="bracket h-full w-full px-4 py-4 text-left transition-all duration-500 disabled:cursor-default"
+            <li
+              key={m.id}
+              className="bracket h-full px-4 py-4 transition-all duration-500"
+              style={{
+                border: `1px solid ${isSel ? 'var(--accent)' : 'var(--hud-line)'}`,
+                background: isSel
+                  ? 'color-mix(in oklab, var(--accent) 8%, transparent)'
+                  : 'color-mix(in oklab, var(--color-smoke) 45%, transparent)',
+                opacity: live ? 1 : 0.22,
+                transform: live ? 'none' : 'translateY(10px)',
+                transitionDelay: live ? `${i * 70}ms` : '0ms',
+                ['--bracket-color' as string]: isSel
+                  ? 'var(--accent)'
+                  : 'var(--color-steel-700)',
+              }}
+            >
+              <span
+                className="font-display block text-xs font-bold uppercase transition-colors duration-500"
                 style={{
-                  border: `1px solid ${isSel ? 'var(--accent)' : 'var(--hud-line)'}`,
-                  background: isSel
-                    ? 'color-mix(in oklab, var(--accent) 8%, transparent)'
-                    : 'color-mix(in oklab, var(--color-smoke) 45%, transparent)',
-                  opacity: live ? 1 : 0.22,
-                  transform: live ? 'none' : 'translateY(10px)',
-                  transitionDelay: live ? `${i * 70}ms` : '0ms',
-                  ['--bracket-color' as string]: isSel
-                    ? 'var(--accent)'
-                    : 'var(--color-steel-700)',
+                  letterSpacing: '0.2em',
+                  color: isSel ? 'var(--accent)' : 'var(--color-bone)',
                 }}
               >
-                <span
-                  className="font-display block text-xs font-bold uppercase"
-                  style={{
-                    letterSpacing: '0.2em',
-                    color: isSel ? 'var(--accent)' : 'var(--color-bone)',
-                  }}
-                >
-                  {m.label}
-                </span>
-                <span
-                  className="mt-2 block text-xs leading-relaxed"
-                  style={{ color: 'var(--color-muted)' }}
-                >
-                  {m.body}
-                </span>
-              </button>
+                {m.label}
+              </span>
+              <span
+                className="mt-2 block text-xs leading-relaxed"
+                style={{ color: 'var(--color-muted)' }}
+              >
+                {m.body}
+              </span>
             </li>
           );
         })}
@@ -144,23 +150,19 @@ export function AiSector({ sector }: { sector: Sector }) {
 
 function Core({
   state,
-  onActivate,
   selectedAngle,
 }: {
   state: 'idle' | 'booting' | 'online';
-  onActivate: () => void;
   selectedAngle: number | null;
 }) {
   const live = state !== 'idle';
   const online = state === 'online';
 
   return (
-    <button
-      type="button"
-      onClick={onActivate}
-      disabled={live}
-      aria-label={live ? 'AI core online' : 'Activate AI core'}
-      className="relative grid h-56 w-56 place-items-center disabled:cursor-default sm:h-72 sm:w-72"
+    <div
+      role="img"
+      aria-label={online ? 'AI core, online' : 'AI core, starting'}
+      className="relative grid h-56 w-56 place-items-center sm:h-72 sm:w-72"
     >
       <svg viewBox="-100 -100 200 200" className="absolute inset-0 h-full w-full">
         {/* outer ring */}
@@ -270,8 +272,8 @@ function Core({
           textShadow: live ? '0 0 12px color-mix(in oklab, var(--accent) 70%, transparent)' : undefined,
         }}
       >
-        {online ? 'Online' : state === 'booting' ? 'Booting' : 'Initialise core'}
+        {online ? 'Online' : 'Booting'}
       </span>
-    </button>
+    </div>
   );
 }

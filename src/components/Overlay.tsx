@@ -1,15 +1,30 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import type { Build } from '@/content/builds';
-import { asset } from '@/lib/paths';
 
 /**
- * A build opens as a dossier rather than a page: four blocks, no scroll-jacking,
- * escape and backdrop both close it. Focus is trapped for keyboard users.
+ * The modal shell both end-of-page panels sit in.
+ *
+ * Portalled to <body> because <main> establishes its own stacking context — a
+ * dialog rendered inside it can never sit above the fixed HUD. Escape and the
+ * backdrop both close; focus is trapped and restored.
  */
-export function BuildDialog({ build, onClose }: { build: Build; onClose: () => void }) {
+export function Overlay({
+  label,
+  eyebrow,
+  title,
+  onClose,
+  children,
+  onBack,
+}: {
+  label: string;
+  eyebrow: string;
+  title: string;
+  onClose: () => void;
+  children: ReactNode;
+  onBack?: () => void;
+}) {
   const panelRef = useRef<HTMLDivElement | null>(null);
   const restoreTo = useRef<HTMLElement | null>(null);
 
@@ -49,9 +64,6 @@ export function BuildDialog({ build, onClose }: { build: Build; onClose: () => v
     };
   }, [onClose]);
 
-  // Portalled to <body>: <main> establishes its own stacking context, so a
-  // dialog rendered inside it could never sit above the fixed HUD. This only
-  // ever renders after a click, so `document` is always there.
   return createPortal(
     <div
       className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center"
@@ -61,21 +73,21 @@ export function BuildDialog({ build, onClose }: { build: Build; onClose: () => v
         type="button"
         aria-label="Close"
         onClick={onClose}
+        tabIndex={-1}
         className="absolute inset-0 h-full w-full cursor-default"
         style={{
-          background: 'rgba(2,4,7,0.86)',
+          background: 'rgba(2,4,7,0.88)',
           backdropFilter: 'blur(6px)',
           WebkitBackdropFilter: 'blur(6px)',
           animation: 'fade-in 300ms ease both',
         }}
-        tabIndex={-1}
       />
 
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
-        aria-labelledby={`build-${build.id}-title`}
+        aria-label={label}
         tabIndex={-1}
         className="relative max-h-[88svh] w-full overflow-y-auto sm:max-w-2xl"
         style={{
@@ -89,91 +101,53 @@ export function BuildDialog({ build, onClose }: { build: Build; onClose: () => v
           className="sticky top-0 z-10 flex items-center justify-between gap-4 px-5 py-4 sm:px-7"
           style={{
             borderBottom: '1px solid var(--hud-line)',
-            background: 'linear-gradient(180deg, #0c1119 70%, transparent)',
+            background: 'linear-gradient(180deg, #0c1119 72%, transparent)',
             backdropFilter: 'blur(8px)',
           }}
         >
           <div className="min-w-0">
             <p className="hud-sm" style={{ color: 'var(--color-signal)' }}>
-              ● {build.status} · {build.year}
+              {eyebrow}
             </p>
             <h3
-              id={`build-${build.id}-title`}
               className="font-display mt-1 truncate text-xl font-extrabold uppercase sm:text-2xl"
               style={{ letterSpacing: '0.02em' }}
             >
-              {build.title}
+              {title}
             </h3>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="hud-sm shrink-0 px-3 py-2 transition-colors hover:text-[var(--color-bone)]"
-            style={{ border: '1px solid var(--hud-line)' }}
-          >
-            Close
-          </button>
+
+          <div className="flex shrink-0 items-center gap-2">
+            {onBack && (
+              <button
+                type="button"
+                onClick={onBack}
+                className="hud-sm px-3 py-2 transition-colors hover:text-[var(--color-bone)]"
+                style={{ border: '1px solid var(--hud-line)' }}
+              >
+                ← Back
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onClose}
+              className="hud-sm px-3 py-2 transition-colors hover:text-[var(--color-bone)]"
+              style={{ border: '1px solid var(--hud-line)' }}
+            >
+              Close
+            </button>
+          </div>
         </header>
 
-        <div className="space-y-7 px-5 py-6 sm:px-7 sm:py-8">
-          <Block label="What it is">
-            <p className="prose-body">{build.what}</p>
-          </Block>
-
-          <Block label="Why I built it">
-            <p className="prose-body">{build.why}</p>
-          </Block>
-
-          <Block label="What it does">
-            <ul className="space-y-2">
-              {build.does.map((d) => (
-                <li key={d} className="prose-body flex gap-3">
-                  <span aria-hidden style={{ color: 'var(--color-signal)' }}>
-                    ›
-                  </span>
-                  <span>{d}</span>
-                </li>
-              ))}
-            </ul>
-          </Block>
-
-          <Block label="Tech used">
-            <ul className="flex flex-wrap gap-2">
-              {build.tech.map((t) => (
-                <li
-                  key={t}
-                  className="hud-sm px-2 py-1"
-                  style={{ border: '1px solid var(--hud-line)' }}
-                >
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </Block>
-
-          {build.href && (
-            <a
-              href={asset(build.href)}
-              target={build.href.startsWith('http') ? '_blank' : undefined}
-              rel="noreferrer"
-              className="hud-sm inline-flex items-center gap-2 px-5 py-3 transition-colors"
-              style={{
-                border: '1px solid color-mix(in oklab, var(--color-signal) 50%, transparent)',
-                color: 'var(--color-signal)',
-                background: 'color-mix(in oklab, var(--color-signal) 8%, transparent)',
-              }}
-            >
-              {build.hrefLabel ?? 'Open'} <span aria-hidden>→</span>
-            </a>
-          )}
-        </div>
+        <div className="px-5 py-6 sm:px-7 sm:py-8">{children}</div>
       </div>
     </div>,
     document.body,
   );
 }
 
-function Block({ label, children }: { label: string; children: React.ReactNode }) {
+/** Labelled block used inside both panels. */
+export function Block({ label, children }: { label: string; children: ReactNode }) {
   return (
     <section>
       <h4 className="hud-sm mb-2.5" style={{ color: 'var(--color-signal)' }}>

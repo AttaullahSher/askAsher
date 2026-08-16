@@ -47,6 +47,17 @@ interface Ember {
   max: number;
 }
 
+/** Dust caught in the light. Slower and paler than an ember. */
+interface Mote {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  r: number;
+  a: number;
+  phase: number;
+}
+
 interface FogPuff {
   x: number;
   y: number;
@@ -82,6 +93,7 @@ export class AtmosphereScene {
   private fogSprite: HTMLCanvasElement | null = null;
   private puffs: FogPuff[] = [];
   private embers: Ember[] = [];
+  private motes: Mote[] = [];
   private stars: Star[] = [];
 
   /** 0 at the gate, 1 once the camera has finished pushing in. */
@@ -119,6 +131,7 @@ export class AtmosphereScene {
     this.buildRidges();
     this.buildFog();
     this.buildStars();
+    this.buildMotes();
     this.embers = [];
   }
 
@@ -136,6 +149,20 @@ export class AtmosphereScene {
       x: r() * this.w,
       y: r() * this.horizon * 0.92,
       r: 0.4 + r() * 0.9,
+      phase: r() * Math.PI * 2,
+    }));
+  }
+
+  private buildMotes() {
+    const r = rng(4242);
+    const n = Math.round(this.budget.embers * 0.7);
+    this.motes = Array.from({ length: n }, () => ({
+      x: r() * this.w,
+      y: r() * this.h,
+      vx: (r() - 0.5) * 6,
+      vy: (r() - 0.5) * 4,
+      r: 0.5 + r() * 1.3,
+      a: 0.06 + r() * 0.16,
       phase: r() * Math.PI * 2,
     }));
   }
@@ -284,8 +311,11 @@ export class AtmosphereScene {
     this.drawAirdrop(dt, t, horizon, push);
     this.drawFog(dt, push);
     this.drawGround(horizon, push, t);
+    this.drawGroundProps(horizon, push);
     this.drawEmbers(dt);
+    this.drawMotes(dt, t);
     this.drawVignette();
+    this.drawGrade();
   }
 
   private parallax(depth: number, push: number) {
@@ -300,11 +330,13 @@ export class AtmosphereScene {
   private drawSky(horizon: number, push: number) {
     const { ctx, w, h } = this;
     const hot = this.overdrive;
+    // Faded-stock grade: the blacks are lifted and warmed rather than crushed,
+    // which is what makes old film read as old film.
     const g = ctx.createLinearGradient(0, 0, 0, h);
-    g.addColorStop(0, '#03050a');
-    g.addColorStop(0.42, hot ? '#0d0a08' : '#070c14');
-    g.addColorStop(Math.min(0.99, horizon / h), hot ? '#241408' : '#101a28');
-    g.addColorStop(1, hot ? '#120b06' : '#070b11');
+    g.addColorStop(0, hot ? '#0a0704' : '#080a0e');
+    g.addColorStop(0.42, hot ? '#150e08' : '#0d1016');
+    g.addColorStop(Math.min(0.99, horizon / h), hot ? '#2b1a0b' : '#1a1c1e');
+    g.addColorStop(1, hot ? '#160d06' : '#0d0e10');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, w, h);
     void push;
@@ -471,6 +503,95 @@ export class AtmosphereScene {
     }
   }
 
+  /**
+   * Ground furniture — supply crates and a run of chain-link. Original shapes,
+   * silhouette only; the genre is the reference, never the assets.
+   */
+  private drawGroundProps(horizon: number, push: number) {
+    const { ctx, w, h } = this;
+    const depth = h - horizon;
+    if (depth <= 0) return;
+
+    const r = rng(515);
+    ctx.save();
+    ctx.fillStyle = this.overdrive ? '#0d0803' : '#05070b';
+    ctx.strokeStyle = this.overdrive
+      ? 'rgba(255,170,90,0.16)'
+      : 'rgba(150,180,210,0.12)';
+    ctx.lineWidth = 1;
+
+    // Crates scattered along the plate, larger as they come forward.
+    const count = this.w < 720 ? 3 : 5;
+    for (let i = 0; i < count; i += 1) {
+      // Kept well clear of the horizon — a crate level with the skyline reads
+      // as a floating box, not as something sitting on the ground.
+      const k = 0.34 + r() * 0.5;
+      const cy = horizon + depth * k * k * (1 + push * 0.1);
+      const scale = (0.35 + k * 1.5) * (1 + push * 0.2);
+      const cw = 26 * scale;
+      const ch = 17 * scale;
+      const cx = r() * (w + 160) - 80 - this.pointer.x * (14 + k * 40);
+
+      ctx.globalAlpha = 0.85;
+      ctx.fillRect(cx, cy - ch, cw, ch);
+      // A single lit edge, so it reads as a solid object catching the moon
+      // rather than as an outlined shape.
+      ctx.globalAlpha = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - ch);
+      ctx.lineTo(cx + cw, cy - ch);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
+  private drawMotes(dt: number, t: number) {
+    const { ctx, w, h } = this;
+    ctx.save();
+    for (const m of this.motes) {
+      m.x += m.vx * dt;
+      m.y += m.vy * dt;
+      if (m.x < -10) m.x = w + 10;
+      if (m.x > w + 10) m.x = -10;
+      if (m.y < -10) m.y = h + 10;
+      if (m.y > h + 10) m.y = -10;
+
+      const tw = 0.55 + 0.45 * Math.sin(t * 0.9 + m.phase);
+      ctx.globalAlpha = m.a * tw;
+      ctx.fillStyle = this.overdrive ? '#ffd9b0' : '#cfd9e4';
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
+  /** A warm, faded wash over everything — the last step, like a print grade. */
+  private drawGrade() {
+    const { ctx, w, h } = this;
+    ctx.save();
+    ctx.globalCompositeOperation = 'overlay';
+    const g = ctx.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, this.overdrive ? 'rgba(255,150,70,0.10)' : 'rgba(150,126,92,0.055)');
+    g.addColorStop(0.6, 'rgba(120,104,84,0.03)');
+    g.addColorStop(1, this.overdrive ? 'rgba(255,170,90,0.09)' : 'rgba(162,132,96,0.07)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+    ctx.restore();
+
+    // Lift the blacks — warm and slight. A neutral lift at any real strength
+    // just reads as haze and takes the contrast with it.
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = this.overdrive ? 'rgba(22,11,4,0.34)' : 'rgba(13,10,7,0.26)';
+    ctx.fillRect(0, 0, w, h);
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
   private drawGround(horizon: number, push: number, t: number) {
     const { ctx, w, h } = this;
     const depth = h - horizon;
@@ -572,7 +693,8 @@ export class AtmosphereScene {
       Math.max(w, h) * 0.78,
     );
     g.addColorStop(0, 'rgba(0,0,0,0)');
-    g.addColorStop(1, 'rgba(0,0,0,0.72)');
+    g.addColorStop(0.55, 'rgba(0,0,0,0.18)');
+    g.addColorStop(1, 'rgba(0,0,0,0.82)');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, w, h);
   }

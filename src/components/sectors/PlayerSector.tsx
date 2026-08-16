@@ -1,20 +1,37 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Section } from '@/components/Section';
+import { useInView } from '@/lib/hooks';
+import { useExperience } from '@/lib/experience';
 import { loadout, playerNote, playerTitles } from '@/content/player';
 import type { Sector } from '@/content/site';
+
+const DWELL_MS = 2800;
 
 /**
  * A loadout screen, not a scoreboard. No ranks, no K/D, no invented stats —
  * each slot is a habit the games trained that the building work uses.
+ *
+ * Cycles itself: nothing in the descent asks to be tapped.
  */
 export function PlayerSector({ sector }: { sector: Sector }) {
-  const [active, setActive] = useState(loadout[0]?.id ?? '');
+  const { ref, inView } = useInView<HTMLDivElement>({ threshold: 0.25, once: false });
+  const { motion } = useExperience();
+  const [slot, setSlot] = useState(0);
+
+  useEffect(() => {
+    if (!inView || motion === 'reduced') return;
+    const id = window.setInterval(() => setSlot((i) => (i + 1) % loadout.length), DWELL_MS);
+    return () => window.clearInterval(id);
+  }, [inView, motion]);
+
+  const active = loadout[slot]?.id ?? loadout[0]?.id ?? '';
 
   return (
     <Section sector={sector} wide>
       <div
+        ref={ref}
         className="relative overflow-hidden"
         style={{
           border: '1px solid var(--hud-line)',
@@ -56,13 +73,8 @@ export function PlayerSector({ sector }: { sector: Sector }) {
                   key={s.id}
                   style={i > 0 ? { borderTop: '1px solid var(--hud-line)' } : undefined}
                 >
-                  <button
-                    type="button"
-                    aria-pressed={on}
-                    onPointerEnter={() => setActive(s.id)}
-                    onFocus={() => setActive(s.id)}
-                    onClick={() => setActive(s.id)}
-                    className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-all duration-300 sm:px-5"
+                  <div
+                    className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-all duration-500 sm:px-5"
                     style={{
                       background: on
                         ? 'color-mix(in oklab, var(--accent) 10%, transparent)'
@@ -85,7 +97,7 @@ export function PlayerSector({ sector }: { sector: Sector }) {
                     >
                       {s.label}
                     </span>
-                  </button>
+                  </div>
                 </li>
               );
             })}

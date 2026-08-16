@@ -1,16 +1,15 @@
 'use client';
 
 import { lazy, Suspense } from 'react';
+import { Access } from './Access';
 import { Atmosphere } from './Atmosphere';
 import { EasterEggs } from './EasterEggs';
 import { Gate } from './Gate';
 import { Hero } from './Hero';
 import { Hud } from './Hud';
 import { Manifest } from './Manifest';
-import { Outro } from './Outro';
 import { AiSector } from './sectors/AiSector';
 import { AutomationSector } from './sectors/AutomationSector';
-import { BuildsSector } from './sectors/BuildsSector';
 import { CodeSector } from './sectors/CodeSector';
 import { PlayerSector } from './sectors/PlayerSector';
 import { SecuritySector } from './sectors/SecuritySector';
@@ -35,9 +34,8 @@ export function Experience() {
         {byId.automation && <AutomationSector sector={byId.automation} />}
         {byId.ai && <AiSector sector={byId.ai} />}
         {byId.security && <SecuritySector sector={byId.security} />}
-        {byId.builds && <BuildsSector sector={byId.builds} />}
         {byId.player && <PlayerSector sector={byId.player} />}
-        <Outro />
+        <Access />
       </main>
 
       <Hud />

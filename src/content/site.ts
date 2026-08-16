@@ -7,7 +7,7 @@ export const site = {
   name: 'ASHER',
   tagline: 'Code. Create. Automate. Play.',
   description:
-    'A digital playground for the things I build, break, automate and experiment with.',
+    'A quiet room, a few screens, and whatever refused to stay solved. This is the part I let people see.',
   /** Used for canonical URLs and Open Graph. Change this if you move the site. */
   url: 'https://attaullahsher.github.io/askAsher/',
   locale: 'en',
@@ -41,7 +41,7 @@ export const links: { label: string; href: string; note: string }[] = [
 /** The three lines of the opening. Kept short on purpose. */
 export const intro = ['HELLO.', "I'M ASHER.", 'I BUILD THINGS.'] as const;
 
-export type SectorId = 'code' | 'automation' | 'ai' | 'security' | 'builds' | 'player';
+export type SectorId = 'code' | 'automation' | 'ai' | 'security' | 'player';
 
 export interface Sector {
   id: SectorId;
@@ -57,7 +57,7 @@ export const sectors: Sector[] = [
     id: 'code',
     index: '01',
     title: 'CODE',
-    subtitle: 'The raw material. Languages, runtimes and the glue between them.',
+    subtitle: 'The raw material. Scanning.',
     accent: 'var(--accent-code)',
   },
   {
@@ -82,17 +82,10 @@ export const sectors: Sector[] = [
     accent: 'var(--accent-security)',
   },
   {
-    id: 'builds',
-    index: '05',
-    title: 'BUILDS',
-    subtitle: 'Things that exist and are being used.',
-    accent: 'var(--accent-builds)',
-  },
-  {
     id: 'player',
-    index: '06',
+    index: '05',
     title: 'PLAYER',
-    subtitle: 'Where the reflexes come from.',
+    subtitle: 'Where the reflexes came from.',
     accent: 'var(--accent-player)',
   },
 ];

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useExperience } from '@/lib/experience';
-import { builds } from '@/content/builds';
+import { projects } from '@/content/projects';
 import { sectors, site } from '@/content/site';
 import { stack } from '@/content/stack';
 
@@ -75,12 +75,12 @@ export function Terminal() {
             text: `  ${s.index}  ${s.title.padEnd(12)} ${s.subtitle}`,
           })),
       },
-      builds: {
+      work: {
         desc: 'what exists',
         run: () =>
-          builds.map((b) => ({
+          projects.map((p) => ({
             kind: 'out' as const,
-            text: `  [${b.status.padEnd(10)}] ${b.title.padEnd(20)} ${b.blurb}`,
+            text: `  ${p.code}  [${p.status.padEnd(8)}] ${p.title.padEnd(8)} ${p.blurb}`,
           })),
       },
       stack: {
@@ -94,7 +94,6 @@ export function Terminal() {
         run: () => {
           const secrets: [string, string][] = [
             ['supply', 'clicked the airdrop'],
-            ['core', 'brought the ai core online'],
             ['konami', 'entered overdrive'],
             ['terminal', 'opened this terminal'],
             ['deep', 'found the last one'],

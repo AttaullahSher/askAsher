@@ -103,7 +103,10 @@ export function Hud() {
       >
         <span style={{ color: 'var(--color-signal)' }}>●</span>{' '}
         {active === 'top' ? '00' : (sectors.find((s) => s.id === active)?.index ?? '00')}
-        <span style={{ opacity: 0.4 }}> / 06</span>
+        <span style={{ opacity: 0.4 }}>
+          {' / '}
+          {String(sectors.length).padStart(2, '0')}
+        </span>
       </span>
 
       {/* sector rail — desktop only; on a phone the progress line does this job */}

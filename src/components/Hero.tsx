@@ -159,10 +159,12 @@ function ScrollCue({ visible }: { visible: boolean }) {
       className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2 transition-opacity duration-1000 delay-500"
       style={{ opacity: visible ? 1 : 0, paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
-      <div className="flex flex-col items-center gap-3">
-        <span className="hud-sm">Begin descent</span>
+      <div className="flex flex-col items-center gap-2.5">
+        <span className="hud-sm" style={{ color: 'var(--color-bone)' }}>
+          Scroll
+        </span>
         <span
-          className="relative block h-10 w-px overflow-hidden"
+          className="relative block h-9 w-px overflow-hidden"
           style={{ background: 'var(--hud-line)' }}
         >
           <span
@@ -174,6 +176,20 @@ function ScrollCue({ visible }: { visible: boolean }) {
             }}
           />
         </span>
+        <svg
+          width="16"
+          height="10"
+          viewBox="0 0 16 10"
+          fill="none"
+          style={{ animation: 'nudge 2.4s var(--ease-in-out-quint) infinite' }}
+        >
+          <path
+            d="M1 1l7 7 7-7"
+            stroke="var(--color-signal)"
+            strokeWidth="1.6"
+            strokeLinecap="square"
+          />
+        </svg>
       </div>
     </div>
   );

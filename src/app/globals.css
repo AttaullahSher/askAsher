@@ -250,7 +250,8 @@ body[data-locked='true'] {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.035;
+  /* Heavier than a clean digital look wants — this is the vintage stock. */
+  opacity: 0.062;
   mix-blend-mode: overlay;
   background-image: var(--grain-url);
   background-size: 160px 160px;
@@ -405,4 +406,9 @@ body[data-locked='true'] {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+@keyframes nudge {
+  0%, 100% { transform: translateY(0); opacity: 0.55; }
+  50% { transform: translateY(4px); opacity: 1; }
 }

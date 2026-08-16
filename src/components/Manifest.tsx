@@ -6,7 +6,7 @@ import { site } from '@/content/site';
 const WORDS = ['CODE.', 'CREATE.', 'AUTOMATE.', 'PLAY.'];
 
 const AXIOMS = [
-  { k: '01', v: 'Build, do not narrate.' },
+  { k: '01', v: 'Build. Do not narrate.' },
   { k: '02', v: 'If it repeats, it gets automated.' },
   { k: '03', v: 'Every system has a seam.' },
 ];
@@ -60,6 +60,15 @@ export function Manifest() {
           style={{ ['--d' as string]: '600ms' }}
         >
           {site.description}
+        </p>
+
+        <p
+          className="prose-body reveal mt-4 max-w-xl text-balance"
+          data-in={inView}
+          style={{ ['--d' as string]: '650ms', color: 'var(--color-muted)' }}
+        >
+          Most of it runs somewhere quiet and nobody thinks about it. That is the
+          part I am proud of.
         </p>
 
         <ul className="mt-14 grid gap-px sm:grid-cols-3" style={{ background: 'var(--hud-line)' }}>

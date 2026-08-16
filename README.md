@@ -17,12 +17,14 @@ A single dark, cinematic page:
   held frame rather than a loading screen.
 - **Opening.** A slow camera push into a night drop zone, three lines of type,
   then the standing title. Skippable from the first beat.
-- **Six sectors.** `01 CODE` (a constellation of tools, not a logo grid) ·
-  `02 AUTOMATION` (one pipeline running end to end) · `03 AI` (a core the
-  visitor brings online) · `04 SECURITY` (a defensive posture run) ·
-  `05 BUILDS` (real projects, each opening as a dossier) · `06 PLAYER` (a
-  loadout, no invented stats).
-- **Hidden things.** Five of them. The console will point you at the first.
+- **Five sectors, all passive.** `01 CODE` (a field map that scans itself) ·
+  `02 AUTOMATION` (one pipeline running end to end) · `03 AI` (a core that
+  boots as you reach it) · `04 SECURITY` (a defensive posture run) ·
+  `05 PLAYER` (a loadout, no invented stats). Nothing in the descent asks to
+  be tapped — it plays while you scroll.
+- **Two doors at the end.** `WHO I AM` opens the personal file; `THE WORK`
+  opens the project index. All interaction on the page lives here, on purpose.
+- **Hidden things.** Four of them. The console will point you at the first.
 
 ---
 
@@ -86,7 +88,8 @@ lives in `src/content/`:
 | File | What is in it |
 | --- | --- |
 | `site.ts` | Name, tagline, description, canonical URL, outbound links, the six sector titles |
-| `builds.ts` | The projects in sector 05, each with what / why / does / tech |
+| `profile.ts` | The personal file behind the first door — roles, the long version, the closing line |
+| `projects.ts` | The project index behind the second door, each with what / why / how / tech |
 | `stack.ts` | Technologies in sector 01, their positions in the field map and the edges between them |
 | `automation.ts` | The pipeline stages and their log lines |
 | `ai.ts` | The AI modules and the core boot log |
@@ -97,9 +100,14 @@ lives in `src/content/`:
 there are no dead placeholder URLs on the page. Add your Instagram or an email
 by uncommenting and filling in the relevant line.
 
-**Builds.** The rule for `builds.ts` is written at the top of the file: no
-invented metrics, no awards, no client logos. If a build cannot be described
-honestly in four short blocks, it does not go in yet.
+**Projects.** The rule is written at the top of `projects.ts`: no invented
+metrics, no awards, no client logos, and nothing that exposes a business's
+internals. Describe the shape of a system, never its keys, schema, pricing
+rules or source. Where a system is deliberately held at arm's length, say so
+on the page — the `guarded` field renders that note.
+
+**Stack.** `stack.ts` is a claim about what you can be asked about in a room
+with no internet. Prune anything that is not true rather than softening it.
 
 ---
 
@@ -151,6 +159,11 @@ fetched after a deliberate tap.
 **The scene recedes.** After the opening, a scrim brings the drop zone down to a
 trace. Without it, the skyline sits behind every heading and each sector reads
 as text pasted over a photograph.
+
+**The grade is deliberate.** Warm lifted blacks, drifting dust, heavier grain
+and a heavy vignette — faded stock rather than clean digital. The lift is kept
+small: a neutral lift at any real strength just reads as haze and takes the
+contrast with it.
 
 ---
 
