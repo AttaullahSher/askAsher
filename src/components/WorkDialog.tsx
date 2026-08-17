@@ -9,10 +9,11 @@ const STATUS_COLOR: Record<Project['status'], string> = {
   LIVE: 'var(--color-signal)',
   INTERNAL: 'var(--color-ice)',
   ONGOING: 'var(--color-violet)',
+  CONCEPT: 'var(--color-alert)',
 };
 
 /**
- * The work. A list first, then one file at a time — a stack of six full
+ * The work. A list first, then one file at a time — a stack of ten full
  * case studies is a wall of text on a phone.
  */
 export function WorkDialog({ onClose }: { onClose: () => void }) {
@@ -31,11 +32,23 @@ export function WorkDialog({ onClose }: { onClose: () => void }) {
   );
 }
 
+/** Counting in words, so the copy can never drift out of step with the list. */
+const WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+const spell = (n: number) => WORDS[n] ?? String(n);
+const Spell = (n: number) => {
+  const w = spell(n);
+  return w.charAt(0).toUpperCase() + w.slice(1);
+};
+
 function Index({ onOpen }: { onOpen: (p: Project) => void }) {
+  const drawn = projects.filter((p) => p.status === 'CONCEPT').length;
+  const built = projects.length - drawn;
+
   return (
     <>
       <p className="prose-body mb-6">
-        Six systems. Most of them are quietly running somewhere right now.
+        {Spell(built)} systems, most of them quietly running somewhere right now
+        {drawn > 0 && `, and ${spell(drawn)} designs that were never built and say so`}.
       </p>
       <ul className="grid gap-2">
         {projects.map((p) => (

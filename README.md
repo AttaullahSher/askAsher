@@ -104,7 +104,9 @@ by uncommenting and filling in the relevant line.
 metrics, no awards, no client logos, and nothing that exposes a business's
 internals. Describe the shape of a system, never its keys, schema, pricing
 rules or source. Where a system is deliberately held at arm's length, say so
-on the page — the `guarded` field renders that note.
+on the page — the `guarded` field renders that note. Anything that has not
+actually been built carries `status: 'CONCEPT'` and says so in `guarded`; a
+design is worth reading, but it never wears a shipped system's clothes.
 
 **Stack.** `stack.ts` is a claim about what you can be asked about in a room
 with no internet. Prune anything that is not true rather than softening it.
