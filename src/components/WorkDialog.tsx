@@ -33,7 +33,10 @@ export function WorkDialog({ onClose }: { onClose: () => void }) {
 }
 
 /** Counting in words, so the copy can never drift out of step with the list. */
-const WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+const WORDS = [
+  'no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven',
+  'eight', 'nine', 'ten', 'eleven', 'twelve',
+];
 const spell = (n: number) => WORDS[n] ?? String(n);
 const Spell = (n: number) => {
   const w = spell(n);
