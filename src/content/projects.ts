@@ -208,4 +208,23 @@ export const projects: Project[] = [
     guarded:
       'Not built — this is a written plan, and it only ever looks at a network you own.',
   },
+  {
+    id: 'seen',
+    code: 'P-11',
+    title: 'SEEN',
+    blurb: 'Your phone announces itself all day. Anyone nearby can listen.',
+    status: 'CONCEPT',
+    what: 'A plan for a WiFi listener that measures how much your own devices give away. It does two things. It records what phones and laptops broadcast constantly, even while connected to nothing, and turns that into a picture of who is in a room and when they arrived. Then it uses the distortion in an ordinary WiFi signal to detect movement through a wall — no camera, no microphone, just the radio already sitting in the hallway.',
+    why: 'Every device you own is a radio that never stops talking. A phone in your pocket calls out for networks it remembers, and a shop, a station or a parked car can write all of it down. WiFi motion sensing is now sold as a router feature. None of this is secret or difficult, which is the problem — so I would rather know exactly how much of it works on me than assume it does not.',
+    flow: [
+      { step: 'LISTEN', detail: 'A cheap USB WiFi adapter records what nearby devices broadcast while looking for networks. Nothing has to connect and no password is involved.' },
+      { step: 'IDENTIFY', detail: 'Phones are meant to randomise their hardware address so they cannot be followed. Many still leak a real one, or hold a pattern steady long enough to matter. The point is to measure how often that protection actually fails.' },
+      { step: 'MAP', detail: 'Signal strength across two or three cheap receivers places a device in a room rather than at a point. Over a week that turns into a schedule: who is home, when they leave, and which day looks different.' },
+      { step: 'SENSE', detail: 'Bodies absorb and reflect WiFi. Watching how the signal between two fixed points changes shows movement, roughly where it is, and whether a room is empty — through a wall, with nothing pointed at anyone.' },
+      { step: 'DEFEND', detail: 'Then the half that is worth having. Which phone settings genuinely stop this, which ones only look like they do, and what the same week of tracking produces once the working ones are switched on.' },
+    ],
+    tech: ['Raspberry Pi', 'USB WiFi adapter', 'Monitor mode', 'Python', 'Signal processing', 'Local storage'],
+    guarded:
+      'Not built — a written plan, pointed at my own home and my own devices. Doing this to people who never agreed to it is the exact thing it is meant to warn about, so it stays a plan about a house I live in.',
+  },
 ];
