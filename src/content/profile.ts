@@ -38,7 +38,7 @@ export const roles: Role[] = [
 /** Read in order. Each line earns its place or it goes. */
 export const bio: string[] = [
   'Four things run at once. A company to steer, a music business I own part of, hours given to the people who keep a city quiet, and a course I am in no hurry to finish.',
-  'Most of the work is unglamorous. Someone is losing an hour a day to something a machine should be doing. I make it cost nothing, and nobody notices — which is the point.',
+  'Most of the work is unglamorous, and that is the whole trade. A business is quietly losing an hour a day to something that should have been software years ago. I find it, move it, and the hour stops existing — usually without anybody noticing anything changed except that they got home earlier.',
   'There is a version of me that never leaves the screen. He is unbearable company. So there are long dinners, worse jokes, and people who have never once asked what a database is. I am reliably the last one awake, and rarely the only one.',
   'The rest is curiosity with a keyboard. I take things apart to find where they give. Rooms and people included. I stopped mentioning that a long time ago.',
 ];

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useExperience } from '@/lib/experience';
+import { playerTag } from '@/content/player';
 import { projects } from '@/content/projects';
 import { sectors, site } from '@/content/site';
 import { stack } from '@/content/stack';
@@ -63,9 +64,10 @@ export function Terminal() {
         desc: 'who is asher',
         run: () => [
           { kind: 'accent', text: 'asher' },
-          { kind: 'out', text: 'builder · operator · automation + ai · plays to win' },
-          { kind: 'dim', text: 'writes software so people stop doing the same thing twice.' },
+          { kind: 'out', text: 'business transformation · automation + ai · plays to win' },
+          { kind: 'dim', text: 'takes businesses off manual. nobody notices afterwards.' },
           { kind: 'dim', text: 'notices the rest. mentions almost none of it.' },
+          { kind: 'dim', text: `also answers to ${playerTag.toLowerCase()}.` },
           { kind: 'dim', text: 'you found the shell, so you are already ahead of most.' },
         ],
       },

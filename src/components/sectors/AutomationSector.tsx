@@ -192,7 +192,7 @@ export function AutomationSector({ sector }: { sector: Sector }) {
               className="hud-sm mt-3 transition-opacity duration-700"
               style={{ opacity: machineOn ? 1 : 0.25 }}
             >
-              {machineOn ? 'Nobody opened a spreadsheet' : 'Waiting'}
+              {machineOn ? automated.status : automated.idle}
             </p>
           </div>
         </div>

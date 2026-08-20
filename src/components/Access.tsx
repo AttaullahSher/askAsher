@@ -72,7 +72,7 @@ export function Access() {
         <Door
           index="02"
           title="The work"
-          line="Eleven files. Two you can open."
+          line="Ten files. Three you can open."
           onClick={() => setPanel('work')}
         />
       </div>
