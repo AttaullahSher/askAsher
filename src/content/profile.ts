@@ -38,10 +38,55 @@ export const roles: Role[] = [
 /** Read in order. Each line earns its place or it goes. */
 export const bio: string[] = [
   'Four things run at once. A company to steer, a music business I own part of, hours given to the people who keep a city quiet, and a course I am in no hurry to finish.',
-  'Most of the work is unglamorous. Someone is losing an hour a day to something a machine should be doing. I make it cost nothing, and nobody notices — which is the point.',
+  'Most of the work is unglamorous, and that is the whole trade. A business is quietly losing an hour a day to something that should have been software years ago. I find it, move it, and the hour stops existing — usually without anybody noticing anything changed except that they got home earlier.',
   'There is a version of me that never leaves the screen. He is unbearable company. So there are long dinners, worse jokes, and people who have never once asked what a database is. I am reliably the last one awake, and rarely the only one.',
   'The rest is curiosity with a keyboard. I take things apart to find where they give. Rooms and people included. I stopped mentioning that a long time ago.',
 ];
+
+/**
+ * The modes.
+ *
+ * Not phases, and not a personality test. Several things that are true of the
+ * same person on the same day — which is the only honest way to write this,
+ * because a single consistent character is a brand, not a human being.
+ */
+export interface Mode {
+  id: string;
+  label: string;
+  body: string;
+}
+
+export const modes: Mode[] = [
+  {
+    id: 'charm',
+    label: 'Charm',
+    body: 'Better company than is convenient, and faster with a line than anybody needs me to be. It has earned me a reputation I have never once bothered to correct.',
+  },
+  {
+    id: 'family',
+    label: 'Family first',
+    body: 'Above all of it. Not a value I list — an order I follow. Everything else here is negotiable and this is the part that is not.',
+  },
+  {
+    id: 'contained',
+    label: 'Self-contained',
+    body: 'Emotionally independent, which is the polite way of saying I need nothing back. People read that as distance right up until they need something.',
+  },
+  {
+    id: 'poetry',
+    label: 'Pashto poetry',
+    body: 'Read late and out loud, in a language that carries grief and pride in the same breath. A landay says in two lines what an essay cannot in two pages.',
+  },
+  {
+    id: 'history',
+    label: 'History',
+    body: 'Read for the pattern, never the dates. Empires end the way businesses do — slowly, and then in a single afternoon nobody thought to write down.',
+  },
+];
+
+/** The frame around the modes. The point is that none of them wait their turn. */
+export const modesNote =
+  'None of these take turns. They run at once, all day, and the one you meet is mostly a question of what time it is.';
 
 /** The closing note. Deliberately the shortest thing on the page. */
 export const bioClose = 'Better in person than in text. Better at 2am than at 9. You will work out which one you got.';

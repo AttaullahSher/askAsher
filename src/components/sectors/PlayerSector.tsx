@@ -4,7 +4,13 @@ import { useEffect, useState } from 'react';
 import { Section } from '@/components/Section';
 import { useInView } from '@/lib/hooks';
 import { useExperience } from '@/lib/experience';
-import { loadout, playerNote, playerTitles } from '@/content/player';
+import {
+  loadout,
+  playerNote,
+  playerTag,
+  playerTagLabel,
+  playerTitles,
+} from '@/content/player';
 import type { Sector } from '@/content/site';
 
 const DWELL_MS = 2800;
@@ -46,8 +52,14 @@ export function PlayerSector({ sector }: { sector: Sector }) {
         >
           <div className="flex items-center gap-2.5">
             <Crosshair />
-            <span className="hud-sm" style={{ color: 'var(--accent)' }}>
-              Player mode
+            <span className="hud-sm" style={{ color: 'var(--color-steel-500)' }}>
+              {playerTagLabel}
+            </span>
+            <span
+              className="font-display text-xs font-extrabold uppercase"
+              style={{ letterSpacing: '0.22em', color: 'var(--accent)' }}
+            >
+              {playerTag}
             </span>
           </div>
           <ul className="flex flex-wrap gap-1.5">

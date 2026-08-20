@@ -1,4 +1,10 @@
-/** The AI sector. Modules deploy around the core when it is brought online. */
+/**
+ * The AI sector. Modules deploy around the core when it is brought online.
+ *
+ * Written for the person who has to decide something, not for the person who
+ * has to implement it. If a module cannot be explained to an owner in one
+ * sentence, it does not belong on the ring.
+ */
 export interface AiModule {
   id: string;
   label: string;
@@ -8,11 +14,11 @@ export interface AiModule {
 }
 
 export const aiModules: AiModule[] = [
-  { id: 'agents', label: 'AGENTS', body: 'Loops with tools and a stopping condition. Useful the moment they can be trusted to fail loudly.', angle: 0 },
-  { id: 'llm', label: 'LLM INTEGRATION', body: 'Model as a component. Swappable, budgeted, and never the only thing between input and output.', angle: 60 },
-  { id: 'prompt', label: 'PROMPTING', body: 'Less clever wording, more structure: schemas, examples, refusal paths, evaluation.', angle: 120 },
-  { id: 'pipe', label: 'AI WORKFLOWS', body: 'Chains that survive a bad response. Retry, validate, fall back, escalate to a human.', angle: 180 },
-  { id: 'data', label: 'DATA PROCESSING', body: 'Extraction and normalisation on messy real input — voice notes, photos, half-typed requests.', angle: 240 },
+  { id: 'decisions', label: 'DECISIONS', body: 'Should we, how much, how soon — answered from your own numbers, before the meeting instead of after it.', angle: 0 },
+  { id: 'agents', label: 'AGENTS', body: 'Software that runs the whole errand: looks, decides, acts. Trusted only once it fails loudly.', angle: 60 },
+  { id: 'language', label: 'LANGUAGE', body: 'Voice notes, messages and photographs of handwritten lists become clean records. That is where most businesses lose the day.', angle: 120 },
+  { id: 'pipe', label: 'WORKFLOWS', body: 'Chains that survive a bad answer. Retry, check, fall back, hand it to a person with the context attached.', angle: 180 },
+  { id: 'foresight', label: 'FORESIGHT', body: 'What the numbers are about to do, not what they did. Stated with a confidence you are allowed to distrust.', angle: 240 },
   { id: 'bi', label: 'INTELLIGENCE', body: 'Turning what already happened into the one number somebody will actually act on.', angle: 300 },
 ];
 

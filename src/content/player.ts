@@ -10,14 +10,18 @@ export interface LoadoutSlot {
 }
 
 export const loadout: LoadoutSlot[] = [
-  { id: 'tactics', slot: 'PRIMARY', label: 'TACTICAL THINKING', body: 'Position before engagement. Most fights are decided before anyone fires — same with architecture.' },
-  { id: 'reaction', slot: 'SECONDARY', label: 'REACTION', body: 'Information arrives incomplete and late. Decide anyway, then correct fast.' },
-  { id: 'adapt', slot: 'UTILITY', label: 'ADAPTATION', body: 'The plan survives contact for about nine seconds. Rebuild it without stopping.' },
-  { id: 'systems', slot: 'OPTIC', label: 'SYSTEMS', body: 'Every map is a system with rules, edges and exploits. So is every codebase.' },
-  { id: 'compete', slot: 'STANCE', label: 'COMPETITION', body: 'Losing is a diff. Read it, patch it, queue again.' },
+  { id: 'rotation', slot: 'PRIMARY', label: 'ROTATION', body: 'Move before the zone makes you. Everyone caught in the open left it too late.' },
+  { id: 'callouts', slot: 'SECONDARY', label: 'CALLOUTS', body: 'Four words, not four sentences. Squads die waiting for somebody to finish explaining.' },
+  { id: 'clutch', slot: 'UTILITY', label: 'CLUTCH', body: 'Two down, plan gone, nine seconds left. Rebuild it without stopping.' },
+  { id: 'mapsense', slot: 'OPTIC', label: 'MAP SENSE', body: 'Every map is a system with rules, edges and exploits. So is every business.' },
+  { id: 'rematch', slot: 'STANCE', label: 'REMATCH', body: 'Losing is information you already paid for. Read it, patch it, queue again.' },
 ];
 
-export const playerTitles = ['PUBG', 'Extraction', 'Strategy', 'Sim', 'Competitive'];
+/** The name on the scoreboard. Old, and still answered to. */
+export const playerTag = 'ASHER GLOGS';
+export const playerTagLabel = 'IGN';
+
+export const playerTitles = ['PUBG', 'Shooters', 'Strategy', 'Racing', 'Anything ranked'];
 
 export const playerNote =
-  'Gaming is not the identity. It is where the reflexes were trained — read the map, hold the angle, adapt or die.';
+  'The tag is old. The reflexes are not. Read the map, hold the angle, adapt or die — the version played in meeting rooms is just slower.';

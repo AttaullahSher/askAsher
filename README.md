@@ -1,8 +1,10 @@
 # ASHER
 
-An interactive personal microsite — a character introduction, not a portfolio.
-Built to be opened from a phone, from an Instagram bio link, and to make the
-visitor curious rather than informed.
+An interactive personal microsite for Asher — business transformation,
+automation and AI, written so somebody who has never read a line of code
+understands every sentence. A character introduction, not a portfolio: built to
+be opened from a phone, from an Instagram bio link, and to make the visitor
+curious rather than informed.
 
 **Live:** https://attaullahsher.github.io/askAsher/
 
@@ -18,10 +20,10 @@ A single dark, cinematic page:
 - **Opening.** A slow camera push into a night drop zone, three lines of type,
   then the standing title. Skippable from the first beat.
 - **Five sectors, all passive.** `01 CODE` (a field map that scans itself) ·
-  `02 AUTOMATION` (one pipeline running end to end) · `03 AI` (a core that
-  boots as you reach it) · `04 SECURITY` (a defensive posture run) ·
-  `05 PLAYER` (a loadout, no invented stats). Nothing in the descent asks to
-  be tapped — it plays while you scroll.
+  `02 AUTOMATION` (the same morning in two businesses, side by side) ·
+  `03 AI` (a core that boots as you reach it) · `04 SECURITY` (a defensive
+  posture run) · `05 PLAYER` (a loadout, no invented stats). Nothing in the
+  descent asks to be tapped — it plays while you scroll.
 - **Two doors at the end.** `WHO I AM` opens the personal file; `THE WORK`
   opens the project index. All interaction on the page lives here, on purpose.
 - **Hidden things.** Four of them. The console will point you at the first.
@@ -87,14 +89,14 @@ lives in `src/content/`:
 
 | File | What is in it |
 | --- | --- |
-| `site.ts` | Name, tagline, description, canonical URL, outbound links, the six sector titles |
+| `site.ts` | Name, tagline, the on-page line, the plain-language summary used for search and link previews, the hero (eyebrow, lead, sub), canonical URL, outbound links, the five sector titles |
 | `profile.ts` | The personal file behind the first door — roles, the long version, the closing line |
 | `projects.ts` | The project index behind the second door, each with what / why / how / tech |
 | `stack.ts` | Technologies in sector 01, their positions in the field map and the edges between them |
-| `automation.ts` | The pipeline stages and their log lines |
+| `automation.ts` | The by-hand steps and what each costs, and the automated side that answers them |
 | `ai.ts` | The AI modules and the core boot log |
 | `security.ts` | The posture run and the principles list |
-| `player.ts` | The loadout slots |
+| `player.ts` | The loadout slots, the games, and the tag on the scoreboard |
 
 **Links.** In `site.ts`, a link with an empty `href` simply does not render —
 there are no dead placeholder URLs on the page. Add your Instagram or an email

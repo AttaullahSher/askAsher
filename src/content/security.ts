@@ -63,7 +63,7 @@ export const securityRun: SecurityStep[] = [
 export const securityPrinciples: { label: string; body: string }[] = [
   {
     label: 'Surface',
-    body: 'Every convenience is a door. Most of them were fitted by someone who never came back to close them.',
+    body: 'A business grows by adding doors — an app, a portal, a login for a supplier. Nobody is ever handed the job of counting them.',
   },
   {
     label: 'Devices',
@@ -71,19 +71,19 @@ export const securityPrinciples: { label: string; body: string }[] = [
   },
   {
     label: 'Signal',
-    body: 'People give away more in the shape of their traffic than in anything they actually say.',
+    body: 'Nobody has to read what you sent. When you sent it, how often, and who answered already tells most of the story.',
   },
   {
-    label: 'Secure coding',
-    body: 'Validate at the edge. Encode on the way out. Assume the input arrived wanting something.',
+    label: 'Trust',
+    body: 'Anything arriving from outside is a stranger at the door. Greeted, checked, and never walked straight through to the till.',
   },
   {
     label: 'Privacy',
-    body: 'Collect less. Keep it shorter. The safest record is the one that was never written.',
+    body: 'The safest record is the one that was never written. The second safest is the one deleted on time. Everything after that is a promise.',
   },
   {
     label: 'Restraint',
-    body: 'Knowing how is common enough. Choosing not to is the part almost nobody trains.',
+    body: 'Knowing how is common enough. Choosing not to — every day, with nobody watching and nobody ever finding out — is the part almost nobody trains.',
   },
 ];
 

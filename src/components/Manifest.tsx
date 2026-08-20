@@ -3,11 +3,11 @@
 import { useInView } from '@/lib/hooks';
 import { site } from '@/content/site';
 
-const WORDS = ['CODE.', 'CREATE.', 'AUTOMATE.', 'PLAY.'];
+const WORDS = ['DESIGN.', 'AUTOMATE.', 'DECIDE.', 'PLAY.'];
 
 const AXIOMS = [
   { k: '01', v: 'I read the room before the docs.' },
-  { k: '02', v: 'If it repeats, it stops needing me.' },
+  { k: '02', v: 'If it repeats, it stops needing a person.' },
   { k: '03', v: 'Everything has a seam. I find it early.' },
 ];
 
@@ -67,8 +67,9 @@ export function Manifest() {
           data-in={inView}
           style={{ ['--d' as string]: '650ms', color: 'var(--color-muted)' }}
         >
-          Most of it is running somewhere right now and nobody is thinking about
-          it. That is the part I am proud of.
+          Businesses that used to move at the speed of one tired person. Most
+          of them are running right now, and nobody in the building is thinking
+          about it. That is the part I am proud of.
         </p>
 
         <ul className="mt-14 grid gap-px sm:grid-cols-3" style={{ background: 'var(--hud-line)' }}>

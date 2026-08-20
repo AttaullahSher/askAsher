@@ -2,8 +2,9 @@
  * The AUTOMATION sector.
  *
  * A pipeline diagram explains the mechanism but not the point. The point is
- * the gap: the same job, done twice, side by side. One enquiry — illustrative
- * of the shape of the work, not a measurement of any particular business.
+ * the gap: the same morning, in two businesses. One still runs on people, one
+ * has already been moved. Illustrative of the shape of the work, not a
+ * measurement of any particular business.
  */
 
 export interface ManualStep {
@@ -13,22 +14,25 @@ export interface ManualStep {
 }
 
 export const manual: ManualStep[] = [
-  { text: 'Read the message. Read it again.', cost: 2 },
-  { text: 'Open the catalogue. Hunt for three items.', cost: 5 },
-  { text: 'Check what is genuinely in stock.', cost: 4 },
-  { text: 'Work out the price for this customer.', cost: 3 },
-  { text: 'Find last month’s template. Rename it.', cost: 2 },
-  { text: 'Retype all of it, correctly, by hand.', cost: 4 },
-  { text: 'Send it. File it. Forget to file it.', cost: 2 },
+  { text: 'A customer asks what it costs. Read it twice.', cost: 3 },
+  { text: 'Open three files to find what is actually in stock.', cost: 5 },
+  { text: 'Ask the one person who remembers this customer’s price.', cost: 4 },
+  { text: 'Find last month’s document. Rename it. Again.', cost: 2 },
+  { text: 'Type it all out by hand and pray about the decimal point.', cost: 4 },
+  { text: 'Send it. Mean to file it. File it tomorrow.', cost: 2 },
+  { text: 'Start again — another one just came in.', cost: 4 },
 ];
 
 export const automated = {
   /** Seconds. */
   cost: 1.4,
-  line: 'Message in. Quotation out. Filed on the way past.',
+  line: 'Request in. Answer out. Priced, sent and filed before anyone looks up.',
+  /** Shown under the bar once the machine side has resolved. */
+  status: 'Nobody was asked. Nobody was chased.',
+  idle: 'Waiting',
 };
 
-export const automationLead = 'One enquiry. Two ways.';
+export const automationLead = 'The same morning, in two businesses.';
 
 export const automationNote =
-  'The interesting part was never the model. It is the boring plumbing around it — the validation, the fallbacks, the record written exactly once — that makes the output trustworthy enough to send without reading it first.';
+  'The clever part was never the software. It is that the whole business finally answers from one place — one price, one stock figure, one record — so the fast answer and the correct answer are the same answer. Nobody gets thanked for saving twenty minutes. Everybody notices when the twenty minutes stop existing.';

@@ -121,7 +121,7 @@ export function Hero() {
             style={{ background: 'var(--hud-line)' }}
             aria-hidden
           />
-          <span className="hud-sm">Digital operations</span>
+          <span className="hud-sm">{heroLines.eyebrow}</span>
           <span
             className="block h-px w-8"
             style={{ background: 'var(--hud-line)' }}

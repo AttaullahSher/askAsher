@@ -5,9 +5,19 @@
 
 export const site = {
   name: 'ASHER',
-  tagline: 'Code. Create. Automate. Play.',
+  tagline: 'Design. Automate. Decide. Play.',
+  /**
+   * The on-page line, under the manifest. Atmosphere, not explanation.
+   */
   description:
-    'A dark room, several screens, and whatever refused to stay solved. This is the part I let people see.',
+    'A dark room, several screens, and whatever refused to stay solved by morning. This is the part I let people see.',
+  /**
+   * The plain-language version, used for search results and link previews.
+   * Somebody who has never written a line of code has to understand it in one
+   * pass — that is the only job this sentence has.
+   */
+  summary:
+    'I rebuild how a business runs: the work that waits on people moves to software, and the decisions get easier. Systems for shops, offices, and the people who own them.',
   /** Used for canonical URLs and Open Graph. Change this if you move the site. */
   url: 'https://attaullahsher.github.io/askAsher/',
   locale: 'en',
@@ -35,15 +45,19 @@ export const audio: { track: string | null } = {
 export const links: { label: string; href: string; note: string }[] = [];
 
 /** The three lines of the opening. Kept short on purpose. */
-export const intro = ['HELLO.', "I'M ASHER.", 'I BUILD THINGS.'] as const;
+export const intro = ['HELLO.', "I'M ASHER.", 'I FIX HOW THINGS RUN.'] as const;
 
 /**
  * The standing hero, under the name. Longer than the opening line on purpose —
  * this is the sentence somebody actually reads before deciding to scroll.
+ *
+ * `eyebrow` is the label above the name. It is the closest thing on the page to
+ * a job title, so it says the thing plainly and then gets out of the way.
  */
 export const heroLines = {
-  lead: 'I build the things you never notice working',
-  sub: 'Shops, documents, data, and a few that exist only because somebody said it could not be done at three in the morning.',
+  eyebrow: 'Business transformation',
+  lead: 'I take a business off manual and leave it running',
+  sub: 'Shops, offices, paperwork, decisions. Work that used to wait on one tired person now happens on its own — including a few things that only exist because somebody said it could not be done at three in the morning.',
   cue: 'Scroll down to see what I do',
 } as const;
 
@@ -77,7 +91,7 @@ export const sectors: Sector[] = [
     id: 'ai',
     index: '03',
     title: 'AI',
-    subtitle: 'Models as components, not magic. Wired into things that already run.',
+    subtitle: 'Not a chatbot in the corner. Better decisions, earlier, for the person who has to make them.',
     accent: 'var(--accent-ai)',
   },
   {

@@ -98,13 +98,13 @@ function ogSvg() {
 
   <text x="600" y="392" text-anchor="middle"
         font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace"
-        font-size="23" letter-spacing="11" fill="#8a949f">CODE · CREATE · AUTOMATE · PLAY</text>
+        font-size="23" letter-spacing="11" fill="#8a949f">DESIGN · AUTOMATE · DECIDE · PLAY</text>
 
   <rect x="536" y="424" width="128" height="2" fill="${SIGNAL}"/>
 
   <text x="600" y="480" text-anchor="middle"
         font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace"
-        font-size="17" letter-spacing="3" fill="#5d6874">an interactive introduction</text>
+        font-size="17" letter-spacing="3" fill="#5d6874">business transformation</text>
 
   <!-- corner ticks -->
   <g stroke="#3a4655" stroke-width="2" fill="none">
