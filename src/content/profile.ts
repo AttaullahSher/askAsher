@@ -43,6 +43,51 @@ export const bio: string[] = [
   'The rest is curiosity with a keyboard. I take things apart to find where they give. Rooms and people included. I stopped mentioning that a long time ago.',
 ];
 
+/**
+ * The modes.
+ *
+ * Not phases, and not a personality test. Several things that are true of the
+ * same person on the same day — which is the only honest way to write this,
+ * because a single consistent character is a brand, not a human being.
+ */
+export interface Mode {
+  id: string;
+  label: string;
+  body: string;
+}
+
+export const modes: Mode[] = [
+  {
+    id: 'charm',
+    label: 'Charm',
+    body: 'Better company than is convenient, and faster with a line than anybody needs me to be. It has earned me a reputation I have never once bothered to correct.',
+  },
+  {
+    id: 'family',
+    label: 'Family first',
+    body: 'Above all of it. Not a value I list — an order I follow. Everything else here is negotiable and this is the part that is not.',
+  },
+  {
+    id: 'contained',
+    label: 'Self-contained',
+    body: 'Emotionally independent, which is the polite way of saying I need nothing back. People read that as distance right up until they need something.',
+  },
+  {
+    id: 'poetry',
+    label: 'Pashto poetry',
+    body: 'Read late and out loud, in a language that carries grief and pride in the same breath. A landay says in two lines what an essay cannot in two pages.',
+  },
+  {
+    id: 'history',
+    label: 'History',
+    body: 'Read for the pattern, never the dates. Empires end the way businesses do — slowly, and then in a single afternoon nobody thought to write down.',
+  },
+];
+
+/** The frame around the modes. The point is that none of them wait their turn. */
+export const modesNote =
+  'None of these take turns. They run at once, all day, and the one you meet is mostly a question of what time it is.';
+
 /** The closing note. Deliberately the shortest thing on the page. */
 export const bioClose = 'Better in person than in text. Better at 2am than at 9. You will work out which one you got.';
 

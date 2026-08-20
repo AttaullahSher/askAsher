@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useExperience } from '@/lib/experience';
 import { playerTag } from '@/content/player';
+import { modes, modesNote } from '@/content/profile';
 import { projects } from '@/content/projects';
 import { sectors, site } from '@/content/site';
 import { stack } from '@/content/stack';
@@ -69,6 +70,16 @@ export function Terminal() {
           { kind: 'dim', text: 'notices the rest. mentions almost none of it.' },
           { kind: 'dim', text: `also answers to ${playerTag.toLowerCase()}.` },
           { kind: 'dim', text: 'you found the shell, so you are already ahead of most.' },
+        ],
+      },
+      modes: {
+        desc: 'what is running at once',
+        run: () => [
+          ...modes.map((m) => ({
+            kind: 'out' as const,
+            text: `  ${m.label.toLowerCase().padEnd(16)} ${m.body}`,
+          })),
+          { kind: 'dim' as const, text: modesNote.toLowerCase() },
         ],
       },
       sectors: {

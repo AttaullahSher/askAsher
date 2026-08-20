@@ -3,7 +3,16 @@
 import { Appreciation } from './Appreciation';
 import { CurveMark, CurveRule } from './Curve';
 import { Block, Overlay } from './Overlay';
-import { bio, bioClose, contact, facts, offRecord, roles } from '@/content/profile';
+import {
+  bio,
+  bioClose,
+  contact,
+  facts,
+  modes,
+  modesNote,
+  offRecord,
+  roles,
+} from '@/content/profile';
 import { site } from '@/content/site';
 
 /** The personal file. The one thing on this site that is not about software. */
@@ -53,6 +62,40 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
               </p>
             ))}
           </div>
+        </Block>
+
+        <Block label="Running at once">
+          <ul className="grid gap-px" style={{ background: 'var(--hud-line)' }}>
+            {modes.map((m, i) => (
+              <li
+                key={m.id}
+                className="flex gap-3.5 px-4 py-3.5"
+                style={{ background: 'var(--color-void)' }}
+              >
+                <span
+                  className="hud-sm shrink-0 tabular-nums"
+                  style={{ color: 'var(--color-signal)' }}
+                >
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span
+                    className="font-display block text-sm font-bold uppercase"
+                    style={{ letterSpacing: '0.12em', color: 'var(--color-hot)' }}
+                  >
+                    {m.label}
+                  </span>
+                  <span
+                    className="mt-1.5 block text-xs leading-relaxed"
+                    style={{ color: 'var(--color-muted)' }}
+                  >
+                    {m.body}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="prose-body mt-3.5">{modesNote}</p>
         </Block>
 
         <CurveRule className="w-full" />
