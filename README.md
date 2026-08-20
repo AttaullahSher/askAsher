@@ -26,8 +26,9 @@ A single dark, cinematic page:
 - **Five sectors.** `01 CODE` (a field map that scans itself) ·
   `02 AUTOMATION` (a request handed from app to app) · `03 AI` (a core that
   boots as you reach it) · `04 SECURITY` (**a live readout of your own
-  device** — see below) · `05 PLAYER` (a loadout, no invented stats). Nothing
-  in the descent asks to be tapped; it plays while you scroll.
+  device**, and then the one line the sector exists to earn — see below) ·
+  `05 PLAYER` (a loadout, no invented stats). Nothing in the descent asks to be
+  tapped; it plays while you scroll.
 - **Three doors at the end.** `WHO I AM` opens the personal file; `THE WORK`
   opens the project index; `ASK ME` opens the console.
 - **Hidden things.** Four of them. The browser console will point you at the
@@ -116,13 +117,22 @@ capability; never publish the method. And no jargon — the reader has never
 written a line of code and never wants to, so `made` carries one human line
 about what it took instead of a list of technology names.
 
-**Two rules that replaced the old hedging.** `status` describes what a thing
-*is* rather than whether it shipped — `RUNNING`, `IN USE`, `BENCH`, `STUDY`. A
-study is honestly a study, and the label says so without the entry having to
-apologise for itself afterwards. `guarded` survives in exactly two places: where
-a real client's internals are the reason, and where scope genuinely needs
-stating once, flatly, in a single line. Nowhere else. An entry states what is
-true and then stops.
+**No disclaimers.** `status` never comments on whether something shipped:
+`LIVE` means you can open it, `PRIVATE` means it runs for real people who are
+not you, `CLOSED` means it is not published. All three are true of every entry
+carrying them and none of them is a confession. `guarded` survives on exactly
+one entry, where a real client's internals are the reason — that reads as
+discretion. Scope is stated once for the whole site in `securityScope`, not
+re-apologised for at the bottom of every file. An entry states what is true and
+then stops.
+
+**And no claimed operation.** Nothing says a thing was pointed at a person,
+because it was not, and because it is weaker than what is there. Authority
+comes from knowing exactly how something works and declining to dress it up.
+
+**Short.** Declaratives, full stops instead of commas, under fifteen words where
+it will go. Every field here used to run sixty to a hundred words; nobody reads
+that on a phone at midnight, and length itself reads as arguing a case.
 
 **And the research entries are written about the reader, not the author.** "I
 know what a room gives away" is a claim somebody has to take on trust; "your

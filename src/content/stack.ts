@@ -57,7 +57,7 @@ export const stack: StackNode[] = [
  * jargon in it.
  */
 export const stackLead =
-  'Twenty-odd tools. None of them learned from a course, none of them on here because they look good in a list — each one is on the map because something running right now depends on it, and because I would be happy to be asked about it in a room with no internet.';
+  'Twenty-odd tools. Nothing on the map to look good in a list. Everything on it runs something right now, and I will take the question in a room with no internet.';
 
 /** Field connections — drawn faint, lit when either end is scanned. */
 export const stackEdges: [string, string][] = [

@@ -45,9 +45,9 @@ export const roles: Role[] = [
 
 /** Read in order. Each line earns its place or it goes. */
 export const bio: string[] = [
-  'Four things run at once. A company to steer, a music business I own part of, hours given to the people who keep a city quiet, and a course I am in no hurry to finish.',
-  'Most of the work is unglamorous, and that is the whole trade. A business is quietly losing an hour a day to something that should have been software years ago. I find it, move it, and the hour stops existing — usually without anybody noticing anything changed except that they got home earlier.',
-  'The music shop keeps me honest. You can tell in about four seconds which guitar is going home to be played and which one is going home to lean against a wall looking expensive, and you sell both without ever once letting on which is which. Nothing I have learned about software has been more useful than that.',
+  'Four things run at once. A company. Half a music business. Hours given to the people who keep a city quiet. A course I am in no hurry to finish.',
+  'Most of the work is unglamorous. A business is losing an hour a day to something that should have been software years ago. I find it, move it, and the hour stops existing.',
+  'The music shop keeps me honest. You can tell in four seconds which guitar is going home to be played and which one is going home to lean against a wall. You sell both. You never let on which is which.',
   'There is a version of me that never leaves the screen. He is unbearable company. So there are long dinners, worse jokes, and people who have never once asked what a database is.',
   'The rest is curiosity with a keyboard. I take things apart to find where they give. Rooms and people included. I stopped mentioning that a long time ago.',
 ];
@@ -72,33 +72,33 @@ export const modes: Mode[] = [
   {
     id: 'company',
     label: 'Company',
-    body: 'I will talk to anybody — the driver, the man fixing the aircon, whoever is standing on their own at the edge of the room. It is not a technique and it is not kindness. They are usually the most interesting person there and everybody else has made the mistake of not checking.',
+    body: 'I will talk to anybody. The driver, the man fixing the aircon, whoever is standing on their own at the edge of the room. Not a technique. They are usually the most interesting person there and nobody else checked.',
   },
   {
     id: 'family',
     label: 'Family first',
-    body: 'Above all of it. Not a value I list — an order I follow. Everything else here is negotiable and this is the part that is not.',
+    body: 'Above all of it. Not a value I list — an order I follow. Everything else here is negotiable.',
   },
   {
     id: 'contained',
     label: 'Self-contained',
-    body: 'I need very little back. It makes me easy to have around and genuinely hard to read, and I have never worked out how to fix the second half without losing the first.',
+    body: 'I need very little back. It makes me easy to have around and hard to read, and I have never worked out how to fix the second half without losing the first.',
   },
   {
     id: 'poetry',
     label: 'Pashto poetry',
-    body: 'Read late and out loud, in a language that carries grief and pride in the same breath. A landay says in two lines what an essay cannot in two pages.',
+    body: 'Read late and out loud. A language that carries grief and pride in the same breath. A landay says in two lines what an essay cannot in two pages.',
   },
   {
     id: 'history',
     label: 'History',
-    body: 'Read for the pattern, never the dates. Empires end the way businesses do — slowly, and then in a single afternoon nobody thought to write down.',
+    body: 'Read for the pattern, never the dates. Empires end the way businesses do. Slowly, then in one afternoon nobody thought to write down.',
   },
 ];
 
 /** The frame around the modes. The point is that none of them wait their turn. */
 export const modesNote =
-  'None of these take turns. They run at once, all day, and the one you meet is mostly a question of what time it is.';
+  'None of them take turns. They run at once, all day. Which one you meet is mostly a question of what time it is.';
 
 /**
  * The closing note. Deliberately the shortest thing on the page — and
