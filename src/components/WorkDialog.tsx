@@ -50,8 +50,17 @@ function Index({ onOpen }: { onOpen: (p: Project) => void }) {
   return (
     <>
       <p className="prose-body mb-3">
-        Some of it runs a business. The rest is how something works, and then
-        how it comes apart.
+        Some of it runs a business. The rest is how a thing works, and then how
+        it comes apart.
+      </p>
+      {/*
+        The line that decides how a reader files him. Taking something apart
+        and keeping it standing are the same skill; saying which one he has
+        been paid for says he could do the other without ever claiming he did.
+      */}
+      <p className="prose-body mb-3">
+        Knowing how a thing comes apart is the same skill as keeping it
+        together. I have only ever been paid for the second one.
       </p>
       <p className="prose-body mb-6" style={{ color: 'var(--color-muted)' }}>
         {Spell(projects.length)} files. {Spell(openable)} open.

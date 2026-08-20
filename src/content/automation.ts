@@ -35,4 +35,4 @@ export const relayFooter = {
 };
 
 export const automationNote =
-  'Not one of these apps was built to speak to any of the others. That is the entire job — I put the wiring in between them. After that the request walks the whole chain on its own, at midnight, while everybody who used to do it by hand is asleep.';
+  'None of these apps was built to speak to the others. I put the wiring in between. After that it walks the chain on its own, at midnight, while everybody who used to do it is asleep.';

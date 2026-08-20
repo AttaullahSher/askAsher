@@ -57,7 +57,7 @@ export const stack: StackNode[] = [
  * jargon in it.
  */
 export const stackLead =
-  'Twenty-odd tools. Nothing on the map to look good in a list. Everything on it runs something right now, and I will take the question in a room with no internet.';
+  'Everything on this map runs something right now. Ask me about any of it with no internet in the room.';
 
 /** Field connections — drawn faint, lit when either end is scanned. */
 export const stackEdges: [string, string][] = [

@@ -14,12 +14,12 @@ export interface AiModule {
 }
 
 export const aiModules: AiModule[] = [
-  { id: 'decisions', label: 'DECISIONS', body: 'Should we, how much, how soon — answered from your own numbers, before the meeting instead of after it.', angle: 0 },
-  { id: 'agents', label: 'AGENTS', body: 'Software that runs the whole errand by itself — and shouts for a human instead of guessing when it gets stuck.', angle: 60 },
-  { id: 'language', label: 'LANGUAGE', body: 'Voice notes, messages and photographs of handwritten lists turn into proper records. That is where most businesses lose the day.', angle: 120 },
-  { id: 'pipe', label: 'WORKFLOWS', body: 'It carries on when something goes wrong: tries again, checks itself, and hands it to a person with the whole story attached.', angle: 180 },
-  { id: 'foresight', label: 'FORESIGHT', body: 'What the numbers are about to do, not what they did. Stated with a confidence you are allowed to distrust.', angle: 240 },
-  { id: 'bi', label: 'INTELLIGENCE', body: 'Turning what already happened into the one number somebody will actually act on.', angle: 300 },
+  { id: 'decisions', label: 'DECISIONS', body: 'Should we, how much, how soon. From your own numbers, before the meeting.', angle: 0 },
+  { id: 'agents', label: 'AGENTS', body: 'Software that runs the whole errand, and shouts for a human instead of guessing.', angle: 60 },
+  { id: 'language', label: 'LANGUAGE', body: 'Voice notes, messages, photographs of handwritten lists. Into proper records.', angle: 120 },
+  { id: 'pipe', label: 'WORKFLOWS', body: 'It carries on when something breaks. Retries, checks itself, hands over the whole story.', angle: 180 },
+  { id: 'foresight', label: 'FORESIGHT', body: 'What the numbers are about to do. Not what they did.', angle: 240 },
+  { id: 'bi', label: 'INTELLIGENCE', body: 'What already happened, as the one number somebody will act on.', angle: 300 },
 ];
 
 /** Boot log for the core. Deliberately labelled as a simulation. */
