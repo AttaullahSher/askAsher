@@ -1,39 +1,33 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Section } from '@/components/Section';
 import { useInView } from '@/lib/hooks';
 import { useExperience } from '@/lib/experience';
 import {
   securityClose,
+  securityCreed,
   securityPrinciples,
-  securityRun,
   securityScope,
 } from '@/content/security';
 import type { Sector } from '@/content/site';
 
-const LINE_MS = 340;
+const LINE_MS = 900;
 
 /**
- * The darkest sector, and the most careful one. The terminal runs a *defensive*
- * posture check against something the operator owns — headers, dependencies,
- * secrets, error handling. There is nothing offensive here to copy.
+ * The darkest sector, and the most careful one.
+ *
+ * There is no posture run and no list of steps: the method is nobody's
+ * business, and showing it would turn the one section that is about a person
+ * into a process document. Four lines land in order, and the last one does
+ * the work.
  */
 export function SecuritySector({ sector }: { sector: Sector }) {
   const { ref, inView } = useInView<HTMLDivElement>({ threshold: 0.3, once: false });
   const { motion } = useExperience();
 
-  const flat = useMemo(
-    () =>
-      securityRun.flatMap((step) =>
-        step.lines.map((text, i) => ({ phase: step.phase, text, head: i === 0 })),
-      ),
-    [],
-  );
-
+  const [shown, setShown] = useState(0);
   const running = inView && motion === 'full';
-
-  const [typed, setTyped] = useState(0);
 
   useEffect(() => {
     if (!running) return;
@@ -41,132 +35,60 @@ export function SecuritySector({ sector }: { sector: Sector }) {
     let i = 0;
     const id = window.setInterval(() => {
       i += 1;
-      setTyped(i);
-      if (i >= flat.length) window.clearInterval(id);
+      setShown(i);
+      if (i >= securityCreed.length) window.clearInterval(id);
     }, LINE_MS);
 
-    // Rewind on the way out so re-entering the section replays the run.
+    // Rewind on the way out so re-entering the section lands them again.
     return () => {
       window.clearInterval(id);
-      setTyped(0);
+      setShown(0);
     };
-  }, [running, flat.length]);
+  }, [running]);
 
-  // Off screen or reduced motion: show the completed report.
-  const count = running ? typed : flat.length;
-
-  const phaseIndex = securityRun.findIndex((s) => {
-    const start = flat.findIndex((f) => f.phase === s.phase);
-    const end = start + s.lines.length;
-    return count > start && count <= end;
-  });
-  const activePhase = count >= flat.length ? securityRun.length - 1 : phaseIndex;
+  // Off screen or reduced motion: the lines are simply there.
+  const count = running ? shown : securityCreed.length;
 
   return (
     <Section sector={sector}>
-      <p className="prose-body mb-8 max-w-2xl">{securityScope}</p>
-
-      {/* phase bar */}
-      <ol className="mb-4 flex flex-wrap gap-x-1 gap-y-2">
-        {securityRun.map((s, i) => {
-          const done = i < activePhase || count >= flat.length;
-          const on = i === activePhase && count < flat.length;
-          return (
-            <li key={s.id} className="flex items-center gap-1">
-              <span
-                className="hud-sm px-2 py-1 transition-all duration-300"
-                style={{
-                  border: `1px solid ${on || done ? 'var(--accent)' : 'var(--hud-line)'}`,
-                  color: on ? 'var(--accent)' : done ? 'var(--color-bone)' : 'var(--color-steel-700)',
-                  background: on
-                    ? 'color-mix(in oklab, var(--accent) 14%, transparent)'
-                    : 'transparent',
-                }}
-              >
-                {s.phase}
-              </span>
-              {i < securityRun.length - 1 && (
-                <span
-                  aria-hidden
-                  className="h-px w-3 transition-colors duration-300"
-                  style={{ background: done ? 'var(--accent)' : 'var(--hud-line)' }}
-                />
-              )}
-            </li>
-          );
-        })}
-      </ol>
-
-      {/* terminal */}
       <div
         ref={ref}
-        className="scanlines relative overflow-hidden px-4 py-4 sm:px-5"
+        className="scanlines relative overflow-hidden px-5 py-9 sm:px-8 sm:py-12"
         style={{
           border: '1px solid var(--hud-line)',
-          background: 'linear-gradient(180deg, rgba(12,6,6,0.8), rgba(0,0,0,0.6))',
-          minHeight: '19rem',
+          background: 'linear-gradient(180deg, rgba(12,6,6,0.82), rgba(0,0,0,0.6))',
         }}
       >
-        <div
-          className="mb-3 flex items-center gap-2 pb-2"
-          style={{ borderBottom: '1px solid var(--hud-line)' }}
-        >
-          <span
-            className="block h-1.5 w-1.5 rounded-full"
-            style={{ background: 'var(--accent)', animation: 'flicker 4s infinite' }}
-            aria-hidden
-          />
-          <span className="hud-sm">posture — own asset</span>
-        </div>
+        <span
+          aria-hidden
+          className="absolute inset-y-0 left-0 w-px"
+          style={{ background: 'var(--accent)', opacity: 0.55 }}
+        />
 
-        <ul className="space-y-1">
-          {flat.slice(0, count).map((l, i) => (
-            <li
-              key={`${l.phase}-${i}`}
-              // Flex, not inline — otherwise a wrapped line loses the gutter
-              // and the whole log goes ragged on a phone.
-              className="flex gap-2 text-[11px] leading-relaxed sm:text-xs"
-              style={{ fontFamily: 'var(--font-mono)' }}
-            >
-              <span
-                className="w-[4.25rem] shrink-0"
+        <ul className="space-y-4">
+          {securityCreed.map((line, i) => {
+            const on = count > i;
+            const last = i === securityCreed.length - 1;
+            return (
+              <li
+                key={line}
+                className="font-display text-[clamp(1.15rem,5.2vw,2.1rem)] font-extrabold uppercase leading-[1.08] transition-all duration-700"
                 style={{
-                  color: l.head ? 'var(--accent)' : 'transparent',
-                  letterSpacing: '0.1em',
+                  letterSpacing: '-0.01em',
+                  opacity: on ? 1 : 0,
+                  transform: on ? 'none' : 'translateY(12px)',
+                  transitionTimingFunction: 'var(--ease-out-expo)',
+                  color: last ? 'var(--accent)' : 'var(--color-bone)',
                 }}
-                aria-hidden={!l.head}
               >
-                {l.phase}
-              </span>
-              <span className="min-w-0 flex-1" style={{ color: 'var(--color-muted)' }}>
-                {l.text}
-              </span>
-            </li>
-          ))}
-          {count < flat.length && (
-            <li
-              className="caret flex gap-2 text-[11px] sm:text-xs"
-              style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-steel-500)' }}
-              aria-hidden
-            >
-              <span className="w-[4.25rem] shrink-0" />
-            </li>
-          )}
+                {line}
+              </li>
+            );
+          })}
         </ul>
-
-        {count >= flat.length && (
-          <p
-            className="mt-4 pt-3 text-[11px] sm:text-xs"
-            style={{
-              borderTop: '1px solid var(--hud-line)',
-              color: 'var(--accent)',
-              fontFamily: 'var(--font-mono)',
-            }}
-          >
-            2 findings · 2 closed · report filed
-          </p>
-        )}
       </div>
+
+      <p className="prose-body mt-6 max-w-2xl">{securityScope}</p>
 
       <ul className="mt-8 grid gap-px sm:grid-cols-2" style={{ background: 'var(--hud-line)' }}>
         {securityPrinciples.map((p) => (

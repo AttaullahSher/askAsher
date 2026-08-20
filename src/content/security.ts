@@ -1,63 +1,18 @@
 /**
  * The SECURITY sector.
  *
- * Written as capability plus restraint, which is the only version of this that
- * is both true and worth reading. The posture run is defensive — a check on
- * something the operator owns — and there is nothing offensive here for anyone
- * to copy. The edge comes from what is implied, never from a claim.
+ * There is no run, no scan and no list of steps here, deliberately. How it is
+ * done is nobody's business and it is not the interesting part. What is true
+ * about the person doing it is the interesting part, and the edge comes from
+ * what is implied rather than from anything claimed.
  */
-export interface SecurityStep {
-  id: string;
-  phase: 'SCAN' | 'ANALYZE' | 'IDENTIFY' | 'PATCH' | 'SECURE';
-  lines: string[];
-}
 
-export const securityRun: SecurityStep[] = [
-  {
-    id: 'scan',
-    phase: 'SCAN',
-    lines: [
-      'target · asset i own',
-      'surface: 1 origin, 3 routes, 0 open admin paths',
-      'transport: tls 1.3 · hsts present',
-    ],
-  },
-  {
-    id: 'analyze',
-    phase: 'ANALYZE',
-    lines: [
-      'headers · csp, referrer-policy, frame-ancestors',
-      'dependencies · 214 resolved, lockfile pinned',
-      'secrets · history scanned, none in tree',
-    ],
-  },
-  {
-    id: 'identify',
-    phase: 'IDENTIFY',
-    lines: [
-      'finding · form accepts unbounded input',
-      'finding · error page leaks a stack frame',
-      'severity · low, low. noted anyway.',
-    ],
-  },
-  {
-    id: 'patch',
-    phase: 'PATCH',
-    lines: [
-      'input · validated at the boundary, not in the handler',
-      'errors · generic to the client, verbose to the log',
-      'retest · both closed',
-    ],
-  },
-  {
-    id: 'secure',
-    phase: 'SECURE',
-    lines: [
-      'least privilege · keys scoped, rotated',
-      'logging · on. alerting · on.',
-      'posture recorded · next review scheduled',
-    ],
-  },
+/** Four lines. Landed one at a time, in the order they have to be read. */
+export const securityCreed: string[] = [
+  'I see where a thing would give.',
+  'Usually before anyone has thought to ask me to look.',
+  'And then I leave it exactly where it stands.',
+  'That is a decision. It was never a limit.',
 ];
 
 export const securityPrinciples: { label: string; body: string }[] = [
@@ -87,11 +42,14 @@ export const securityPrinciples: { label: string; body: string }[] = [
   },
 ];
 
-export const securityScope = 'Scope: what I own, or what I was invited to look at.';
+/** The one rule, stated once and not argued about. */
+export const securityScope =
+  'What I touch is mine, or I was invited to it. There has never been a third category.';
 
 /**
- * The closing line. Says what he is without ever claiming anything: the
- * awareness is a reflex, and the discipline is what he does about it.
+ * The closing line. Says what he is without claiming anything and without
+ * threatening anybody: the capability is stated, the restraint is stated, and
+ * the reader is left to work out what the two of them together mean.
  */
 export const securityClose =
-  'The habit was never breaking things. It is noticing where a thing would give — immediately, without trying, without being asked. That does not stop at software, and it does not switch off. What I do about it is the only part that matters, and the answer has always been nothing.';
+  'None of this is a service and none of it is for sale. It is simply what I am like in a room. I notice where a thing would give — immediately, without trying, without being asked — and then I do nothing, which is the whole discipline and the only part of it worth respecting. The people who have needed it got it for free and never had to ask twice. The people who decided to test it found out that the restraint was the only thing standing between them and a genuinely bad week, and that it holds. It always holds. That should be reassuring. It is not always taken that way.';
