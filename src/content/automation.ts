@@ -1,38 +1,38 @@
 /**
  * The AUTOMATION sector.
  *
- * A pipeline diagram explains the mechanism but not the point. The point is
- * the gap: the same morning, in two businesses. One still runs on people, one
- * has already been moved. Illustrative of the shape of the work, not a
- * measurement of any particular business.
+ * Not a diagram of a process. A relay: one request walks through six apps that
+ * were never built to speak to each other, and nobody opens a single one of
+ * them. Illustrative of the shape of the work, not a measurement of anything.
  */
 
-export interface ManualStep {
-  text: string;
-  /** Minutes this step costs a person. */
-  cost: number;
+export interface Hop {
+  id: string;
+  /** The app. Real names — everybody already knows what these are. */
+  app: string;
+  /** What it is doing in the chain. A few words. */
+  role: string;
+  /** What leaves it and walks to the next one. */
+  carries: string;
 }
 
-export const manual: ManualStep[] = [
-  { text: 'A customer asks what it costs. Read it twice.', cost: 3 },
-  { text: 'Open three files to find what is actually in stock.', cost: 5 },
-  { text: 'Ask the one person who remembers this customer’s price.', cost: 4 },
-  { text: 'Find last month’s document. Rename it. Again.', cost: 2 },
-  { text: 'Type it all out by hand and pray about the decimal point.', cost: 4 },
-  { text: 'Send it. Mean to file it. File it tomorrow.', cost: 2 },
-  { text: 'Start again — another one just came in.', cost: 4 },
+export const relay: Hop[] = [
+  { id: 'whatsapp', app: 'WhatsApp', role: 'where it lands', carries: 'a voice note · 11.40pm' },
+  { id: 'sheets', app: 'Sheets', role: 'what actually exists', carries: 'three items · two in stock' },
+  { id: 'drive', app: 'Drive', role: 'the document writes itself', carries: 'a quotation · priced' },
+  { id: 'gmail', app: 'Gmail', role: 'out of the door', carries: 'sent · nobody was awake' },
+  { id: 'calendar', app: 'Calendar', role: 'the chase books itself', carries: 'Tuesday · if they go quiet' },
+  { id: 'phone', app: 'My phone', role: 'the only part a human sees', carries: 'quoted · sent · filed' },
 ];
 
-export const automated = {
-  /** Seconds. */
-  cost: 1.4,
-  line: 'Request in. Answer out. Priced, sent and filed before anyone looks up.',
-  /** Shown under the bar once the machine side has resolved. */
-  status: 'Nobody was asked. Nobody was chased.',
-  idle: 'Waiting',
+export const automationLead = 'One message. Six apps. Nobody opened any of them.';
+
+/** Shown once the relay has run end to end. */
+export const relayFooter = {
+  value: '1.4',
+  unit: 'sec',
+  label: 'end to end',
 };
 
-export const automationLead = 'The same morning, in two businesses.';
-
 export const automationNote =
-  'The clever part was never the software. It is that the whole business finally answers from one place — one price, one stock figure, one record — so the fast answer and the correct answer are the same answer. Nobody gets thanked for saving twenty minutes. Everybody notices when the twenty minutes stop existing.';
+  'Not one of these apps was built to speak to any of the others. That is the entire job — I put the wiring in between them. After that the request walks the whole chain on its own, at midnight, while everybody who used to do it by hand is asleep.';

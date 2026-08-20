@@ -20,10 +20,10 @@ A single dark, cinematic page:
 - **Opening.** A slow camera push into a night drop zone, three lines of type,
   then the standing title. Skippable from the first beat.
 - **Five sectors, all passive.** `01 CODE` (a field map that scans itself) ·
-  `02 AUTOMATION` (the same morning in two businesses, side by side) ·
-  `03 AI` (a core that boots as you reach it) · `04 SECURITY` (a defensive
-  posture run) · `05 PLAYER` (a loadout, no invented stats). Nothing in the
-  descent asks to be tapped — it plays while you scroll.
+  `02 AUTOMATION` (a request handed from app to app) · `03 AI` (a core that
+  boots as you reach it) · `04 SECURITY` (four lines and no method) ·
+  `05 PLAYER` (a loadout, no invented stats). Nothing in the descent asks to
+  be tapped — it plays while you scroll.
 - **Two doors at the end.** `WHO I AM` opens the personal file; `THE WORK`
   opens the project index. All interaction on the page lives here, on purpose.
 - **Hidden things.** Four of them. The console will point you at the first.
@@ -91,11 +91,11 @@ lives in `src/content/`:
 | --- | --- |
 | `site.ts` | Name, tagline, the on-page line, the plain-language summary used for search and link previews, the hero (eyebrow, lead, sub), canonical URL, outbound links, the five sector titles |
 | `profile.ts` | The personal file behind the first door — roles, the long version, the closing line |
-| `projects.ts` | The project index behind the second door, each with what / why / how / tech |
+| `projects.ts` | The work behind the second door, written in the first person — what it is, why it exists, what it does, what it is built with |
 | `stack.ts` | Technologies in sector 01, their positions in the field map and the edges between them |
-| `automation.ts` | The by-hand steps and what each costs, and the automated side that answers them |
+| `automation.ts` | The relay: which apps the request is handed through, and what each one passes on |
 | `ai.ts` | The AI modules and the core boot log |
-| `security.ts` | The posture run and the principles list |
+| `security.ts` | The four lines, the principles list, the one rule, and the closing note. Deliberately contains no method |
 | `player.ts` | The loadout slots, the games, and the tag on the scoreboard |
 
 **Links.** In `site.ts`, a link with an empty `href` simply does not render —
@@ -104,8 +104,8 @@ by uncommenting and filling in the relevant line.
 
 **Projects.** The rule is written at the top of `projects.ts`: no invented
 metrics, no awards, no client logos, and nothing that exposes a business's
-internals. Describe the shape of a system, never its keys, schema, pricing
-rules or source. Where a system is deliberately held at arm's length, say so
+internals or a technique somebody could follow. Say what is true about the
+capability; never publish the method. Where a system is deliberately held at arm's length, say so
 on the page — the `guarded` field renders that note. Anything that has not
 actually been built carries `status: 'CONCEPT'` and says so in `guarded`; a
 design is worth reading, but it never wears a shipped system's clothes.

@@ -49,9 +49,16 @@ function Index({ onOpen }: { onOpen: (p: Project) => void }) {
 
   return (
     <>
-      <p className="prose-body mb-6">
-        {Spell(built)} systems, most of them quietly running somewhere right now
-        {drawn > 0 && `, and ${spell(drawn)} designs that were never built and say so`}.
+      <p className="prose-body mb-3">
+        Some of it runs a business. Most of it is me finding out how something
+        works, and then how it comes apart.
+      </p>
+      <p className="prose-body mb-6" style={{ color: 'var(--color-muted)' }}>
+        Everything here points at something I own or was invited into. That is
+        the only rule I have, and it does not bend.
+        {' '}
+        {Spell(built)} built
+        {drawn > 0 && `, ${spell(drawn)} written as plans and saying so`}.
       </p>
       <ul className="grid gap-2">
         {projects.map((p) => (
@@ -107,49 +114,6 @@ function Detail({ project }: { project: Project }) {
       <Block label="Why it exists">
         <p className="prose-body">{project.why}</p>
       </Block>
-
-      {project.flow && (
-        <Block label="How it works">
-          <ol className="relative space-y-0">
-            <span
-              aria-hidden
-              className="absolute bottom-4 left-[11px] top-4 w-px"
-              style={{ background: 'var(--hud-line)' }}
-            />
-            {project.flow.map((f) => (
-              <li key={f.step} className="relative flex gap-4 py-2.5">
-                <span
-                  aria-hidden
-                  className="relative z-10 mt-1 grid h-[23px] w-[23px] shrink-0 place-items-center"
-                  style={{
-                    border: '1px solid color-mix(in oklab, var(--color-signal) 55%, transparent)',
-                    background: 'var(--color-void)',
-                  }}
-                >
-                  <span
-                    className="block h-1.5 w-1.5"
-                    style={{ background: 'var(--color-signal)' }}
-                  />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span
-                    className="font-display block text-xs font-bold uppercase"
-                    style={{ letterSpacing: '0.2em', color: 'var(--color-signal)' }}
-                  >
-                    {f.step}
-                  </span>
-                  <span
-                    className="mt-1 block text-sm leading-relaxed"
-                    style={{ color: 'var(--color-muted)' }}
-                  >
-                    {f.detail}
-                  </span>
-                </span>
-              </li>
-            ))}
-          </ol>
-        </Block>
-      )}
 
       {project.does && (
         <Block label="What it does">
