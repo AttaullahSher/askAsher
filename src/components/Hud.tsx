@@ -5,13 +5,25 @@ import { useExperience } from '@/lib/experience';
 import { sectors, site } from '@/content/site';
 
 /**
- * Persistent chrome: wordmark, sector rail, scroll progress and the three
- * controls that matter (sound, motion, terminal). Everything is pointer-events
+ * Persistent chrome: wordmark, sector rail, scroll progress and the controls
+ * that matter (ask, sound, motion, terminal). Everything is pointer-events
  * transparent except the controls themselves.
+ *
+ * Ask sits first and stays lit. Contact used to be seven full-viewport sections
+ * down, behind a door, at the bottom of a modal; it is now one tap from any
+ * point on the page.
  */
 export function Hud() {
-  const { entered, introPlaying, sound, toggleSound, motion, toggleMotion, setTerminalOpen } =
-    useExperience();
+  const {
+    entered,
+    introPlaying,
+    sound,
+    toggleSound,
+    motion,
+    toggleMotion,
+    setTerminalOpen,
+    setAskOpen,
+  } = useExperience();
   const [active, setActive] = useState<string>('top');
   const progressRef = useRef<HTMLSpanElement | null>(null);
   const taps = useRef<{ n: number; t: number }>({ n: 0, t: 0 });
@@ -161,6 +173,10 @@ export function Hud() {
           paddingLeft: 'max(0px, env(safe-area-inset-left))',
         }}
       >
+        <Control label="Ask me something" active onClick={() => setAskOpen(true)}>
+          <AskIcon />
+        </Control>
+
         <Control
           label={sound ? 'Sound on' : 'Sound off'}
           active={sound}
@@ -322,6 +338,22 @@ function Control({
     >
       {children}
     </button>
+  );
+}
+
+function AskIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden>
+      <path
+        d="M2 3.2h11v7.2H6.6L3.6 13v-2.6H2z"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+      <circle cx="7.5" cy="6.8" r="0.85" fill="currentColor" />
+      <circle cx="4.6" cy="6.8" r="0.85" fill="currentColor" />
+      <circle cx="10.4" cy="6.8" r="0.85" fill="currentColor" />
+    </svg>
   );
 }
 

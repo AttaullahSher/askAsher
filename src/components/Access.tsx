@@ -5,7 +5,9 @@ import { CurveMark, CurveRule } from './Curve';
 import { useInView } from '@/lib/hooks';
 import { useExperience } from '@/lib/experience';
 import { asset } from '@/lib/paths';
-import { links, site } from '@/content/site';
+import { answers } from '@/content/answers';
+import { projects } from '@/content/projects';
+import { links, outro, site } from '@/content/site';
 
 const ProfileDialog = lazy(() =>
   import('./ProfileDialog').then((m) => ({ default: m.ProfileDialog })),
@@ -20,8 +22,11 @@ type Panel = 'profile' | 'work' | null;
  */
 export function Access() {
   const { ref, inView } = useInView<HTMLElement>({ threshold: 0.15 });
-  const { setTerminalOpen } = useExperience();
+  const { setTerminalOpen, setAskOpen } = useExperience();
   const [panel, setPanel] = useState<Panel>(null);
+
+  // Counted, never typed. The old line said "Ten files. Three you can open."
+  const openable = projects.filter((p) => p.href).length;
 
   return (
     <footer
@@ -35,13 +40,13 @@ export function Access() {
       />
 
       <p className="hud-sm reveal mb-8" data-in={inView}>
-        End of transmission
+        {outro.eyebrow}
       </p>
 
       <h2 className="display-lg reveal" data-in={inView} style={{ ['--d' as string]: '60ms' }}>
-        Still
+        {outro.title[0]}
         <br />
-        building
+        {outro.title[1]}
       </h2>
 
       <CurveRule
@@ -54,26 +59,31 @@ export function Access() {
         data-in={inView}
         style={{ ['--d' as string]: '180ms' }}
       >
-        That was the surface. Two doors from here — one for the person, one for
-        the work.
+        {outro.lead}
       </p>
 
       <div
-        className="reveal mt-9 grid w-full max-w-2xl gap-2.5 sm:grid-cols-2"
+        className="reveal mt-9 grid w-full max-w-3xl gap-2.5 sm:grid-cols-3"
         data-in={inView}
         style={{ ['--d' as string]: '280ms' }}
       >
         <Door
           index="01"
-          title="Who I am"
-          line="The parts that are not code."
+          title={outro.doors.profile.title}
+          line={outro.doors.profile.line}
           onClick={() => setPanel('profile')}
         />
         <Door
           index="02"
-          title="The work"
-          line="Ten files. Three you can open."
+          title={outro.doors.work.title}
+          line={`${projects.length} files. ${openable} you can open.`}
           onClick={() => setPanel('work')}
+        />
+        <Door
+          index="03"
+          title={outro.doors.ask.title}
+          line={`${answers.length} answers written. ${outro.doors.ask.line}`}
+          onClick={() => setAskOpen(true)}
         />
       </div>
 
@@ -116,7 +126,7 @@ export function Access() {
         data-in={inView}
         style={{ ['--d' as string]: '460ms' }}
       >
-        Some of this page is hidden →
+        {outro.hidden}
       </button>
 
       <p
@@ -124,7 +134,7 @@ export function Access() {
         data-in={inView}
         style={{ ['--d' as string]: '520ms', color: 'var(--color-steel-700)' }}
       >
-        {site.name} · built by hand
+        {site.name} · {outro.signature}
       </p>
 
       {panel === 'profile' && (

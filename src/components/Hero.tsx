@@ -19,7 +19,7 @@ const BEATS = [
 const SETTLE = 4550;
 
 export function Hero() {
-  const { entered, introPlaying, endIntro, motion } = useExperience();
+  const { entered, introPlaying, endIntro, motion, setAskOpen } = useExperience();
   const [beat, setBeat] = useState(-1);
   const [settled, setSettled] = useState(false);
 
@@ -152,6 +152,24 @@ export function Hero() {
         >
           {heroLines.sub}
         </p>
+
+        {/*
+          The site is called askAsher. Until now the only way to reach him was
+          seven sections down, behind a door, at the bottom of a modal — so most
+          visitors never learned that asking was on offer at all. This says so
+          within four seconds, and it is the one button above the fold.
+        */}
+        <button
+          type="button"
+          onClick={() => setAskOpen(true)}
+          className="hud-sm mt-7 whitespace-nowrap px-4 py-2.5 transition-colors hover:text-[var(--color-signal)]"
+          style={{
+            border: '1px solid color-mix(in oklab, var(--color-signal) 38%, transparent)',
+            background: 'color-mix(in oklab, var(--color-signal) 6%, transparent)',
+          }}
+        >
+          {heroLines.ask} →
+        </button>
       </div>
 
       <ScrollCue visible={showRest} />
@@ -163,7 +181,10 @@ function ScrollCue({ visible }: { visible: boolean }) {
   return (
     <div
       aria-hidden
-      className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2 transition-opacity duration-1000 delay-500"
+      // Decoration, and it sits over the bottom of the hero. Without this it
+      // quietly eats clicks aimed at anything down there — which is exactly
+      // what happened the moment a real button was added above it.
+      className="pointer-events-none absolute bottom-10 left-1/2 z-10 -translate-x-1/2 transition-opacity duration-1000 delay-500"
       style={{ opacity: visible ? 1 : 0, paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <div className="flex flex-col items-center gap-2.5">

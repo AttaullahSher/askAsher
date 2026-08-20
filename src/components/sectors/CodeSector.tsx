@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Section } from '@/components/Section';
 import { useInView } from '@/lib/hooks';
 import { useExperience } from '@/lib/experience';
-import { stack, stackEdges, type StackNode } from '@/content/stack';
+import { stack, stackEdges, stackLead, type StackNode } from '@/content/stack';
 import type { Sector } from '@/content/site';
 
 const DWELL_MS = 2100;
@@ -42,6 +42,8 @@ export function CodeSector({ sector }: { sector: Sector }) {
 
   return (
     <Section sector={sector} wide>
+      <p className="prose-body mb-6 max-w-2xl">{stackLead}</p>
+
       <div
         ref={ref}
         className="bracket relative aspect-[5/6] w-full select-none overflow-hidden sm:aspect-[4/3] lg:aspect-[16/10]"

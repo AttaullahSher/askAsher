@@ -34,6 +34,10 @@ interface ExperienceValue {
   terminalOpen: boolean;
   setTerminalOpen: (open: boolean) => void;
 
+  /** The public console. Opened from the HUD, the hero, and the third door. */
+  askOpen: boolean;
+  setAskOpen: (open: boolean) => void;
+
   /** Easter-egg flags, surfaced in the hidden terminal's `status` command. */
   found: Record<string, boolean>;
   markFound: (key: string) => void;
@@ -53,6 +57,7 @@ export function ExperienceProvider({ children }: { children: ReactNode }) {
   const [sound, setSound] = useState(false);
   const [overdrive, setOverdrive] = useState(false);
   const [terminalOpen, setTerminalOpenState] = useState(false);
+  const [askOpen, setAskOpen] = useState(false);
   const [found, setFound] = useState<Record<string, boolean>>({});
 
   const motion: MotionMode =
@@ -139,6 +144,8 @@ export function ExperienceProvider({ children }: { children: ReactNode }) {
       toggleOverdrive,
       terminalOpen,
       setTerminalOpen,
+      askOpen,
+      setAskOpen,
       found,
       markFound,
     }),
@@ -155,6 +162,7 @@ export function ExperienceProvider({ children }: { children: ReactNode }) {
       toggleOverdrive,
       terminalOpen,
       setTerminalOpen,
+      askOpen,
       found,
       markFound,
     ],

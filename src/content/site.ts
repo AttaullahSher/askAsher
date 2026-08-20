@@ -7,10 +7,17 @@ export const site = {
   name: 'ASHER',
   tagline: 'Design. Automate. Decide. Play.',
   /**
-   * The on-page line, under the manifest. Atmosphere, not explanation.
+   * The on-page line, under the manifest. Atmosphere first, but it has to
+   * leave the reader holding one fact.
    */
   description:
-    'A dark room, several screens, and whatever refused to stay solved by morning. This is the part I let people see.',
+    'A dark room, several screens, and four businesses running on things I built. Three of them have never met me.',
+  /**
+   * The second on-page line. Used to be hard-coded inside `Manifest.tsx`,
+   * which the README has always said was not a thing that happened here.
+   */
+  descriptionSub:
+    'Businesses that used to move at the speed of one tired person. Most of them are running right now, and nobody in the building is thinking about it. That is the part I am proud of.',
   /**
    * The plain-language version, used for search results and link previews.
    * Somebody who has never written a line of code has to understand it in one
@@ -38,9 +45,9 @@ export const audio: { track: string | null } = {
 };
 
 /**
- * Outbound links shown on the page itself. Empty by design: contact lives
- * inside the personal file (`profile.ts`), so you get it after you have read
- * something rather than before.
+ * Outbound links shown on the page itself. Empty by design: the console is the
+ * contact surface now, and it is reachable from the HUD at any point on the
+ * page. Addresses live inside the personal file (`profile.ts`).
  */
 export const links: { label: string; href: string; note: string }[] = [];
 
@@ -51,14 +58,45 @@ export const intro = ['HELLO.', "I'M ASHER.", 'I FIX HOW THINGS RUN.'] as const;
  * The standing hero, under the name. Longer than the opening line on purpose —
  * this is the sentence somebody actually reads before deciding to scroll.
  *
- * `eyebrow` is the label above the name. It is the closest thing on the page to
- * a job title, so it says the thing plainly and then gets out of the way.
+ * `eyebrow` is the label above the name. It names the person and the work in
+ * one breath and then gets out of the way; a category ("business
+ * transformation") describes an industry, not a man.
+ *
+ * `ask` is the early hint. The site is called askAsher — a visitor should know
+ * within four seconds that asking is a real option, not a form at the bottom.
  */
 export const heroLines = {
-  eyebrow: 'Business transformation',
+  // Two segments, not three. The hairlines either side plus 0.3em tracking
+  // make this line far wider than its character count suggests, and a third
+  // segment wraps "answers late" onto its own line on a phone — which is where
+  // essentially all of this site's traffic is.
+  eyebrow: 'Builds systems · Abu Dhabi',
   lead: 'I take a business off manual and leave it running',
-  sub: 'Shops, offices, paperwork, decisions. Work that used to wait on one tired person now happens on its own — including a few things that only exist because somebody said it could not be done at three in the morning.',
+  sub: 'I run one company, own half of another, and build the software underneath both. Most of what I make ends up free, online, and used by people who have no idea who wrote it.',
   cue: 'Scroll down to see what I do',
+  /** Kept short so the one button above the fold never wraps. */
+  ask: 'Ask me anything',
+} as const;
+
+/**
+ * The end of the descent. Lived in `Access.tsx` as hard-coded strings, which
+ * the README has always claimed was not the case anywhere on this site.
+ *
+ * The door lines are built from the real counts at render time — the old
+ * "Ten files. Three you can open." was typed by hand and went stale the moment
+ * a project moved.
+ */
+export const outro = {
+  eyebrow: 'End of transmission',
+  title: ['Still', 'building'],
+  lead: 'That was the surface. Three doors from here — one for the person, one for the work, and one where you can just ask.',
+  doors: {
+    profile: { title: 'Who I am', line: 'The parts that are not code.' },
+    work: { title: 'The work' },
+    ask: { title: 'Ask me', line: 'Anything I have not answered goes to my phone.' },
+  },
+  hidden: 'Some of this page is hidden →',
+  signature: 'built by hand',
 } as const;
 
 export type SectorId = 'code' | 'automation' | 'ai' | 'security' | 'player';
@@ -98,7 +136,7 @@ export const sectors: Sector[] = [
     id: 'security',
     index: '04',
     title: 'SECURITY',
-    subtitle: 'Everything is more open than its owner thinks. That is a reason to be careful, not clever.',
+    subtitle: 'You are already broadcasting. Here is some of it, read off your own device, while you sit there.',
     accent: 'var(--accent-security)',
   },
   {

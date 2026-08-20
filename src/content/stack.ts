@@ -47,6 +47,18 @@ export const stack: StackNode[] = [
   { id: 'gas', label: 'Apps Script', use: 'the unglamorous glue that quietly runs real businesses.', group: 'glue', weight: 2, x: 0.90, y: 0.83 },
 ];
 
+/**
+ * The line above the map.
+ *
+ * The field map is beautiful and it is addressed entirely to somebody who
+ * already knows what half of these words mean — which, on a site written for
+ * people who have never opened a terminal, is most of the audience walking
+ * past it. This is what the map is actually claiming, in one sentence, with no
+ * jargon in it.
+ */
+export const stackLead =
+  'Twenty-odd tools. None of them learned from a course, none of them on here because they look good in a list — each one is on the map because something running right now depends on it, and because I would be happy to be asked about it in a room with no internet.';
+
 /** Field connections — drawn faint, lit when either end is scanned. */
 export const stackEdges: [string, string][] = [
   ['ts', 'js'], ['ts', 'react'], ['ts', 'next'], ['react', 'next'],
