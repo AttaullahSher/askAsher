@@ -18,15 +18,20 @@ A single dark, cinematic page:
   chooses to enter. The scene is already alive behind the gate, so it reads as a
   held frame rather than a loading screen.
 - **Opening.** A slow camera push into a night drop zone, three lines of type,
-  then the standing title. Skippable from the first beat.
-- **Five sectors, all passive.** `01 CODE` (a field map that scans itself) ·
+  then the standing title. Skippable from the first beat. One button under it —
+  the console — because the site is called askAsher and that should not be a
+  secret until the seventh screen.
+- **The method.** How the work actually happens, in five steps, straight after
+  the manifest. What gets looked at first, what gets refused, where it stops.
+- **Five sectors.** `01 CODE` (a field map that scans itself) ·
   `02 AUTOMATION` (a request handed from app to app) · `03 AI` (a core that
-  boots as you reach it) · `04 SECURITY` (four lines and no method) ·
-  `05 PLAYER` (a loadout, no invented stats). Nothing in the descent asks to
-  be tapped — it plays while you scroll.
-- **Two doors at the end.** `WHO I AM` opens the personal file; `THE WORK`
-  opens the project index. All interaction on the page lives here, on purpose.
-- **Hidden things.** Four of them. The console will point you at the first.
+  boots as you reach it) · `04 SECURITY` (**a live readout of your own
+  device** — see below) · `05 PLAYER` (a loadout, no invented stats). Nothing
+  in the descent asks to be tapped; it plays while you scroll.
+- **Three doors at the end.** `WHO I AM` opens the personal file; `THE WORK`
+  opens the project index; `ASK ME` opens the console.
+- **Hidden things.** Four of them. The browser console will point you at the
+  first.
 
 ---
 
@@ -89,13 +94,15 @@ lives in `src/content/`:
 
 | File | What is in it |
 | --- | --- |
-| `site.ts` | Name, tagline, the on-page line, the plain-language summary used for search and link previews, the hero (eyebrow, lead, sub), canonical URL, outbound links, the five sector titles |
-| `profile.ts` | The personal file behind the first door — roles, the long version, the closing line |
+| `site.ts` | Name, tagline, the on-page lines, the plain-language summary used for search and link previews, the hero (eyebrow, lead, sub, the ask label), the end-of-page copy, canonical URL, outbound links, the five sector titles |
+| `method.ts` | **How the work happens.** Five steps, in order, rendered under the manifest |
+| `profile.ts` | The personal file behind the first door — roles, the long version, the modes, the closing line, and the relay endpoint |
 | `projects.ts` | The work behind the second door, written in the first person and in plain English — what it is, why it exists, what it does, and one line on what it took |
-| `stack.ts` | Technologies in sector 01, their positions in the field map and the edges between them |
+| `answers.ts` | **The console corpus.** Every question the console can answer, and the copy around a miss |
+| `stack.ts` | Technologies in sector 01, their positions in the field map, the edges between them, and the plain-language line above it |
 | `automation.ts` | The relay: which apps the request is handed through, and what each one passes on |
 | `ai.ts` | The AI modules and the core boot log |
-| `security.ts` | The four lines, the principles list, the one rule, and the closing note. Deliberately contains no method |
+| `security.ts` | The four lines, the principles list, the one rule, the readout copy, and the closing note. Deliberately contains no method |
 | `player.ts` | The loadout slots, the games, and the tag on the scoreboard |
 
 **Links.** In `site.ts`, a link with an empty `href` simply does not render —
@@ -107,13 +114,76 @@ metrics, no awards, no client logos, and nothing that exposes a business's
 internals or a technique somebody could follow. Say what is true about the
 capability; never publish the method. And no jargon — the reader has never
 written a line of code and never wants to, so `made` carries one human line
-about what it took instead of a list of technology names. Where a system is deliberately held at arm's length, say so
-on the page — the `guarded` field renders that note. Anything that has not
-actually been built carries `status: 'CONCEPT'` and says so in `guarded`; a
-design is worth reading, but it never wears a shipped system's clothes.
+about what it took instead of a list of technology names.
+
+**Two rules that replaced the old hedging.** `status` describes what a thing
+*is* rather than whether it shipped — `RUNNING`, `IN USE`, `BENCH`, `STUDY`. A
+study is honestly a study, and the label says so without the entry having to
+apologise for itself afterwards. `guarded` survives in exactly two places: where
+a real client's internals are the reason, and where scope genuinely needs
+stating once, flatly, in a single line. Nowhere else. An entry states what is
+true and then stops.
+
+**And the research entries are written about the reader, not the author.** "I
+know what a room gives away" is a claim somebody has to take on trust; "your
+phone is talking right now" is a fact they can check, and it does not require
+the writer to have done anything to anybody. The subject is frightening on its
+own — it has never needed help.
 
 **Stack.** `stack.ts` is a claim about what you can be asked about in a room
 with no internet. Prune anything that is not true rather than softening it.
+
+---
+
+## The console
+
+`ASK ASHER` is the front door. It opens from the button under the hero, the
+first control in the HUD, the third door at the end, and `ask` in the hidden
+shell.
+
+It is **not a model, and it must never pretend to be one.** `src/lib/ask.ts`
+scores what the visitor typed against the `match` keys in
+`src/content/answers.ts` and prints the winning `reply`. No request, no key, no
+generation — the AI sector already tells the visitor that nothing is running on
+this page, and a console that implied otherwise would make a liar of that line
+for the sake of a party trick.
+
+**A miss is the point, not a failure.** Anything with no written answer offers
+to carry the question to his phone through the same FormSubmit relay
+(`relay.endpoint` in `profile.ts`). A question worth answering twice then
+becomes a new entry in `answers.ts` on the next deploy, so the console gets
+sharper every time somebody uses it and the site stops being a thing you
+finish.
+
+Longer phrases win decisively — the score is the square of the word count — so
+list both the distinctive phrasing *and* the bare keyword on an entry. The one
+list to keep deliberately over-broad is the refusal (`hack-for-me`): an
+over-broad refusal costs a slightly odd reply, an under-broad one costs a great
+deal more.
+
+---
+
+## The readout in sector 04
+
+The security sector reads the visitor's own device in front of them and then
+throws every value away. `src/lib/readout.ts` holds the rules, and they are not
+negotiable:
+
+1. **Read-only.** Nothing is transmitted and nothing is written — no
+   `localStorage`, no cookie, no retained fingerprint. Every value lives inside
+   one React render. The page says it kept nothing because it kept nothing; if
+   that stops being true the whole section has to come out, because the claim
+   *is* the section.
+2. **No permission is ever requested.** No geolocation, camera, microphone or
+   clipboard. Only values the browser hands to every site unprompted. A section
+   about being read without your knowledge cannot open by asking permission.
+3. **Nothing is ever faked.** Every field is feature-detected and an
+   unavailable one is simply absent. A reader who catches one invented value
+   correctly stops believing the other nine.
+
+Values are read after mount, never during render — this is a static export, and
+anything device-specific written on the first pass would disagree with the
+prerendered HTML.
 
 ---
 
@@ -194,11 +264,14 @@ contrast with it.
 ```
 src/
   app/           layout (fonts, metadata, OG), page, globals.css, robots, sitemap
-  components/    Gate, Hero, Manifest, Section shell, Hud, Terminal,
-                 BuildDialog, EasterEggs, Toast, Atmosphere
+  components/    Gate, Hero, Manifest, Section shell, Hud, Overlay,
+                 ConsoleShell — the frame Terminal and AskConsole share,
+                 Terminal (hidden), AskConsole (the front door), AskInvite,
+                 ProfileDialog, WorkDialog, EasterEggs, Toast, Atmosphere
     sectors/     one component per sector
   content/       all copy and data — see the table above
-  lib/           scene (the canvas engine), audio, hooks, experience context, paths
+  lib/           scene (the canvas engine), audio, hooks, experience context,
+                 ask (the matcher), readout (the device snapshot), paths
 public/
   ask/           the previous site, kept live at /ask/ so a real build is reachable
   icons/         generated favicon set

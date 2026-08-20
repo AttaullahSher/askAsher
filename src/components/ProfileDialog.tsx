@@ -1,6 +1,6 @@
 'use client';
 
-import { Appreciation } from './Appreciation';
+import { AskInvite } from './AskInvite';
 import { CurveMark, CurveRule } from './Curve';
 import { Block, Overlay } from './Overlay';
 import {
@@ -174,7 +174,7 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
           </ul>
         </Block>
 
-        <Appreciation />
+        <AskInvite onClose={onClose} />
       </div>
     </Overlay>
   );

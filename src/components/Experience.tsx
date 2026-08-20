@@ -17,11 +17,14 @@ import { useExperience } from '@/lib/experience';
 import { sectors } from '@/content/site';
 
 const Terminal = lazy(() => import('./Terminal').then((m) => ({ default: m.Terminal })));
+const AskConsole = lazy(() =>
+  import('./AskConsole').then((m) => ({ default: m.AskConsole })),
+);
 
 const byId = Object.fromEntries(sectors.map((s) => [s.id, s]));
 
 export function Experience() {
-  const { terminalOpen, entered } = useExperience();
+  const { terminalOpen, askOpen, setAskOpen, entered } = useExperience();
 
   return (
     <>
@@ -54,6 +57,12 @@ export function Experience() {
       {terminalOpen && (
         <Suspense fallback={null}>
           <Terminal />
+        </Suspense>
+      )}
+
+      {askOpen && (
+        <Suspense fallback={null}>
+          <AskConsole onClose={() => setAskOpen(false)} />
         </Suspense>
       )}
     </>

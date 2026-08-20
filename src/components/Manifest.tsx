@@ -1,19 +1,20 @@
 'use client';
 
 import { useInView } from '@/lib/hooks';
+import { method, methodNote } from '@/content/method';
 import { site } from '@/content/site';
 
 const WORDS = ['DESIGN.', 'AUTOMATE.', 'DECIDE.', 'PLAY.'];
 
-const AXIOMS = [
-  { k: '01', v: 'I read the room before the docs.' },
-  { k: '02', v: 'If it repeats, it stops needing a person.' },
-  { k: '03', v: 'Everything has a seam. I find it early.' },
-];
-
 /**
- * The character reveal, straight after the hero. One idea per line, nothing
- * explained twice.
+ * The character reveal, straight after the hero — and then the method.
+ *
+ * This section used to end on three one-line axioms ("I read the room before
+ * the docs.") which are the sort of thing anybody can write about themselves in
+ * an afternoon. The site said what he does in five sectors and who he is behind
+ * a door, and nowhere at all did it say *how* — which is the half a sharp
+ * reader is actually weighing. `method.ts` is that half, and it goes here,
+ * early, before anybody has decided whether to keep scrolling.
  */
 export function Manifest() {
   const { ref, inView } = useInView<HTMLElement>({ threshold: 0.15 });
@@ -67,34 +68,61 @@ export function Manifest() {
           data-in={inView}
           style={{ ['--d' as string]: '650ms', color: 'var(--color-muted)' }}
         >
-          Businesses that used to move at the speed of one tired person. Most
-          of them are running right now, and nobody in the building is thinking
-          about it. That is the part I am proud of.
+          {site.descriptionSub}
         </p>
 
-        <ul className="mt-14 grid gap-px sm:grid-cols-3" style={{ background: 'var(--hud-line)' }}>
-          {AXIOMS.map((a, i) => (
+        {/*
+          The method. A vertical sequence rather than the three-column grid the
+          axioms used, because these are steps in an order and a grid reads as
+          a menu of unrelated virtues.
+        */}
+        <p
+          className="hud-sm reveal mt-16"
+          data-in={inView}
+          style={{ ['--d' as string]: '720ms', color: 'var(--color-signal)' }}
+        >
+          How it actually happens
+        </p>
+
+        <ol className="mt-5 grid gap-px" style={{ background: 'var(--hud-line)' }}>
+          {method.map((s, i) => (
             <li
-              key={a.k}
-              className="reveal px-5 py-6"
+              key={s.index}
+              className="reveal px-5 py-6 sm:px-6"
               data-in={inView}
               style={{
-                ['--d' as string]: `${700 + i * 90}ms`,
+                ['--d' as string]: `${780 + i * 80}ms`,
                 background: 'var(--color-void)',
               }}
             >
-              <span className="hud-sm block" style={{ color: 'var(--color-signal)' }}>
-                {a.k}
-              </span>
-              <span
-                className="font-display mt-3 block text-sm font-semibold uppercase leading-snug"
-                style={{ letterSpacing: '0.08em' }}
-              >
-                {a.v}
-              </span>
+              <div className="flex items-baseline gap-4">
+                <span
+                  className="hud-sm shrink-0 tabular-nums"
+                  style={{ color: 'var(--color-signal)' }}
+                >
+                  {s.index}
+                </span>
+                <div className="min-w-0">
+                  <h3
+                    className="font-display text-sm font-extrabold uppercase leading-snug sm:text-base"
+                    style={{ letterSpacing: '0.1em', color: 'var(--color-hot)' }}
+                  >
+                    {s.label}
+                  </h3>
+                  <p className="prose-body mt-2">{s.body}</p>
+                </div>
+              </div>
             </li>
           ))}
-        </ul>
+        </ol>
+
+        <p
+          className="prose-body reveal mt-6 max-w-xl"
+          data-in={inView}
+          style={{ ['--d' as string]: '1200ms', color: 'var(--color-muted)' }}
+        >
+          {methodNote}
+        </p>
       </div>
     </section>
   );

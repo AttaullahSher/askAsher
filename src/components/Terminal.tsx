@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { ConsoleShell } from './ConsoleShell';
 import { useExperience } from '@/lib/experience';
+import { answers } from '@/content/answers';
 import { playerTag } from '@/content/player';
 import { modes, modesNote } from '@/content/profile';
 import { projects } from '@/content/projects';
@@ -26,6 +28,7 @@ const BANNER = [
 export function Terminal() {
   const {
     setTerminalOpen,
+    setAskOpen,
     overdrive,
     toggleOverdrive,
     motion,
@@ -40,11 +43,6 @@ export function Terminal() {
     { kind: 'accent', text: `${site.name} // shell` },
     { kind: 'dim', text: "type 'help'. esc closes." },
   ]);
-  const [value, setValue] = useState('');
-  const [recall, setRecall] = useState<string[]>([]);
-  const [recallAt, setRecallAt] = useState(-1);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const bodyRef = useRef<HTMLDivElement | null>(null);
   const opened = useRef(0);
 
   const commands = useMemo(() => {
@@ -65,7 +63,7 @@ export function Terminal() {
         desc: 'who is asher',
         run: () => [
           { kind: 'accent', text: 'asher' },
-          { kind: 'out', text: 'business transformation · automation + ai · plays to win' },
+          { kind: 'out', text: 'abu dhabi · builds systems · answers late' },
           { kind: 'dim', text: 'takes businesses off manual. nobody notices afterwards.' },
           { kind: 'dim', text: 'notices the rest. mentions almost none of it.' },
           { kind: 'dim', text: `also answers to ${playerTag.toLowerCase()}.` },
@@ -153,6 +151,19 @@ export function Terminal() {
           return [{ kind: 'out', text: `sound · ${sound ? 'off' : 'on'}` }];
         },
       },
+      ask: {
+        desc: 'open the ask console',
+        run: () => {
+          setAskOpen(true);
+          setTerminalOpen(false);
+          return [
+            {
+              kind: 'out',
+              text: `${answers.length} answers written by hand. anything else reaches his phone.`,
+            },
+          ];
+        },
+      },
       sudo: {
         desc: '?',
         run: () => [
@@ -164,7 +175,8 @@ export function Terminal() {
         desc: 'where to find me',
         run: () => [
           { kind: 'out', text: `${site.url}` },
-          { kind: 'dim', text: 'open "who i am" at the end of the page. it is in there.' },
+          { kind: 'dim', text: "type 'ask' — that goes straight to his phone." },
+          { kind: 'dim', text: 'addresses are in "who i am" at the end of the page.' },
         ],
       },
       asher: {
@@ -190,41 +202,23 @@ export function Terminal() {
     motion,
     overdrive,
     sound,
+    setAskOpen,
     setTerminalOpen,
     toggleMotion,
     toggleOverdrive,
     toggleSound,
   ]);
 
+  // Focus, the scroll lock, Escape and the scrollback all live in ConsoleShell
+  // now. The only thing this component still needs to know is when it opened,
+  // because `uptime` reports it.
   useEffect(() => {
     opened.current = Date.now();
-    const id = window.setTimeout(() => inputRef.current?.focus(), 120);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      window.clearTimeout(id);
-      document.body.style.overflow = prev;
-    };
   }, []);
-
-  useEffect(() => {
-    bodyRef.current?.scrollTo({ top: bodyRef.current.scrollHeight });
-  }, [history]);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setTerminalOpen(false);
-    };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [setTerminalOpen]);
 
   const submit = (raw: string) => {
     const cmd = raw.trim().toLowerCase();
-    setValue('');
     if (!cmd) return;
-    setRecall((r) => [cmd, ...r].slice(0, 30));
-    setRecallAt(-1);
 
     const next: Line[] = [{ kind: 'in', text: cmd }];
     const entry = commands[cmd];
@@ -239,115 +233,33 @@ export function Terminal() {
   };
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-end sm:items-center sm:justify-center">
-      <button
-        type="button"
-        aria-label="Close terminal"
-        onClick={() => setTerminalOpen(false)}
-        className="absolute inset-0 cursor-default"
-        style={{ background: 'rgba(2,4,7,0.82)', backdropFilter: 'blur(4px)' }}
-        tabIndex={-1}
-      />
-
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="Hidden terminal"
-        className="scanlines relative flex h-[70svh] w-full flex-col overflow-hidden sm:h-[30rem] sm:max-w-2xl"
-        style={{
-          border: '1px solid color-mix(in oklab, var(--color-signal) 30%, transparent)',
-          background: 'linear-gradient(180deg, rgba(7,10,15,0.97), rgba(3,5,8,0.97))',
-          animation: 'dialog-in 340ms var(--ease-out-expo) both',
-          paddingBottom: 'env(safe-area-inset-bottom)',
-        }}
-      >
-        <div
-          className="flex items-center justify-between px-3 py-2"
-          style={{ borderBottom: '1px solid var(--hud-line)' }}
-        >
-          <span className="hud-sm" style={{ color: 'var(--color-signal)' }}>
-            asher@shell
-          </span>
-          <button
-            type="button"
-            onClick={() => setTerminalOpen(false)}
-            className="hud-sm px-2 py-1 transition-colors hover:text-[var(--color-bone)]"
-          >
-            esc
-          </button>
-        </div>
-
-        <div
-          ref={bodyRef}
-          className="flex-1 overflow-y-auto px-3 py-3"
-          style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', lineHeight: 1.65 }}
-          onClick={() => inputRef.current?.focus()}
-        >
-          {history.map((l, i) => (
-            <p
-              key={i}
-              className="whitespace-pre-wrap break-words"
-              style={{
-                color:
-                  l.kind === 'accent'
-                    ? 'var(--color-signal)'
-                    : l.kind === 'dim'
-                      ? 'var(--color-steel-500)'
-                      : l.kind === 'in'
-                        ? 'var(--color-hot)'
-                        : 'var(--color-muted)',
-              }}
-            >
-              {l.kind === 'in' ? `› ${l.text}` : l.text}
-            </p>
-          ))}
-        </div>
-
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            submit(value);
+    <ConsoleShell
+      label="Hidden terminal"
+      title="asher@shell"
+      placeholder="help"
+      inputLabel="Command"
+      onClose={() => setTerminalOpen(false)}
+      onSubmit={submit}
+      scrollKey={history.length}
+    >
+      {history.map((l, i) => (
+        <p
+          key={i}
+          className="whitespace-pre-wrap break-words"
+          style={{
+            color:
+              l.kind === 'accent'
+                ? 'var(--color-signal)'
+                : l.kind === 'dim'
+                  ? 'var(--color-steel-500)'
+                  : l.kind === 'in'
+                    ? 'var(--color-hot)'
+                    : 'var(--color-muted)',
           }}
-          className="flex items-center gap-2 px-3 py-2.5 focus-within:bg-[rgba(255,138,31,0.04)]"
-          style={{ borderTop: '1px solid color-mix(in oklab, var(--color-signal) 26%, transparent)' }}
         >
-          <span style={{ color: 'var(--color-signal)', fontFamily: 'var(--font-mono)' }}>›</span>
-          <input
-            ref={inputRef}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                const at = Math.min(recallAt + 1, recall.length - 1);
-                if (at >= 0) {
-                  setRecallAt(at);
-                  setValue(recall[at] ?? '');
-                }
-              } else if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                const at = recallAt - 1;
-                setRecallAt(at);
-                setValue(at >= 0 ? (recall[at] ?? '') : '');
-              }
-            }}
-            spellCheck={false}
-            autoComplete="off"
-            autoCapitalize="off"
-            autoCorrect="off"
-            aria-label="Command"
-            placeholder="help"
-            // The caret is the focus indicator here; a ring around the only
-            // control in a shell reads as an error state.
-            className="w-full bg-transparent outline-none focus-visible:outline-none"
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '16px', // 16px stops iOS zooming the whole page on focus
-              color: 'var(--color-hot)',
-            }}
-          />
-        </form>
-      </div>
-    </div>
+          {l.kind === 'in' ? `\u203a ${l.text}` : l.text}
+        </p>
+      ))}
+    </ConsoleShell>
   );
 }

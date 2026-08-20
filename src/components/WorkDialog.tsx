@@ -6,14 +6,14 @@ import { projects, type Project } from '@/content/projects';
 import { asset } from '@/lib/paths';
 
 const STATUS_COLOR: Record<Project['status'], string> = {
-  LIVE: 'var(--color-signal)',
-  INTERNAL: 'var(--color-ice)',
-  ONGOING: 'var(--color-violet)',
-  CONCEPT: 'var(--color-alert)',
+  RUNNING: 'var(--color-signal)',
+  'IN USE': 'var(--color-ice)',
+  BENCH: 'var(--color-violet)',
+  STUDY: 'var(--color-alert)',
 };
 
 /**
- * The work. A list first, then one file at a time — a stack of ten full
+ * The work. A list first, then one file at a time — a stack of eight full
  * case studies is a wall of text on a phone.
  */
 export function WorkDialog({ onClose }: { onClose: () => void }) {
@@ -44,8 +44,9 @@ const Spell = (n: number) => {
 };
 
 function Index({ onOpen }: { onOpen: (p: Project) => void }) {
-  const drawn = projects.filter((p) => p.status === 'CONCEPT').length;
-  const built = projects.length - drawn;
+  // Counted, never typed. The old copy said "ten files, three you can open"
+  // in two different places and both were hand-maintained.
+  const openable = projects.filter((p) => p.href).length;
 
   return (
     <>
@@ -57,8 +58,8 @@ function Index({ onOpen }: { onOpen: (p: Project) => void }) {
         Everything here points at something I own or was invited into. That is
         the only rule I have, and it does not bend.
         {' '}
-        {Spell(built)} built
-        {drawn > 0 && `, ${spell(drawn)} written as plans and saying so`}.
+        {Spell(projects.length)} files, {spell(openable)} of them you can open
+        right now.
       </p>
       <ul className="grid gap-2">
         {projects.map((p) => (
