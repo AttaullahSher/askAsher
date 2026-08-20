@@ -24,28 +24,16 @@ export const securityCreed: string[] = [
 
 export const securityPrinciples: { label: string; body: string }[] = [
   {
-    label: 'Surface',
-    body: 'A business grows by adding doors. An app, a portal, a login for a supplier. Nobody is ever handed the job of counting them.',
-  },
-  {
     label: 'Devices',
-    body: 'A phone is a microphone, a camera, a radio and a very long memory. It was never only a phone.',
+    body: 'A phone is a microphone, a camera, a radio and a very long memory.',
   },
   {
     label: 'Signal',
     body: 'Nobody has to read what you sent. When, how often, and who answered tells most of it.',
   },
   {
-    label: 'Trust',
-    body: 'Anything from outside is a stranger at the door. Greeted, checked, never walked straight through to the till.',
-  },
-  {
-    label: 'Privacy',
-    body: 'The safest record was never written. The second safest was deleted on time. Everything after that is a promise.',
-  },
-  {
     label: 'Restraint',
-    body: 'Knowing how is common. Choosing not to — every day, with nobody watching — is the part almost nobody trains.',
+    body: 'Knowing how is common. Choosing not to, with nobody watching, is not.',
   },
 ];
 
@@ -68,7 +56,7 @@ export const securityScope =
  */
 export const readout = {
   eyebrow: 'Live · off your device',
-  lead: 'You agreed to nothing. Tapped nothing. Answered nothing. Here is some of what this page can already see.',
+  lead: 'You agreed to nothing. Tapped nothing. Here is what this page can already see.',
   /** Lands line by line once the listing finishes. Four beats, no more. */
   turn: [
     'Four milliseconds.',
@@ -78,7 +66,7 @@ export const readout = {
   ],
   /** Without this the section is a cheap scare. With it, that is the subject. */
   release:
-    'This one did not. Nothing above was sent anywhere and nothing was stored. There is no server behind this page and nothing counting you. Close the tab and every line of it stops existing.',
+    'This one did not. Nothing above was sent anywhere and nothing was stored. Close the tab and every line of it stops existing.',
   /**
    * The line the whole sector exists to earn. It goes here, under the proof,
    * and not in a paragraph forty lines further down where it would be a boast.
@@ -90,4 +78,4 @@ export const readout = {
 
 /** The restraint, after the demonstration. A quarter of its old length. */
 export const securityClose =
-  'None of this is a service and none of it is for sale. It is what I am like in a room. I notice, and then I do nothing about it. That is the whole discipline, and the only part worth respecting.';
+  'None of it is for sale. I notice, and then I put it down. Every day, with nobody watching. That is the whole discipline.';

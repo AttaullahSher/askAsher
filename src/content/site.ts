@@ -17,7 +17,7 @@ export const site = {
    * which the README has always said was not a thing that happened here.
    */
   descriptionSub:
-    'They used to move at the speed of one tired person. They are running right now and nobody in the building is thinking about it. That is the part I am proud of.',
+    'They used to move at the speed of one tired person. They are running right now and nobody in the building is thinking about it.',
   /**
    * The plain-language version, used for search results and link previews.
    * Somebody who has never written a line of code has to understand it in one
