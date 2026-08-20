@@ -91,7 +91,7 @@ lives in `src/content/`:
 | --- | --- |
 | `site.ts` | Name, tagline, the on-page line, the plain-language summary used for search and link previews, the hero (eyebrow, lead, sub), canonical URL, outbound links, the five sector titles |
 | `profile.ts` | The personal file behind the first door — roles, the long version, the closing line |
-| `projects.ts` | The work behind the second door, written in the first person — what it is, why it exists, what it does, what it is built with |
+| `projects.ts` | The work behind the second door, written in the first person and in plain English — what it is, why it exists, what it does, and one line on what it took |
 | `stack.ts` | Technologies in sector 01, their positions in the field map and the edges between them |
 | `automation.ts` | The relay: which apps the request is handed through, and what each one passes on |
 | `ai.ts` | The AI modules and the core boot log |
@@ -102,10 +102,12 @@ lives in `src/content/`:
 there are no dead placeholder URLs on the page. Add your Instagram or an email
 by uncommenting and filling in the relevant line.
 
-**Projects.** The rule is written at the top of `projects.ts`: no invented
+**Projects.** The rules are written at the top of `projects.ts`: no invented
 metrics, no awards, no client logos, and nothing that exposes a business's
 internals or a technique somebody could follow. Say what is true about the
-capability; never publish the method. Where a system is deliberately held at arm's length, say so
+capability; never publish the method. And no jargon — the reader has never
+written a line of code and never wants to, so `made` carries one human line
+about what it took instead of a list of technology names. Where a system is deliberately held at arm's length, say so
 on the page — the `guarded` field renders that note. Anything that has not
 actually been built carries `status: 'CONCEPT'` and says so in `guarded`; a
 design is worth reading, but it never wears a shipped system's clothes.

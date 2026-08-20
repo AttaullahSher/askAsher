@@ -130,19 +130,11 @@ function Detail({ project }: { project: Project }) {
         </Block>
       )}
 
-      <Block label="Built with">
-        <ul className="flex flex-wrap gap-2">
-          {project.tech.map((t) => (
-            <li
-              key={t}
-              className="hud-sm px-2 py-1"
-              style={{ border: '1px solid var(--hud-line)' }}
-            >
-              {t}
-            </li>
-          ))}
-        </ul>
-      </Block>
+      {project.made && (
+        <Block label="What it took">
+          <p className="prose-body">{project.made}</p>
+        </Block>
+      )}
 
       {project.guarded && (
         <p
