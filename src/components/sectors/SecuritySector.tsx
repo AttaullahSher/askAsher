@@ -284,6 +284,17 @@ function Readout() {
       </div>
 
       <p className="prose-body mt-5 max-w-2xl">{readout.release}</p>
+
+      {/*
+        The line the sector exists to earn. Display type, directly under the
+        proof — it costs nothing to say once the readout has already said it.
+      */}
+      <p
+        className="font-display mt-6 max-w-2xl text-[clamp(1.05rem,4.4vw,1.7rem)] font-extrabold uppercase leading-[1.12]"
+        style={{ letterSpacing: '-0.01em', color: 'var(--accent)' }}
+      >
+        {readout.after}
+      </p>
     </div>
   );
 }

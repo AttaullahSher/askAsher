@@ -6,10 +6,9 @@ import { projects, type Project } from '@/content/projects';
 import { asset } from '@/lib/paths';
 
 const STATUS_COLOR: Record<Project['status'], string> = {
-  RUNNING: 'var(--color-signal)',
-  'IN USE': 'var(--color-ice)',
-  BENCH: 'var(--color-violet)',
-  STUDY: 'var(--color-alert)',
+  LIVE: 'var(--color-signal)',
+  PRIVATE: 'var(--color-ice)',
+  CLOSED: 'var(--color-alert)',
 };
 
 /**
@@ -51,15 +50,11 @@ function Index({ onOpen }: { onOpen: (p: Project) => void }) {
   return (
     <>
       <p className="prose-body mb-3">
-        Some of it runs a business. Most of it is me finding out how something
-        works, and then how it comes apart.
+        Some of it runs a business. The rest is how something works, and then
+        how it comes apart.
       </p>
       <p className="prose-body mb-6" style={{ color: 'var(--color-muted)' }}>
-        Everything here points at something I own or was invited into. That is
-        the only rule I have, and it does not bend.
-        {' '}
-        {Spell(projects.length)} files, {spell(openable)} of them you can open
-        right now.
+        {Spell(projects.length)} files. {Spell(openable)} open.
       </p>
       <ul className="grid gap-2">
         {projects.map((p) => (
@@ -80,11 +75,25 @@ function Index({ onOpen }: { onOpen: (p: Project) => void }) {
                 {p.code}
               </span>
               <span className="min-w-0 flex-1">
-                <span
-                  className="font-display block text-base font-extrabold uppercase transition-colors duration-300 group-hover:text-[var(--color-signal)]"
-                  style={{ letterSpacing: '0.08em' }}
-                >
-                  {p.title}
+                <span className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+                  <span
+                    className="font-display block text-base font-extrabold uppercase transition-colors duration-300 group-hover:text-[var(--color-signal)]"
+                    style={{ letterSpacing: '0.08em' }}
+                  >
+                    {p.title}
+                  </span>
+                  {/*
+                    The status used to exist only as the colour of the code on
+                    the left, which meant the one piece of signal on the row was
+                    unreadable. LIVE / PRIVATE / CLOSED all say something worth
+                    reading, so they are said.
+                  */}
+                  <span
+                    className="hud-sm shrink-0"
+                    style={{ color: STATUS_COLOR[p.status] }}
+                  >
+                    {p.status}
+                  </span>
                 </span>
                 <span className="mt-1 block text-xs" style={{ color: 'var(--color-muted)' }}>
                   {p.blurb}

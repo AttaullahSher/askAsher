@@ -11,13 +11,13 @@ export const site = {
    * leave the reader holding one fact.
    */
   description:
-    'A dark room, several screens, and four businesses running on things I built. Three of them have never met me.',
+    'A dark room. Several screens. Four businesses running on things I built, three of which have never met me.',
   /**
    * The second on-page line. Used to be hard-coded inside `Manifest.tsx`,
    * which the README has always said was not a thing that happened here.
    */
   descriptionSub:
-    'Businesses that used to move at the speed of one tired person. Most of them are running right now, and nobody in the building is thinking about it. That is the part I am proud of.',
+    'They used to move at the speed of one tired person. They are running right now and nobody in the building is thinking about it. That is the part I am proud of.',
   /**
    * The plain-language version, used for search results and link previews.
    * Somebody who has never written a line of code has to understand it in one
@@ -72,7 +72,7 @@ export const heroLines = {
   // essentially all of this site's traffic is.
   eyebrow: 'Builds systems · Abu Dhabi',
   lead: 'I take a business off manual and leave it running',
-  sub: 'I run one company, own half of another, and build the software underneath both. Most of what I make ends up free, online, and used by people who have no idea who wrote it.',
+  sub: 'One company. Half of another. The software underneath both. Most of what I build ends up free and online, used by people who have no idea who wrote it.',
   cue: 'Scroll down to see what I do',
   /** Kept short so the one button above the fold never wraps. */
   ask: 'Ask me anything',
@@ -89,7 +89,7 @@ export const heroLines = {
 export const outro = {
   eyebrow: 'End of transmission',
   title: ['Still', 'building'],
-  lead: 'That was the surface. Three doors from here — one for the person, one for the work, and one where you can just ask.',
+  lead: 'That was the surface. Three doors. One for the person, one for the work, one where you just ask.',
   doors: {
     profile: { title: 'Who I am', line: 'The parts that are not code.' },
     work: { title: 'The work' },
@@ -129,14 +129,14 @@ export const sectors: Sector[] = [
     id: 'ai',
     index: '03',
     title: 'AI',
-    subtitle: 'Not a chatbot in the corner. Better decisions, earlier, for the person who has to make them.',
+    subtitle: 'Not a chatbot in the corner. Better decisions, earlier, for whoever has to make them.',
     accent: 'var(--accent-ai)',
   },
   {
     id: 'security',
     index: '04',
     title: 'SECURITY',
-    subtitle: 'You are already broadcasting. Here is some of it, read off your own device, while you sit there.',
+    subtitle: 'You are already broadcasting. Here is some of it, off your own device, while you sit there.',
     accent: 'var(--accent-security)',
   },
   {
