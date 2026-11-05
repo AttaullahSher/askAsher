@@ -15,7 +15,7 @@ import { usePersistentState, usePrefersReducedMotion } from './hooks';
 export type MotionMode = 'full' | 'reduced';
 
 interface ExperienceValue {
-  /** False until the visitor passes the entry gate. */
+  /** Always true now: there is no entry gate. Kept so the canvas and easter eggs need no rewrite. */
   entered: boolean;
   enter: () => void;
   /** True while the three-line cinematic is still playing. */
@@ -52,7 +52,7 @@ export function ExperienceProvider({ children }: { children: ReactNode }) {
     'auto',
   );
 
-  const [entered, setEntered] = useState(false);
+  const [entered, setEntered] = useState(true);
   const [introPlaying, setIntroPlaying] = useState(false);
   const [sound, setSound] = useState(false);
   const [overdrive, setOverdrive] = useState(false);
@@ -72,10 +72,6 @@ export function ExperienceProvider({ children }: { children: ReactNode }) {
     document.documentElement.dataset.overdrive = overdrive ? 'on' : 'off';
     getAmbient().setIntensity(overdrive);
   }, [overdrive]);
-
-  useEffect(() => {
-    document.body.dataset.locked = String(!entered);
-  }, [entered]);
 
   /**
    * Start at the top, always.

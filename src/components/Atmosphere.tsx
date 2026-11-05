@@ -87,7 +87,7 @@ export function Atmosphere() {
       const k = Math.min(1, window.scrollY / (window.innerHeight * 0.8));
       // Eased so the scene fades away rather than dimming linearly.
       const eased = k * k * (3 - 2 * k);
-      if (scrimRef.current) scrimRef.current.style.opacity = (eased * 0.88).toFixed(3);
+      if (scrimRef.current) scrimRef.current.style.opacity = (eased * 0.8).toFixed(3);
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(apply);

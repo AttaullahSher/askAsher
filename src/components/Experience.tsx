@@ -1,57 +1,45 @@
 'use client';
 
 import { lazy, Suspense } from 'react';
-import { Access } from './Access';
 import { Atmosphere } from './Atmosphere';
 import { EasterEggs } from './EasterEggs';
-import { Gate } from './Gate';
 import { Hero } from './Hero';
-import { Hud } from './Hud';
-import { Manifest } from './Manifest';
-import { AiSector } from './sectors/AiSector';
-import { AutomationSector } from './sectors/AutomationSector';
-import { CodeSector } from './sectors/CodeSector';
-import { PlayerSector } from './sectors/PlayerSector';
-import { SecuritySector } from './sectors/SecuritySector';
+import { Lab } from './site/Lab';
+import { Nav } from './site/Nav';
+import { Contact, Person } from './site/Person';
+import { Record, Trade } from './site/Trade';
+import { Work } from './site/Work';
 import { useExperience } from '@/lib/experience';
-import { sectors } from '@/content/site';
 
 const Terminal = lazy(() => import('./Terminal').then((m) => ({ default: m.Terminal })));
 const AskConsole = lazy(() =>
   import('./AskConsole').then((m) => ({ default: m.AskConsole })),
 );
 
-const byId = Object.fromEntries(sectors.map((s) => [s.id, s]));
-
+/**
+ * The page, top to bottom. Professional first — the work, the trade, the
+ * record — then the lab, then the person. A recruiter can stop after the
+ * third section with everything they came for; anyone who keeps going finds
+ * out who he is.
+ */
 export function Experience() {
-  const { terminalOpen, askOpen, setAskOpen, entered } = useExperience();
+  const { terminalOpen, askOpen, setAskOpen } = useExperience();
 
   return (
     <>
       <Atmosphere />
+      <Nav />
 
-      {/*
-        Held back until the gate is dismissed. The gate is deliberately
-        translucent so the drop zone stays visible behind it — which also means
-        anything else on the page would show through it.
-      */}
-      <main
-        data-main
-        className="relative z-10 transition-opacity duration-700"
-        style={{ opacity: entered ? 1 : 0 }}
-      >
+      <main data-main className="relative z-10">
         <Hero />
-        <Manifest />
-        {byId.code && <CodeSector sector={byId.code} />}
-        {byId.automation && <AutomationSector sector={byId.automation} />}
-        {byId.ai && <AiSector sector={byId.ai} />}
-        {byId.security && <SecuritySector sector={byId.security} />}
-        {byId.player && <PlayerSector sector={byId.player} />}
-        <Access />
+        <Work />
+        <Trade />
+        <Record />
+        <Lab />
+        <Person />
+        <Contact />
       </main>
 
-      <Hud />
-      <Gate />
       <EasterEggs />
 
       {terminalOpen && (

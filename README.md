@@ -1,10 +1,9 @@
 # ASHER
 
-An interactive personal microsite for Asher — business transformation,
-automation and AI, written so somebody who has never read a line of code
-understands every sentence. A character introduction, not a portfolio: built to
-be opened from a phone, from an Instagram bio link, and to make the visitor
-curious rather than informed.
+The personal site of Attaullah Sher (Asher): operations, procurement and the
+business systems he builds through AI-assisted software development. Dark and
+cinematic, but a portfolio first — a recruiter gets the work in the first
+screen, and anyone who keeps scrolling finds out who he is.
 
 **Live:** https://attaullahsher.github.io/askAsher/
 
@@ -12,27 +11,22 @@ curious rather than informed.
 
 ## What it is
 
-A single dark, cinematic page:
+One dark page, no gate, professional first:
 
-- **Entry gate.** Nothing animates and nothing makes a sound until the visitor
-  chooses to enter. The scene is already alive behind the gate, so it reads as a
-  held frame rather than a loading screen.
-- **Opening.** A slow camera push into a night drop zone, three lines of type,
-  then the standing title. Skippable from the first beat. One button under it —
-  the console — because the site is called askAsher and that should not be a
-  secret until the seventh screen.
-- **The method.** How the work actually happens, in five steps, straight after
-  the manifest. What gets looked at first, what gets refused, where it stops.
-- **Five sectors.** `01 CODE` (a field map that scans itself) ·
-  `02 AUTOMATION` (a request handed from app to app) · `03 AI` (a core that
-  boots as you reach it) · `04 SECURITY` (**a live readout of your own
-  device**, and then the one line the sector exists to earn — see below) ·
-  `05 PLAYER` (a loadout, no invented stats). Nothing in the descent asks to be
-  tapped; it plays while you scroll.
-- **Three doors at the end.** `WHO I AM` opens the personal file; `THE WORK`
-  opens the project index; `ASK ME` opens the console.
-- **Hidden things.** Four of them. The browser console will point you at the
-  first.
+- **Hero.** Name, one line on what he does, two doors (the work, the console)
+  and four checkable numbers. Visible the instant the page opens.
+- **01 Work.** The six systems a real business runs on (POS, CRM, store, AI
+  assistant, documents, inventory) and Hkula. Internal systems are described,
+  never linked — a public page should not point at admin sign-ins.
+- **02 Trade.** Procurement, tenders, sourcing, order-to-cash, and the
+  institutions supplied. Engagements, never employers.
+- **03 Record.** The career on one line, newest first.
+- **04 Lab.** After hours, kept apart from the professional work: the
+  experiments, the security creed, and **a live readout of the visitor's own
+  device** — see below.
+- **05 Person.** Roles, the modes, the off-the-record promises.
+- **06 Contact.** The console, Instagram, email, GitHub.
+- **Hidden things.** The backtick opens a terminal; there is an old cheat code.
 
 ---
 
@@ -95,22 +89,23 @@ lives in `src/content/`:
 
 | File | What is in it |
 | --- | --- |
-| `site.ts` | Name, tagline, the on-page lines, the plain-language summary used for search and link previews, the hero (eyebrow, lead, sub, the ask label), the end-of-page copy, canonical URL, outbound links, the five sector titles |
-| `method.ts` | **How the work happens.** Five steps, in order, rendered under the manifest |
-| `profile.ts` | The personal file behind the first door — roles, the long version, the modes, the closing line, and the relay endpoint |
-| `projects.ts` | The work behind the second door, written in the first person and in plain English — what it is, why it exists, what it does, and one line on what it took |
+| `site.ts` | Name, summary used for search and link previews, the section list the nav reads, the hero, the closing copy, canonical URL |
+| `work.ts` | **The professional half.** The six systems, Hkula, the trade (tenders, sourcing, engagements) and the career record |
+| `lab.ts` | **The lab.** After-hours projects, written short, with status and links |
+| `profile.ts` | The person — roles, the long version, the modes, off the record, contact links, and the relay endpoint |
 | `answers.ts` | **The console corpus.** Every question the console can answer, and the copy around a miss |
-| `stack.ts` | Technologies in sector 01, their positions in the field map, the edges between them, and the plain-language line above it |
-| `automation.ts` | The relay: which apps the request is handed through, and what each one passes on |
-| `ai.ts` | The AI modules and the core boot log |
-| `security.ts` | The four lines, the principles list, the one rule, the readout copy, and the closing note. Deliberately contains no method |
-| `player.ts` | The loadout slots, the games, and the tag on the scoreboard |
+| `security.ts` | The creed, the one rule, and the readout copy. Deliberately contains no method |
+| `stack.ts`, `player.ts` | Read by the hidden terminal |
+
+**Work.** Every figure in `work.ts` is one he has stated and can defend in an
+interview. No invented metrics, no money, no headcount, and named
+organisations are supply and project engagements, never employers.
 
 **Links.** In `site.ts`, a link with an empty `href` simply does not render —
 there are no dead placeholder URLs on the page. Add your Instagram or an email
 by uncommenting and filling in the relevant line.
 
-**Projects.** The rules are written at the top of `projects.ts`: no invented
+**Lab.** The rules are written at the top of `lab.ts`: no invented
 metrics, no awards, no client logos, and nothing that exposes a business's
 internals or a technique somebody could follow. Say what is true about the
 capability; never publish the method. And no jargon — the reader has never
@@ -154,7 +149,7 @@ shell.
 It is **not a model, and it must never pretend to be one.** `src/lib/ask.ts`
 scores what the visitor typed against the `match` keys in
 `src/content/answers.ts` and prints the winning `reply`. No request, no key, no
-generation — the AI sector already tells the visitor that nothing is running on
+generation — the site already tells the visitor that nothing is running on
 this page, and a console that implied otherwise would make a liar of that line
 for the sake of a party trick.
 
@@ -173,9 +168,9 @@ deal more.
 
 ---
 
-## The readout in sector 04
+## The readout in the Lab
 
-The security sector reads the visitor's own device in front of them and then
+The Lab reads the visitor's own device in front of them and then
 throws every value away. `src/lib/readout.ts` holds the rules, and they are not
 negotiable:
 
@@ -243,7 +238,7 @@ The build dossier and the hidden terminal are lazily loaded and only ever
 fetched after a deliberate tap.
 
 **The scene recedes.** After the opening, a scrim brings the drop zone down to a
-trace. Without it, the skyline sits behind every heading and each sector reads
+trace. Without it, the skyline sits behind every heading and each section reads
 as text pasted over a photograph.
 
 **The grade is deliberate.** Warm lifted blacks, drifting dust, heavier grain
@@ -263,7 +258,7 @@ contrast with it.
   with a visible focus ring. The build dossier and the terminal trap focus and
   close on `Escape`.
 - With JavaScript disabled the page is still readable: a `<noscript>` style
-  resolves the reveals and removes the gate.
+  resolves the reveals.
 - Text uses `16px` inputs so iOS does not zoom the page on focus, and honours
   `text-size-adjust` so Instagram's browser does not reflow it.
 
@@ -274,11 +269,11 @@ contrast with it.
 ```
 src/
   app/           layout (fonts, metadata, OG), page, globals.css, robots, sitemap
-  components/    Gate, Hero, Manifest, Section shell, Hud, Overlay,
+  components/    Hero, Atmosphere, Readout (the device snapshot),
                  ConsoleShell — the frame Terminal and AskConsole share,
-                 Terminal (hidden), AskConsole (the front door), AskInvite,
-                 ProfileDialog, WorkDialog, EasterEggs, Toast, Atmosphere
-    sectors/     one component per sector
+                 Terminal (hidden), AskConsole (the front door), EasterEggs, Toast
+    site/        Nav, Work, Trade + Record, Lab, Person + Contact, and ui.tsx
+                 (Band, Heading, Reveal, Tag, Status — the shared primitives)
   content/       all copy and data — see the table above
   lib/           scene (the canvas engine), audio, hooks, experience context,
                  ask (the matcher), readout (the device snapshot), paths
@@ -292,16 +287,16 @@ scripts/
 ```
 
 **Theme.** Every colour, font and easing is a token in the `@theme` block at the
-top of `src/app/globals.css`. Sector accents are one level of indirection on top
-of that (`--accent-code`, `--accent-security`, …), so a sector can be re-skinned
-in one line, and the canvas reads the same values.
+top of `src/app/globals.css`. Each section sets `--accent` once on its `Band` (signal orange for the work, ice for
+the trade, alert red for the lab, gold for the person), so a section can be
+re-skinned in one line, and the canvas reads the same tokens.
 
 ---
 
 ## Two notes on what was already here
 
 **`/ask/`.** The previous occupant of this repo — a browser-only assistant with
-durable memory and voice — is preserved at `/ask/` and linked from sector 05, so
+durable memory and voice — is preserved at `/ask/` and linked from the Lab, so
 the site can point at something real and working rather than describing it.
 
 **`public/sw.js`.** That older site registered a caching service worker at the

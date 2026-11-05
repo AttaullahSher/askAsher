@@ -99,13 +99,6 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Locked while the entry gate is up, so the page cannot be scrolled past the
-   cinematic before it has played. */
-body[data-locked='true'] {
-  overflow: hidden;
-  touch-action: none;
-}
-
 ::selection {
   background: var(--color-signal);
   color: var(--color-void);
@@ -150,6 +143,16 @@ body[data-locked='true'] {
   font-weight: 800;
   font-size: clamp(3.4rem, 17vw, 12rem);
   line-height: 0.86;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.display-name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  /* "ATTAULLAH" is nine wide uppercase glyphs: this keeps it inside a 390px phone. */
+  font-size: clamp(2.5rem, 13.2vw, 10.5rem);
+  line-height: 0.88;
   letter-spacing: -0.03em;
   text-transform: uppercase;
 }

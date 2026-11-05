@@ -20,7 +20,7 @@ const mono = JetBrains_Mono({
   display: 'swap',
 });
 
-const title = `${site.name} — ${site.tagline}`;
+const title = `${site.fullName} (${site.name}) — ${site.tagline}`;
 
 /**
  * Absolute, and built here rather than via `asset()`.
@@ -41,12 +41,14 @@ export const metadata: Metadata = {
   description: site.summary,
   applicationName: site.name,
   keywords: [
+    'Attaullah Sher',
     'ASHER',
+    'procurement Abu Dhabi',
+    'tenders ADERP',
     'business transformation',
     'business automation',
-    'AI for decision making',
-    'operations',
-    'systems for small business',
+    'AI-assisted software development',
+    'digital operations',
   ],
   authors: [{ name: site.name }],
   manifest: asset('site.webmanifest'),
