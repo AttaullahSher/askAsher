@@ -1,39 +1,28 @@
 /**
- * The work.
+ * The Lab. After hours, not for clients.
  *
- * Not a CV and not a set of case studies. What the person can do, stated once,
- * and nothing said twice.
+ * Kept apart from the professional work on purpose: a recruiter should never
+ * have to read past a Wi-Fi experiment to find the systems a business runs on,
+ * and the experiments should never have to be dressed up to sit next to them.
  *
- * ---
+ * **Short.** Declaratives, under fifteen words where possible.
  *
- * **Short.** Every entry here used to run sixty to a hundred words per field.
- * Nobody reads a hundred words on a phone at midnight, and length itself reads
- * as arguing a case. Declaratives, under fifteen words where possible, full
- * stops instead of commas. If a sentence needs a subordinate clause it is two
- * sentences.
+ * **No disclaimers.** `status` says what the entry is, never whether it
+ * shipped. LIVE: open it now. PRIVATE: running for people who are not you.
+ * CLOSED: not published. Scope is stated once, in `security.ts`.
  *
- * **No disclaimers.** The previous version closed three entries with "written
- * down, not built" and a `made` line reading "reading, mostly", then explained
- * who it had never been pointed at. Every one of those is a flinch, and a
- * flinch is the only thing on a page a reader remembers. `status` no longer
- * comments on whether something shipped — `LIVE` means you can open it,
- * `PRIVATE` means it runs for real people who are not you, `CLOSED` means it
- * is not published. All three are true of every entry that carries them and
- * none of them is a confession.
- *
- * **The line that does not move.** No invented metrics, no awards, no client
- * logos, nothing that exposes a business's internals, and no method anybody
- * could follow. And no claimed operation: nothing here says a thing was
- * pointed at a person, because that is not true and because it is weaker than
- * what is here. Authority comes from knowing exactly how something works and
- * declining to dress it up. Scope is stated once, site-wide, in
- * `securityScope` — not apologised for again in every entry.
- *
- * **Second person.** "I know what a room gives away" asks to be believed.
- * "Your phone is talking right now" can be checked. Write the second one.
+ * **No claimed operation.** Nothing here says a thing was pointed at a person.
+ * Authority comes from knowing exactly how something works and declining to
+ * dress it up.
  */
 
-export interface Project {
+export const labIntro = {
+  eyebrow: 'The lab',
+  title: ['After', 'hours'],
+  lead: 'Not for clients. This is where I take things apart, including my own, to find where they give.',
+};
+
+export interface LabProject {
   id: string;
   code: string;
   title: string;
@@ -58,25 +47,10 @@ export interface Project {
   guarded?: string;
 }
 
-export const projects: Project[] = [
-  {
-    id: 'shift',
-    code: 'P-01',
-    title: 'SHIFT',
-    blurb: 'I take a business off manual and leave it running.',
-    status: 'PRIVATE',
-    what: 'The till, the paperwork, the stock, the prices sitting in four places quietly disagreeing. All of it pulled into one place everything else asks. The jobs that waited on a person stop waiting.',
-    why: 'Every business I have been let inside was held together by one person’s memory and a spreadsheet nobody else dares touch. That is not a system. That is a hostage situation with good intentions.',
-    does: [
-      'I find the hour a day that disappears. I make it stop existing.',
-      'I build what that business needed. Not what a salesman sells everybody.',
-      'I hand it over finished. If it still needs me, I built it wrong.',
-    ],
-    guarded: 'How it prices belongs to the business. Not to this page.',
-  },
+export const lab: LabProject[] = [
   {
     id: 'watch',
-    code: 'P-02',
+    code: 'L-01',
     title: 'WATCH',
     blurb: 'Your phone is talking right now. Not to you.',
     status: 'CLOSED',
@@ -92,7 +66,7 @@ export const projects: Project[] = [
   },
   {
     id: 'range',
-    code: 'P-03',
+    code: 'L-02',
     title: 'RANGE',
     blurb: 'I break what was sold as unbreakable.',
     status: 'CLOSED',
@@ -107,7 +81,7 @@ export const projects: Project[] = [
   },
   {
     id: 'lab',
-    code: 'P-04',
+    code: 'L-03',
     title: 'LAB',
     blurb: 'The bench. I break my own things first.',
     status: 'CLOSED',
@@ -123,7 +97,7 @@ export const projects: Project[] = [
   },
   {
     id: 'ask',
-    code: 'P-05',
+    code: 'L-04',
     title: 'ASK',
     blurb: 'A thinking partner that belongs to whoever opens it.',
     status: 'LIVE',
@@ -141,7 +115,7 @@ export const projects: Project[] = [
   },
   {
     id: 'grab',
-    code: 'P-06',
+    code: 'L-05',
     title: 'GRAB',
     blurb: 'Paste a link, get the video. No adverts, no account.',
     status: 'LIVE',
@@ -159,7 +133,7 @@ export const projects: Project[] = [
   },
   {
     id: 'vpn',
-    code: 'P-07',
+    code: 'L-06',
     title: 'VPN',
     blurb: 'A private tunnel for my family. I am the only one who could keep a record.',
     status: 'PRIVATE',
@@ -174,8 +148,23 @@ export const projects: Project[] = [
     hrefLabel: 'Read the scripts',
   },
   {
+    id: 'map',
+    code: 'L-07',
+    title: 'MAP',
+    blurb: 'Every system I run, as a city you can fly over.',
+    status: 'LIVE',
+    what: 'A 3D map of the whole estate. Each app is a building. Each automated job is a robot that sleeps until a message, a payment or its clock wakes it. There is a film mode for screen recording.',
+    why: 'Nobody reads an architecture diagram twice. Everybody watches a city light up.',
+    does: [
+      'The real shape of the systems on this page, with nothing private in it.',
+      'Activity on screen is simulated. No customer data, no keys, no numbers.',
+    ],
+    href: 'https://github.com/AttaullahSher/Architectural-Dashboard',
+    hrefLabel: 'See the source',
+  },
+  {
     id: 'web',
-    code: 'P-08',
+    code: 'L-08',
     title: 'WEB',
     blurb: 'Sites that behave like something, not like a brochure.',
     status: 'LIVE',

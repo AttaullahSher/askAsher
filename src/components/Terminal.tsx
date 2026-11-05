@@ -6,8 +6,9 @@ import { useExperience } from '@/lib/experience';
 import { answers } from '@/content/answers';
 import { playerTag } from '@/content/player';
 import { modes, modesNote } from '@/content/profile';
-import { projects } from '@/content/projects';
-import { sectors, site } from '@/content/site';
+import { lab } from '@/content/lab';
+import { sections, site } from '@/content/site';
+import { systems } from '@/content/work';
 import { stack } from '@/content/stack';
 
 interface Line {
@@ -80,18 +81,26 @@ export function Terminal() {
           { kind: 'dim' as const, text: modesNote.toLowerCase() },
         ],
       },
-      sectors: {
-        desc: 'list the sectors',
+      sections: {
+        desc: 'list the page',
         run: () =>
-          sectors.map((s) => ({
+          sections.map((s, i) => ({
             kind: 'out' as const,
-            text: `  ${s.index}  ${s.title.padEnd(12)} ${s.subtitle}`,
+            text: `  ${String(i + 1).padStart(2, '0')}  ${s.label}`,
           })),
       },
       work: {
-        desc: 'what exists',
+        desc: 'systems a business runs on',
         run: () =>
-          projects.map((p) => ({
+          systems.map((s) => ({
+            kind: 'out' as const,
+            text: `  ${s.code}  [LIVE    ] ${s.name.padEnd(24)} ${s.line}`,
+          })),
+      },
+      lab: {
+        desc: 'after hours',
+        run: () =>
+          lab.map((p) => ({
             kind: 'out' as const,
             text: `  ${p.code}  [${p.status.padEnd(8)}] ${p.title.padEnd(8)} ${p.blurb}`,
           })),

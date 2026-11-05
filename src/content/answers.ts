@@ -10,7 +10,7 @@
  * **It is not a model and it must never pretend to be one.** There is no
  * network call behind this, no key, and no generation — `AskConsole` scores
  * the visitor's words against `match` and returns the `reply` that wins. The
- * AI sector on this page already tells the visitor that nothing is running
+ * site already tells the visitor that nothing is running
  * here; a console that implied otherwise would make a liar out of that line
  * for the sake of a party trick.
  *
@@ -93,9 +93,9 @@ export const answers: Answer[] = [
     id: 'stack',
     match: ['what tech', 'what do you use', 'stack', 'languages', 'what language', 'tools', 'framework', 'typescript', 'python', 'react', 'javascript', 'programming language'],
     reply: [
-      'TypeScript for most of it. Python for anything quick. SQL because it is older than me and undefeated.',
-      'React and Next for what you see. Node underneath. Postgres where the important things live. Linux, because everything ends up there.',
-      'Sector 01 has the map. Every node on it I will take a question about in a room with no internet.',
+      'React and TypeScript for what you see. Firebase and Cloudflare Workers underneath. GitHub Actions to ship it.',
+      'Built through AI-assisted development: I decide what the business needs and direct the build with Claude Code. Then I test it against a real working day.',
+      'Six systems run a business on that stack right now. The Work section has them.',
     ],
     then: ['did you go to school for this'],
   },
@@ -123,7 +123,7 @@ export const answers: Answer[] = [
     reply: [
       'Not a chatbot in the corner. Everybody sells that and almost nobody uses it twice.',
       'The useful version is quiet. It reads what came in, decides what happens next, and interrupts a human only when it has to.',
-      'I built one you can open right now. No account, nothing leaves your phone. Work index, under ASK.',
+      'One of mine answers customers on WhatsApp at 3 AM and knows when to wake a human. Another you can open right now, in the Lab, under ASK.',
     ],
     then: ['what would you build for me'],
   },
@@ -195,13 +195,33 @@ export const answers: Answer[] = [
     ],
   },
 
+  {
+    id: 'procurement',
+    match: ['procurement', 'tender', 'tenders', 'rfq', 'aderp', 'supply chain', 'purchasing', 'sourcing', 'suppliers', 'contracts', 'government supply', 'adnoc'],
+    reply: [
+      'Fifteen years of it. RFQs, quotations, tender submissions, supplier registration on ADERP and the other government portals.',
+      'International suppliers negotiated directly, imports documented, and the order-to-cash cycle run end to end.',
+      'Supply and project engagements involving universities, government schools and entities like Etihad Rail and DCT. The Trade section has the list.',
+    ],
+    then: ['can i see your cv', 'how do i reach you'],
+  },
+  {
+    id: 'cv',
+    match: ['cv', 'resume', 'curriculum vitae', 'can i see your cv', 'hire', 'hiring', 'job', 'vacancy', 'recruiter', 'are you open to work', 'linkedin'],
+    reply: [
+      'Two versions: procurement and commercial, or business transformation and AI. Same man, different door.',
+      'Send your email through this console and say which one. I send it myself.',
+    ],
+    then: ['what do you do', 'procurement'],
+  },
+
   /* ------------------------------------------------------------- the man -- */
   {
     id: 'who',
     match: ['who are you', 'about you', 'tell me about yourself', 'your name', 'introduce yourself', 'who is asher', 'your background'],
     reply: [
       'Asher. Abu Dhabi.',
-      'One company. Half a music business. Hours given to the people who keep a city quiet. A course I am in no hurry to finish.',
+      'A company of my own. A partner’s seat in another. Hours given to the people who keep a city quiet. A degree finished at night.',
       'The rest is curiosity with a keyboard. I take things apart to find where they give.',
     ],
     then: ['what do you do', 'where are you'],
@@ -218,8 +238,8 @@ export const answers: Answer[] = [
     id: 'company',
     match: ['anfal', 'akm', 'your company', 'music shop', 'music business', 'what is anfal', 'akm music'],
     reply: [
-      'Anfal is where the decisions land on me and stay landed.',
-      'AKM Music is the other half. Instruments, the people who play them, the systems underneath.',
+      'TheAnfal is mine: e-commerce and general trading. The decisions land on me and stay landed.',
+      'AKM Music Centre is where I am a partner and run operations. Instruments, the people who play them, and every system underneath.',
       'The shop keeps me honest. Four seconds tells you which guitar is going home to be played and which is going home to lean on a wall. You sell both.',
     ],
   },
@@ -259,7 +279,7 @@ export const answers: Answer[] = [
     id: 'study',
     match: ['did you go to school', 'degree', 'university', 'self taught', 'how did you learn', 'education', 'course', 'certification', 'college'],
     reply: [
-      'Still studying. Part time. No hurry. The day I stop is the day this gets boring.',
+      'Bachelor of Arts, finished in 2026, alongside full-time work.',
       'None of the code came from a course. It came from breaking things and being annoyed enough to find out why.',
     ],
     then: ['can you teach me'],
@@ -303,7 +323,7 @@ export const answers: Answer[] = [
     match: ['what are you working on', 'working on now', 'current project', 'latest', 'what is next', 'busy with'],
     reply: [
       'Something taking a business off manual. Something on the bench that is mostly falling over. And this page.',
-      'The work index has the honest version, including which ones you can open.',
+      'The Work section has the systems. The Lab has the rest, including which ones you can open.',
     ],
   },
 
@@ -330,8 +350,8 @@ export const answers: Answer[] = [
     id: 'prove',
     match: ['prove it', 'show me', 'anyone can say that', 'talk is cheap', 'sounds fake', 'you are full of', 'bullshit', 'doubt it', 'impress me'],
     reply: [
-      'Fair. Sector 04 reads your own device in front of you and then throws it away.',
-      'Or open the work index. Three of them you can click and use right now, free, no account.',
+      'Fair. The Lab reads your own device in front of you and then throws it away.',
+      'Or open the store in the Work section and watch 2,100 products keep themselves up to date.',
       'The rest is a claim. File it that way until you have used one.',
     ],
   },
@@ -341,7 +361,7 @@ export const answers: Answer[] = [
     reply: [
       'Type it here and press send. Anything this console cannot answer goes to my phone.',
       'Instagram if you would rather see a face first. Email for anything that needs a paper trail.',
-      'Both are at the bottom of the personal file.',
+      'Both are at the bottom of the page.',
     ],
   },
   {

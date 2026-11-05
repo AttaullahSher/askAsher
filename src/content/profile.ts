@@ -23,12 +23,12 @@ export interface Role {
 export const roles: Role[] = [
   {
     title: 'Managing Director',
-    org: 'Anfal',
+    org: 'TheAnfal Dot Com SPC LLC',
     note: 'The one where the decisions land on me, and stay landed.',
   },
   {
     title: 'Partner',
-    org: 'AKM Music',
+    org: 'AKM Music Centre',
     note: 'Instruments, the people who play them, and the systems underneath.',
   },
   {
@@ -37,15 +37,15 @@ export const roles: Role[] = [
     note: 'Time given, quietly. Not a story I tell at dinner.',
   },
   {
-    title: 'Student',
-    org: 'Part time, ongoing',
-    note: 'The day I stop is the day it gets boring.',
+    title: 'Graduate',
+    org: 'Bachelor of Arts, 2026',
+    note: 'Finished alongside the day job, at night, without asking anyone to wait.',
   },
 ];
 
 /** Read in order. Each line earns its place or it goes. */
 export const bio: string[] = [
-  'Four things run at once. A company. Half a music business. Hours given to the people who keep a city quiet. A course I am in no hurry to finish.',
+  'Several things run at once. A company of my own. A partner’s seat in another. Hours given to the people who keep a city quiet. A degree finished at night.',
   'Most of the work is unglamorous. A business is losing an hour a day to something that should have been software years ago. I find it, move it, and the hour stops existing.',
   'The music shop keeps me honest. You can tell in four seconds which guitar is going home to be played and which one is going home to lean against a wall. You sell both. You never let on which is which.',
   'There is a version of me that never leaves the screen. He is unbearable company. So there are long dinners, worse jokes, and people who have never once asked what a database is.',
@@ -110,7 +110,7 @@ export const bioClose = 'I answer everything. Late, usually, and not always well
 /** Small factual chips under the roles. */
 export const facts: { k: string; v: string }[] = [
   { k: 'Based', v: 'Abu Dhabi' },
-  { k: 'Works in', v: 'English · Urdu · Pashto' },
+  { k: 'Speaks', v: 'English · Urdu · Hindi · Arabic' },
   { k: 'Hours', v: 'Late' },
   { k: 'Answers to', v: 'Asher' },
   { k: 'Notices', v: 'Most of it' },
